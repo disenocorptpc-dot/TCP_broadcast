@@ -361,8 +361,13 @@
                     <div class="flex-row" style="flex-wrap: wrap;">
                         <input type="text" id="vac-name" placeholder="Nombre completo..." style="flex: 1 1 100%;">
                         <div style="display: flex; gap: 10px; flex: 1 1 100%;">
-                            <input type="date" id="vac-end" title="Fecha de Regreso"
-                                style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                            <select id="vac-status"
+                                style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px; font-family: 'Outfit', sans-serif;">
+                                <option value="De vacaciones">De vacaciones</option>
+                                <option value="Próxima semana">Próxima semana</option>
+                            </select>
+                            <input type="text" id="vac-dates" placeholder="Ej: Regresa el Lunes"
+                                style="flex: 2; margin-bottom: 0;">
                         </div>
                         <button onclick="addVacation()" style="flex: 1 1 100%;">Añadir</button>
                     </div>
@@ -543,20 +548,16 @@
 
         window.addVacation = async function addVacation() {
             const name = document.getElementById('vac-name').value;
-            const end = document.getElementById('vac-end').value;
+            const status = document.getElementById('vac-status').value;
+            const dates = document.getElementById('vac-dates').value;
             if (name) {
                 if (!globalState.vacations) globalState.vacations = [];
-                let datesStr = "En vacaciones";
-                if (end) {
-                    const d = new Date(end + "T12:00:00");
-                    const day = d.getDate();
-                    const month = d.toLocaleString('es-MX', { month: 'short' });
-                    datesStr = `Regresa el ${day} de ${month}`;
-                }
+                let finalStr = status;
+                if (dates) finalStr += ' - ' + dates;
 
-                globalState.vacations.push({ name, dates: datesStr });
+                globalState.vacations.push({ name, dates: finalStr });
                 document.getElementById('vac-name').value = '';
-                document.getElementById('vac-end').value = '';
+                document.getElementById('vac-dates').value = '';
                 renderLists();
                 await saveToFirebase();
             }
