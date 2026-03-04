@@ -361,9 +361,7 @@
                     <div class="flex-row" style="flex-wrap: wrap;">
                         <input type="text" id="vac-name" placeholder="Nombre completo..." style="flex: 1 1 100%;">
                         <div style="display: flex; gap: 10px; flex: 1 1 100%;">
-                            <input type="date" id="vac-start" title="Inicio"
-                                style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
-                            <input type="date" id="vac-end" title="Fin"
+                            <input type="date" id="vac-end" title="Fecha de Regreso"
                                 style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
                         </div>
                         <button onclick="addVacation()" style="flex: 1 1 100%;">Añadir</button>
@@ -545,17 +543,19 @@
 
         window.addVacation = async function addVacation() {
             const name = document.getElementById('vac-name').value;
-            const start = document.getElementById('vac-start').value;
             const end = document.getElementById('vac-end').value;
             if (name) {
                 if (!globalState.vacations) globalState.vacations = [];
-                let datesStr = start ? `Del ${start}` : 'Descanso';
-                if (end && start) datesStr += ` al ${end}`;
-                else if (end && !start) datesStr = `Hasta el ${end}`;
+                let datesStr = "En vacaciones";
+                if (end) {
+                    const d = new Date(end + "T12:00:00");
+                    const day = d.getDate();
+                    const month = d.toLocaleString('es-MX', { month: 'short' });
+                    datesStr = `Regresa el ${day} de ${month}`;
+                }
 
                 globalState.vacations.push({ name, dates: datesStr });
                 document.getElementById('vac-name').value = '';
-                document.getElementById('vac-start').value = '';
                 document.getElementById('vac-end').value = '';
                 renderLists();
                 await saveToFirebase();

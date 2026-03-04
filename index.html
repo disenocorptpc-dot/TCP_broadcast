@@ -57,7 +57,7 @@
 
         .header h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.2rem;
+            font-size: 1.5rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             display: flex;
@@ -149,7 +149,8 @@
 
         .widget h3 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.0rem;
+            font-weight: 700;
             color: var(--text-muted);
             margin-bottom: 20px;
             text-transform: uppercase;
@@ -391,30 +392,28 @@
             margin-top: 5px;
         }
 
-        .weather-banner {
-            margin-top: 15px;
+        .weather-mini {
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            gap: 15px;
-            background: rgba(0, 240, 255, 0.05);
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 240, 255, 0.2);
+            align-items: center;
+            gap: 3px;
         }
 
-        .weather-banner .temp {
+        .weather-mini .temp {
             font-size: 2.2rem;
             font-weight: 800;
             color: var(--accent);
             line-height: 1;
         }
 
-        .weather-banner .loc {
-            font-size: 1.1rem;
+        .weather-mini .cond {
+            font-size: 0.9rem;
             color: var(--text-muted);
             text-transform: uppercase;
             line-height: 1.2;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -439,7 +438,7 @@
     <!-- Sidebar Dashboard 1 -->
     <aside class="sidebar" id="sidebar-1">
         <div class="widget">
-            <h3>🌍 Reloj Mundial y Clima</h3>
+            <h3>🌍 Relojes</h3>
             <div id="clock">12:00:00</div>
 
             <div class="world-clocks">
@@ -451,13 +450,18 @@
                         id="wc-jamaica">--:--</span></div>
                 <div class="world-clock" id="cw-punta"><span class="wc-label">Punta Cana</span><span class="wc-time"
                         id="wc-punta">--:--</span></div>
-                <div class="world-clock" id="cw-milan"><span class="wc-label">Milán</span><span class="wc-time"
-                        id="wc-milan">--:--</span></div>
-            </div>
-
-            <div class="weather-banner">
-                <div class="temp" id="weather-temp">--°C</div>
-                <div class="loc">Cancún<br><span style="font-size:1.1rem;">Clima Actual</span></div>
+                <div class="world-clock" id="cw-milan"
+                    style="flex: 1 1 100%; display: flex; align-items: center; justify-content: space-evenly; padding: 15px;">
+                    <div style="text-align: center;">
+                        <span class="wc-label">Milán</span>
+                        <span class="wc-time" id="wc-milan">--:--</span>
+                    </div>
+                    <div style="width: 1px; height: 40px; background: rgba(255,255,255,0.1);"></div>
+                    <div class="weather-mini">
+                        <span class="temp" id="weather-temp">--°C</span>
+                        <span class="cond" id="weather-cond">Soleado ☀️</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -679,6 +683,19 @@
                 const data = await res.json();
                 if (data && data.current_weather) {
                     document.getElementById('weather-temp').textContent = Math.round(data.current_weather.temperature) + '°C';
+
+                    const code = data.current_weather.weathercode;
+                    let desc = "Clima ext.";
+                    if (code === 0) desc = "Soleado ☀️";
+                    else if (code <= 3) desc = "Nublado ☁️";
+                    else if (code < 50) desc = "Niebla 🌫️";
+                    else if (code < 60) desc = "Llovizna 🌧️";
+                    else if (code < 70) desc = "Lluvia 🌧️";
+                    else if (code < 80) desc = "Nieve ❄️";
+                    else if (code < 90) desc = "Aguaceros 🌧️";
+                    else desc = "Tormenta ⛈️";
+
+                    document.getElementById('weather-cond').textContent = desc;
                 }
             } catch (e) {
                 console.error('Weather error:', e);
