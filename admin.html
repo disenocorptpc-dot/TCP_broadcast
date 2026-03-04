@@ -586,8 +586,8 @@
             const val = document.getElementById('new-ticker').value;
             if (val && loggedInUser) {
                 let styledMsg = val;
-                // Agrega el departamento solo si no es admin, o como gustes (aquí para todos)
-                styledMsg = `<span style="color:${loggedInUser.color}; font-size: 0.9em; margin-right: 5px;">[${loggedInUser.role}]</span> ${val}`;
+                // Agrega el departamento y colorea TODO el mensaje
+                styledMsg = `<span style="color:${loggedInUser.color};"><span style="font-weight: 700; font-size: 0.9em; margin-right: 5px;">[${loggedInUser.role}]</span> ${val}</span>`;
 
                 globalState.tickers.push(styledMsg);
                 document.getElementById('new-ticker').value = '';
@@ -624,7 +624,7 @@
             const msg = document.getElementById('manager-msg').value;
             if (msg && loggedInUser) {
                 let styledMsg = msg;
-                styledMsg = `<span style="color:${loggedInUser.color}; margin-right: 8px;">[${loggedInUser.role}]</span> ${msg}`;
+                styledMsg = `<span style="color:${loggedInUser.color};"><span style="font-weight: 700; margin-right: 8px;">[${loggedInUser.role}]</span> ${msg}</span>`;
 
                 globalState.managerMsg = styledMsg;
                 document.getElementById('manager-msg').value = '';

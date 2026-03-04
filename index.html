@@ -773,19 +773,28 @@
                         tickerBar.classList.remove('alert-mode');
                         tickerLabel.innerText = "ÚLTIMA HORA";
 
+                        let charCount = 0;
                         let innerHtml = '';
                         if (data.tickers && data.tickers.length > 0) {
                             data.tickers.forEach(t => {
-                                if (t.includes('URGENTE') || t.includes('RECORDATORIO')) {
+                                if (t.includes('span style')) {
+                                    // Mensajes desde Admin con colores personalizados
+                                    innerHtml += `<span>${t}</span>`;
+                                } else if (t.includes('URGENTE') || t.includes('RECORDATORIO') || t.includes('COMUNICADO:')) {
                                     innerHtml += `<span><span class="alert">ATENCIÓN:</span> ${t}</span>`;
                                 } else {
                                     innerHtml += `<span><span class="highlight">INFO:</span> ${t}</span>`;
                                 }
+                                charCount += t.replace(/<[^>]+>/g, '').length + 20; // 20 por el espaciado
                             });
                         } else {
                             innerHtml = '<span>Sin anuncios actuales.</span>';
+                            charCount = 40;
                         }
-                        tickerContentBox.innerHTML = `<div class="ticker-text" id="ticker-text">${innerHtml}</div>`;
+
+                        // Ajustar velocidad en base al número de letras (~0.25s por letra) min 25s
+                        let dur = Math.max(25, Math.floor(charCount * 0.25));
+                        tickerContentBox.innerHTML = `<div class="ticker-text" id="ticker-text" style="animation-duration: ${dur}s">${innerHtml}</div>`;
                     }
 
                     // Actualizar Cumpleaños (Automático Google Sheets si existe, o manual si no)
