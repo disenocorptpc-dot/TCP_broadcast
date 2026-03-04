@@ -34,8 +34,8 @@
             color: var(--text-main);
             height: 100vh;
             display: grid;
-            grid-template-columns: 1fr 380px;
-            grid-template-rows: 1fr 60px;
+            grid-template-columns: 1fr 450px;
+            grid-template-rows: 1fr 70px;
             overflow: hidden;
         }
 
@@ -57,7 +57,7 @@
 
         .header h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.8rem;
+            font-size: 2.5rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             display: flex;
@@ -68,9 +68,9 @@
         .live-badge {
             background-color: var(--danger);
             color: white;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 1rem;
             font-weight: bold;
             letter-spacing: 2px;
             animation: pulse 2s infinite;
@@ -140,13 +140,13 @@
         }
 
         .stat-box .value {
-            font-size: 2rem;
+            font-size: 2.8rem;
             font-weight: 800;
             color: var(--accent);
         }
 
         .stat-box .label {
-            font-size: 0.85rem;
+            font-size: 1.1rem;
             color: var(--text-muted);
         }
 
@@ -171,8 +171,8 @@
         }
 
         .status-dot {
-            width: 10px;
-            height: 10px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
         }
 
@@ -207,7 +207,8 @@
             color: #000;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            padding: 0 24px;
+            font-size: 1.4rem;
+            padding: 0 30px;
             height: 100%;
             display: flex;
             align-items: center;
@@ -227,9 +228,9 @@
         .ticker-text {
             display: inline-block;
             padding-left: 100%;
-            animation: ticker 25s linear infinite;
-            font-size: 1.1rem;
-            font-weight: 300;
+            animation: ticker 30s linear infinite;
+            font-size: 1.8rem;
+            font-weight: 400;
         }
 
         .ticker-text span {
@@ -274,7 +275,7 @@
         /* Clock Widget */
         #clock {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-weight: 700;
             text-align: center;
             color: #fff;
@@ -311,18 +312,25 @@
         <div class="widget">
             <h3>🎉 Cumpleaños</h3>
             <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Hoy celebramos a:
+                <div style="font-size: 1rem; color: var(--text-muted); text-transform: uppercase;">Hoy celebramos a:
                 </div>
-                <div id="bday-main" style="font-size: 1.3rem; font-weight: 700; color: #ffaa00; margin-top: 4px;">🎂
+                <div id="bday-main" style="font-size: 1.8rem; font-weight: 700; color: #ffaa00; margin-top: 4px;">🎂
                     Cargando...</div>
-                <div id="bday-dept" style="font-size: 0.85rem; color: var(--text-main); margin-top: 2px;"></div>
+                <div id="bday-dept" style="font-size: 1.1rem; color: var(--text-main); margin-top: 2px;"></div>
             </div>
             <div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
+                <div style="font-size: 1rem; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
                 <ul class="task-list" id="bday-next-list" style="margin-top: 8px;">
                     <!-- Se inyecta desde FB -->
                 </ul>
             </div>
+        </div>
+
+        <div class="widget">
+            <h3>🔇 En Junta / Ocupados</h3>
+            <ul class="task-list" id="busy-list">
+                <!-- Se inyecta desde DB -->
+            </ul>
         </div>
 
         <div class="widget">
@@ -402,6 +410,22 @@
                         document.getElementById('bday-dept').innerHTML = data.birthday.dept || '--';
                     }
 
+                    // Actualizar Personal En Junta
+                    if (data.busy) {
+                        const busyList = document.getElementById('busy-list');
+                        busyList.innerHTML = '';
+                        data.busy.forEach(b => {
+                            busyList.innerHTML += `
+                                <li class="task-item">
+                                    <span class="status-dot urgent"></span>
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 1.2rem;">${b.name}</div>
+                                        <div style="font-size: 0.9rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
+                                    </div>
+                                </li>`;
+                        });
+                    }
+
                     // Actualizar Deadlines
                     if (data.reminders) {
                         const list = document.getElementById('deadline-list');
@@ -415,19 +439,25 @@
                                 <li class="task-item">
                                     <span class="status-dot ${statusClass}"></span>
                                     <div>
-                                        <div style="font-weight: 600;">${r.title}</div>
-                                        <div style="font-size: 0.8rem; color: var(--text-muted);">${r.time}</div>
+                                        <div style="font-weight: 600; font-size: 1.2rem;">${r.title}</div>
+                                        <div style="font-size: 0.9rem; color: var(--text-muted);">${r.time}</div>
                                     </div>
                                 </li>`;
                         });
                     }
 
-                    // Actualizar Media
-                    if (data.mediaId && data.mediaId !== currentVideoId) {
-                        currentVideoId = data.mediaId;
-                        const iframe = document.getElementById('main-video');
-                        // Suponemos que es play de YouTube
-                        iframe.src = `https://www.youtube.com/embed/${currentVideoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${currentVideoId}`;
+                    // Actualizar Media Playlist
+                    if (data.mediaIds && data.mediaIds.length > 0) {
+                        let newPlayListStr = data.mediaIds.join(",");
+                        if (newPlayListStr !== currentVideoId) {
+                            currentVideoId = newPlayListStr;
+                            const iframe = document.getElementById('main-video');
+
+                            let firstId = data.mediaIds[0];
+                            let othersParams = data.mediaIds.length > 1 ? `&playlist=${data.mediaIds.slice(1).join(',')}` : `&playlist=${firstId}`;
+
+                            iframe.src = `https://www.youtube.com/embed/${firstId}?autoplay=1&mute=1&controls=0&loop=1${othersParams}`;
+                        }
                     }
 
                 }

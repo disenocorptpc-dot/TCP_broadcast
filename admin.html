@@ -268,15 +268,15 @@
 
                 <!-- MEDIA PLAYER CONTROL -->
                 <div class="card">
-                    <h2>📺 Control de Media (YouTube/Spotify)</h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Pega el ID del video o
-                        playlist.</p>
-                    <div class="form-group">
-                        <label>ID de YouTube (Ej: jfKfPfyJRdk)</label>
-                        <div class="flex-row">
-                            <input type="text" id="media-id" placeholder="ID del video...">
-                            <button onclick="updateMedia()">Actualizar</button>
-                        </div>
+                    <h2>📺 Playlist de YouTube</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Pega el enlace
+                        completo de YouTube y agrégalo a la fila de reproducción.</p>
+                    <div class="flex-row">
+                        <input type="text" id="new-media-id" placeholder="Enlace de YouTube...">
+                        <button onclick="addMedia()">Añadir</button>
+                    </div>
+                    <div id="media-list" style="margin-top: 15px;">
+                        <!-- Playlist Inject -->
                     </div>
                 </div>
 
@@ -310,14 +310,27 @@
                 </div>
 
                 <!-- REMINDERS CONTROL -->
-                <div class="card" style="grid-column: 1 / -1;">
+                <div class="card">
                     <h2>⏰ Recordatorios y Deadlines</h2>
                     <div class="flex-row">
-                        <input type="text" id="rem-title" placeholder="Título del Recordatorio...">
-                        <input type="text" id="rem-time" placeholder="Hora / Edo (Ej: Hoy - 17:00)">
+                        <input type="text" id="rem-title" placeholder="Título...">
+                        <input type="text" id="rem-time" placeholder="Hora/Edo...">
                         <button onclick="addReminder()">Añadir</button>
                     </div>
-                    <div id="reminder-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div id="reminder-list" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                        <!-- Items se inyectan acá -->
+                    </div>
+                </div>
+
+                <!-- EN JUNTA CONTROL -->
+                <div class="card">
+                    <h2>🔇 Personal en Junta</h2>
+                    <div class="flex-row">
+                        <input type="text" id="busy-name" placeholder="Nombre (Ej: Roberto)...">
+                        <input type="text" id="busy-reason" placeholder="Motivo (Ej: En Junta)...">
+                        <button onclick="addBusy()">Añadir</button>
+                    </div>
+                    <div id="busy-list" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
                         <!-- Items se inyectan acá -->
                     </div>
                 </div>
@@ -333,9 +346,10 @@
 
         let dbDocRef = null;
         let globalState = {
-            mediaId: "jfKfPfyJRdk",
+            mediaIds: ["jfKfPfyJRdk"],
             tickers: [],
             reminders: [],
+            busy: [],
             birthday: { name: "", dept: "" }
         };
 
@@ -377,6 +391,18 @@
         }
 
         window.renderLists = function renderLists() {
+            // Render Playlist
+            const mediaList = document.getElementById('media-list');
+            mediaList.innerHTML = '';
+            globalState.mediaIds.forEach((m, index) => {
+                mediaList.innerHTML += `
+                    <div class="list-item">
+                        <p>${m}</p>
+                        <button class="delete-btn" onclick="deleteMedia(${index})">Eliminar</button>
+                    </div>
+                `;
+            });
+
             // Render Tickers
             const tickerList = document.getElementById('ticker-list');
             tickerList.innerHTML = '';
@@ -403,6 +429,62 @@
                     </div>
                 `;
             });
+
+            // Render En Junta
+            const busyList = document.getElementById('busy-list');
+            busyList.innerHTML = '';
+            (globalState.busy || []).forEach((b, index) => {
+                busyList.innerHTML += `
+                    <div class="list-item">
+                        <div>
+                            <p style="font-weight: 600; color: var(--danger);">${b.name}</p>
+                            <p style="color: var(--text-muted); font-size: 0.8rem;">${b.reason}</p>
+                        </div>
+                        <button class="delete-btn" onclick="deleteBusy(${index})">Liberar</button>
+                    </div>
+                `;
+            });
+        }
+
+        window.addMedia = async function addMedia() {
+            const url = document.getElementById('new-media-id').value;
+            // Extraer ID de Youtube (soporta watch?v=ID o youtu.be/ID)
+            let videoId = url;
+            const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|.*\/|.*embed\/))([a-zA-Z0-9_-]{11})/);
+            if (match && match[1]) videoId = match[1];
+
+            if (videoId) {
+                globalState.mediaIds.push(videoId);
+                document.getElementById('new-media-id').value = '';
+                renderLists();
+                await saveToFirebase();
+            }
+        }
+
+        window.deleteMedia = async function deleteMedia(index) {
+            globalState.mediaIds.splice(index, 1);
+            if (globalState.mediaIds.length === 0) globalState.mediaIds.push('jfKfPfyJRdk'); // Fallback
+            renderLists();
+            await saveToFirebase();
+        }
+
+        window.addBusy = async function addBusy() {
+            const name = document.getElementById('busy-name').value;
+            const reason = document.getElementById('busy-reason').value;
+            if (name) {
+                if (!globalState.busy) globalState.busy = [];
+                globalState.busy.push({ name, reason: reason || 'Ocupado' });
+                document.getElementById('busy-name').value = '';
+                document.getElementById('busy-reason').value = '';
+                renderLists();
+                await saveToFirebase();
+            }
+        }
+
+        window.deleteBusy = async function deleteBusy(index) {
+            globalState.busy.splice(index, 1);
+            renderLists();
+            await saveToFirebase();
         }
 
         window.addTicker = async function addTicker() {
@@ -437,15 +519,6 @@
             globalState.reminders.splice(index, 1);
             renderLists();
             await saveToFirebase();
-        }
-
-        window.updateMedia = async function updateMedia() {
-            const id = document.getElementById('media-id').value;
-            if (id) {
-                globalState.mediaId = id;
-                await saveToFirebase();
-                alert('Media ID actualizado a: ' + id);
-            }
         }
 
         window.updateBirthday = async function updateBirthday() {
