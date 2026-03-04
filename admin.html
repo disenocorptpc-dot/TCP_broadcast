@@ -382,6 +382,7 @@
         import { initFirebase } from './firebase-config.js';
         import { setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        let dbDocRef = null;
         let globalState = {
             mediaIds: ["jfKfPfyJRdk"],
             tickers: [],
