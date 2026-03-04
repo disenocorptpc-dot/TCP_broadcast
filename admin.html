@@ -369,6 +369,7 @@
             reminders: [],
             busy: [],
             managerMsg: "",
+            sheetUrl: "",
             birthday: { name: "", dept: "" }
         };
 
@@ -575,58 +576,10 @@
 
             const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
             if (!match) { alert('URL inválida.'); return; }
-            const sheetId = match[1];
-            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
 
-            try {
-                const res = await fetch(csvUrl);
-                const text = await res.text();
-                const lines = text.split('\\n');
-
-                let foundBirthday = null;
-                let today = new Date();
-                let m = today.getMonth(); // 0-11
-                let d = today.getDate(); // 1-31
-                const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
-                let currentMonthStr = meses[m];
-                let currentMonthInCsv = "";
-
-                for (let line of lines) {
-                    // Ignora si está vacía
-                    if (line.trim() === '') continue;
-                    // Limpieza cruda de CSV
-                    let cols = line.split(',');
-                    if (cols.length < 4) continue;
-
-                    let col1 = cols[1]?.trim().toUpperCase();
-                    if (meses.includes(col1)) { currentMonthInCsv = col1; }
-
-                    if (currentMonthInCsv === currentMonthStr) {
-                        let dayStr = cols[2]?.trim();
-                        if (dayStr == d.toString()) {
-                            let nameStr = cols[3]?.trim();
-                            if (nameStr) {
-                                foundBirthday = nameStr;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (foundBirthday) {
-                    globalState.birthday = { name: foundBirthday, dept: "¡Felicidades!" };
-                    await saveToFirebase();
-                    alert('🎂 ¡Sincronizado! Cumpleaños hoy: ' + foundBirthday);
-                } else {
-                    globalState.birthday = { name: "--", dept: "Nadie el día de hoy" };
-                    await saveToFirebase();
-                    alert('Excel procesado: Nadie cumple años en el equipo el día de hoy.');
-                }
-
-            } catch (e) {
-                console.error(e);
-                alert('Error al leer el Excel. Verifica que el Google Sheet sea público ("Cualquier usuario que tenga el vínculo puede ver").');
-            }
+            globalState.sheetUrl = url;
+            await saveToFirebase();
+            alert('✅ Liga de Sheets vinculada con éxito. \\n\\nLa pantalla principal (Proyector) se encargará de leerlo automáticamente de fondo, mostrar el cumpleaños de hoy y calcular los tres siguientes compañeros en la fila.');
         }
 
     </script>

@@ -34,7 +34,7 @@
             color: var(--text-main);
             height: 100vh;
             display: grid;
-            grid-template-columns: 1fr 450px;
+            grid-template-columns: 1fr 500px;
             grid-template-rows: 1fr 70px;
             overflow: hidden;
         }
@@ -311,7 +311,7 @@
             }
         }
 
-        /* Clock Widget */
+        /* Clock & Weather Widget */
         #clock {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 3.5rem;
@@ -320,6 +320,61 @@
             color: #fff;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
             letter-spacing: 2px;
+        }
+
+        .world-clocks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .world-clock {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .world-clock .wc-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .world-clock .wc-time {
+            display: block;
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-main);
+        }
+
+        .weather-banner {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: rgba(0, 240, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        .weather-banner .temp {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .weather-banner .loc {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -344,8 +399,24 @@
     <!-- Sidebar Dashboard -->
     <aside class="sidebar">
         <div class="widget">
-            <h3>Hora Local</h3>
+            <h3>🌍 Reloj Mundial y Clima</h3>
             <div id="clock">12:00:00</div>
+
+            <div class="world-clocks">
+                <div class="world-clock"><span class="wc-label">Mérida</span><span class="wc-time"
+                        id="wc-merida">--:--</span></div>
+                <div class="world-clock"><span class="wc-label">Los Cabos</span><span class="wc-time"
+                        id="wc-cabos">--:--</span></div>
+                <div class="world-clock"><span class="wc-label">Jamaica</span><span class="wc-time"
+                        id="wc-jamaica">--:--</span></div>
+                <div class="world-clock"><span class="wc-label">Punta Cana</span><span class="wc-time"
+                        id="wc-punta">--:--</span></div>
+            </div>
+
+            <div class="weather-banner">
+                <div class="temp" id="weather-temp">--°C</div>
+                <div class="loc">Mérida<br><span style="font-size:0.8rem;">Clima Actual</span></div>
+            </div>
         </div>
 
         <div class="widget">
@@ -418,6 +489,13 @@
             let seconds = now.getSeconds().toString().padStart(2, '0');
             document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
 
+            // Actualizar Relojes Mundiales
+            const opts = { hour: '2-digit', minute: '2-digit', hour12: false };
+            document.getElementById('wc-merida').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Merida' }).format(now);
+            document.getElementById('wc-cabos').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Mazatlan' }).format(now);
+            document.getElementById('wc-jamaica').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Jamaica' }).format(now);
+            document.getElementById('wc-punta').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Santo_Domingo' }).format(now);
+
             // Actualizar cumpleaños a medianoche automáticamente
             let currentDay = now.getDate();
             if (currentDay !== lastDay) {
@@ -443,7 +521,7 @@
                 const text = await res.text();
 
                 const meses = { "ENERO": 0, "FEBRERO": 1, "MARZO": 2, "ABRIL": 3, "MAYO": 4, "JUNIO": 5, "JULIO": 6, "AGOSTO": 7, "SEPTIEMBRE": 8, "OCTUBRE": 9, "NOVIEMBRE": 10, "DICIEMBRE": 11 };
-                let lines = text.split('\n');
+                let lines = text.split(/\r?\n/);
                 let birthdays = [];
                 let currentMonth = -1;
 
@@ -497,7 +575,7 @@
                 document.getElementById('bday-dept').innerHTML = "¡Muchas Felicidades!";
             } else {
                 document.getElementById('bday-main').innerHTML = `--`;
-                document.getElementById('bday-dept').innerHTML = "Nadie cumple hoy";
+                document.getElementById('bday-dept').innerHTML = "Nadie en el equipo";
             }
 
             const nextList = document.getElementById('bday-next-list');
@@ -515,6 +593,22 @@
                  `;
             });
         }
+
+        async function fetchWeather() {
+            try {
+                // Clima Mérida (Open Meteo Free API)
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=20.9674&longitude=-89.6236&current_weather=true');
+                const data = await res.json();
+                if (data && data.current_weather) {
+                    document.getElementById('weather-temp').textContent = Math.round(data.current_weather.temperature) + '°C';
+                }
+            } catch (e) {
+                console.error('Weather error:', e);
+            }
+        }
+
+        fetchWeather();
+        setInterval(fetchWeather, 1800000); // 30 minutos
 
         // Inicializar Firebase
         initFirebase().then(({ docRef }) => {
