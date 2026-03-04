@@ -450,16 +450,15 @@
                         id="wc-jamaica">--:--</span></div>
                 <div class="world-clock" id="cw-punta"><span class="wc-label">Punta Cana</span><span class="wc-time"
                         id="wc-punta">--:--</span></div>
-                <div class="world-clock" id="cw-milan"
-                    style="flex: 1 1 100%; display: flex; align-items: center; justify-content: space-evenly; padding: 15px;">
-                    <div style="text-align: center;">
-                        <span class="wc-label">Milán</span>
-                        <span class="wc-time" id="wc-milan">--:--</span>
-                    </div>
-                    <div style="width: 1px; height: 40px; background: rgba(255,255,255,0.1);"></div>
+                <div class="world-clock" id="cw-milan">
+                    <span class="wc-label">Milán</span>
+                    <span class="wc-time" id="wc-milan">--:--</span>
+                </div>
+                <div class="world-clock"
+                    style="display: flex; flex-direction: column; justify-content: center; border-color: rgba(0,240,255,0.2);">
                     <div class="weather-mini">
                         <span class="temp" id="weather-temp">--°C</span>
-                        <span class="cond" id="weather-cond">Soleado ☀️</span>
+                        <span class="cond" id="weather-cond" style="margin-top:2px;">Cargando...</span>
                     </div>
                 </div>
             </div>
@@ -816,6 +815,14 @@
                                         } else {
                                             displayStr = `Del ${s.day} de ${s.month} al ${e.day} de ${e.month}`;
                                         }
+                                    }
+                                } else if (v.start && !v.end) {
+                                    const startDate = new Date(v.start + "T12:00:00");
+                                    if (startDate > twoWeeksFromNow || startDate < new Date(now.getTime() - 86400000)) {
+                                        isRelevant = false;
+                                    } else {
+                                        const s = formatVacationDate(v.start);
+                                        displayStr = `El ${s.day} de ${s.month}`;
                                     }
                                 }
 
