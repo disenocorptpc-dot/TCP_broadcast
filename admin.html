@@ -327,14 +327,41 @@
 
     </div>
 
-    <script>
-        // --- LOGIC ---
+    <script type="module">
+        import { initFirebase } from './firebase-config.js';
+        import { setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        function login() {
+        let dbDocRef = null;
+        let globalState = {
+            mediaId: "jfKfPfyJRdk",
+            tickers: [],
+            reminders: [],
+            birthday: { name: "", dept: "" }
+        };
+
+        initFirebase().then(async ({ docRef }) => {
+            dbDocRef = docRef;
+            console.log("Admin Firebase Conectado.");
+            // Cargar estado inicial
+            const snap = await getDoc(docRef);
+            if (snap.exists()) {
+                globalState = { ...globalState, ...snap.data() };
+            }
+        }).catch(err => {
+            console.error(err);
+        });
+
+        async function saveToFirebase() {
+            if (dbDocRef) {
+                await setDoc(dbDocRef, globalState, { merge: true });
+            }
+        }
+
+        // --- EXPORT TO WINDOW FOR HTML ONCLICK ---
+        window.login = function login() {
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
 
-            // Credenciales de prueba
             if (user === 'admin' && pass === 'admin') {
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('dashboard-section').style.display = 'block';
@@ -344,27 +371,16 @@
             }
         }
 
-        function logout() {
+        window.logout = function logout() {
             document.getElementById('dashboard-section').style.display = 'none';
             document.getElementById('login-section').style.display = 'flex';
         }
 
-        // --- MOCK DATA PARA PROTOTIPO ---
-        let tickers = [
-            "ACTUALIZACIÓN: El nuevo portal interno ya está en vivo a partir de hoy.",
-            "RECORDATORIO: Enviar reportes de gastos."
-        ];
-
-        let reminders = [
-            { title: "Cierre de Reportes Q3", time: "Hoy - 17:00 PM" },
-            { title: "Revisión de Presupuesto", time: "Mañana - 09:00 AM" }
-        ];
-
-        function renderLists() {
+        window.renderLists = function renderLists() {
             // Render Tickers
             const tickerList = document.getElementById('ticker-list');
             tickerList.innerHTML = '';
-            tickers.forEach((t, index) => {
+            globalState.tickers.forEach((t, index) => {
                 tickerList.innerHTML += `
                     <div class="list-item">
                         <p>${t}</p>
@@ -376,7 +392,7 @@
             // Render Reminders
             const remList = document.getElementById('reminder-list');
             remList.innerHTML = '';
-            reminders.forEach((r, index) => {
+            globalState.reminders.forEach((r, index) => {
                 remList.innerHTML += `
                     <div class="list-item">
                         <div>
@@ -389,53 +405,64 @@
             });
         }
 
-        function addTicker() {
+        window.addTicker = async function addTicker() {
             const val = document.getElementById('new-ticker').value;
             if (val) {
-                tickers.push(val);
+                globalState.tickers.push(val);
                 document.getElementById('new-ticker').value = '';
                 renderLists();
-                // Aquí en el futuro enviaríamos a Firebase
+                await saveToFirebase();
             }
         }
 
-        function deleteTicker(index) {
-            tickers.splice(index, 1);
+        window.deleteTicker = async function deleteTicker(index) {
+            globalState.tickers.splice(index, 1);
             renderLists();
+            await saveToFirebase();
         }
 
-        function addReminder() {
+        window.addReminder = async function addReminder() {
             const title = document.getElementById('rem-title').value;
             const time = document.getElementById('rem-time').value;
             if (title && time) {
-                reminders.push({ title, time });
+                globalState.reminders.push({ title, time });
                 document.getElementById('rem-title').value = '';
                 document.getElementById('rem-time').value = '';
                 renderLists();
+                await saveToFirebase();
             }
         }
 
-        function deleteReminder(index) {
-            reminders.splice(index, 1);
+        window.deleteReminder = async function deleteReminder(index) {
+            globalState.reminders.splice(index, 1);
             renderLists();
+            await saveToFirebase();
         }
 
-        function updateMedia() {
+        window.updateMedia = async function updateMedia() {
             const id = document.getElementById('media-id').value;
             if (id) {
-                alert('Media ID actualizado a: ' + id + '\n\nEn un entorno real, esto enviaría el ID a la base de datos (Firebase) y la pantalla del Broadcast se actualizaría sola al instante.');
+                globalState.mediaId = id;
+                await saveToFirebase();
+                alert('Media ID actualizado a: ' + id);
             }
         }
 
-        function updateBirthday() {
+        window.updateBirthday = async function updateBirthday() {
             const name = document.getElementById('bday-name').value;
             if (name) {
-                alert('Cumpleañero actualizado a: ' + name);
+                let parts = name.split(",");
+                globalState.birthday = {
+                    name: parts[0]?.trim() || "",
+                    dept: parts[1]?.trim() || ""
+                };
+                await saveToFirebase();
+                alert('Cumpleañero actualizado a: ' + globalState.birthday.name);
             }
         }
 
-        function fetchSharepoint() {
-            alert('Atención: Para extraer la lista de cumpleaños desde el enlace de SharePoint (Excel) necesitaremos usar la "Microsoft Graph API" (requiere que la empresa nos dé permisos OAuth) o bien exportar el Excel y cargarlo. \n\nPor ahora es un panel manual, ¡pero en la estructura final de Firebase esta función leerá el Excel automáticamente!');
+        window.fetchSharepoint = function fetchSharepoint() {
+            alert('Atención: Para extraer la lista de cumpleaños desde el enlace de SharePoint (Excel) necesitaremos usar la "Microsoft Graph API" (requiere que la empresa nos dé permisos OAuth) o bien exportar el Excel y cargarlo. \n\nPor ahora Firebase guardará los datos manuales y la pantalla los replicará.');
         }
 
     </script>

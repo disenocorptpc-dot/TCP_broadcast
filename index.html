@@ -294,8 +294,8 @@
         </header>
 
         <div class="video-container">
-            <!-- Inserted a royalty-free / placeholder YouTube video for demo -->
-            <iframe src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1"
+            <iframe id="main-video"
+                src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe>
         </div>
@@ -313,19 +313,14 @@
             <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
                 <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Hoy celebramos a:
                 </div>
-                <div style="font-size: 1.3rem; font-weight: 700; color: #ffaa00; margin-top: 4px;">🎂 Carlos Pérez</div>
-                <div style="font-size: 0.85rem; color: var(--text-main); margin-top: 2px;">Diseño Gráfico</div>
+                <div id="bday-main" style="font-size: 1.3rem; font-weight: 700; color: #ffaa00; margin-top: 4px;">🎂
+                    Cargando...</div>
+                <div id="bday-dept" style="font-size: 0.85rem; color: var(--text-main); margin-top: 2px;"></div>
             </div>
             <div>
                 <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
-                <ul class="task-list" style="margin-top: 8px;">
-                    <li class="task-item" style="border: none; margin-bottom: 0; padding-bottom: 0;">
-                        <span class="status-dot done"></span>
-                        <div>
-                            <div style="font-weight: 600;">María López</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted);">15 de Marzo</div>
-                        </div>
-                    </li>
+                <ul class="task-list" id="bday-next-list" style="margin-top: 8px;">
+                    <!-- Se inyecta desde FB -->
                 </ul>
             </div>
         </div>
@@ -346,28 +341,8 @@
 
         <div class="widget">
             <h3>Próximos Deadlines</h3>
-            <ul class="task-list">
-                <li class="task-item">
-                    <span class="status-dot urgent"></span>
-                    <div>
-                        <div style="font-weight: 600;">Cierre de Reportes Q3</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">Hoy - 17:00 PM</div>
-                    </div>
-                </li>
-                <li class="task-item">
-                    <span class="status-dot pending"></span>
-                    <div>
-                        <div style="font-weight: 600;">Revisión de Presupuesto</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">Mañana - 09:00 AM</div>
-                    </div>
-                </li>
-                <li class="task-item">
-                    <span class="status-dot done"></span>
-                    <div>
-                        <div style="font-weight: 600;">Kickoff de Diseño</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">Completado</div>
-                    </div>
-                </li>
+            <ul class="task-list" id="deadline-list">
+                <!-- Se inyecta desde DB -->
             </ul>
         </div>
     </aside>
@@ -376,20 +351,16 @@
     <div class="ticker-bar">
         <div class="ticker-label">BREAKING</div>
         <div class="ticker-content">
-            <div class="ticker-text">
-                <span><span class="highlight">ACTUALIZACIÓN:</span> El nuevo portal interno ya está en vivo a partir de
-                    hoy.</span>
-                <span><span class="alert">RECORDATORIO URGENTE:</span> Todos los reportes de gastos deben enviarse antes
-                    de las 5:00 PM de hoy.</span>
-                <span><span class="highlight">META SUPERADA:</span> El equipo de ventas ha alcanzado el 120% de su
-                    objetivo trimestral. ¡Felicidades!</span>
-                <span><span class="highlight">TI:</span> Mantenimiento programado de servidores este sábado a las 2:00
-                    AM.</span>
+            <div class="ticker-text" id="ticker-text">
+                <!-- Cargando... -->
             </div>
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initFirebase } from './firebase-config.js';
+        import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
         // Simple clock functionality
         function updateClock() {
             const now = new Date();
@@ -400,6 +371,71 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        let currentVideoId = "";
+
+        // Inicializar Firebase
+        initFirebase().then(({ docRef }) => {
+            console.log("Firebase Conectado. Escuchando cambios en vivo...");
+
+            onSnapshot(docRef, (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+
+                    // Actualizar Ticker
+                    if (data.tickers && document.getElementById('ticker-text')) {
+                        let innerHtml = '';
+                        data.tickers.forEach(t => {
+                            if (t.includes('URGENTE') || t.includes('RECORDATORIO')) {
+                                innerHtml += `<span><span class="alert">ATENCIÓN:</span> ${t}</span>`;
+                            } else {
+                                innerHtml += `<span><span class="highlight">INFO:</span> ${t}</span>`;
+                            }
+                        });
+                        if (innerHtml === '') innerHtml = '<span>Sin anuncios actuales.</span>';
+                        document.getElementById('ticker-text').innerHTML = innerHtml;
+                    }
+
+                    // Actualizar Cumpleaños
+                    if (data.birthday) {
+                        document.getElementById('bday-main').innerHTML = `🎂 ${data.birthday.name || '--'}`;
+                        document.getElementById('bday-dept').innerHTML = data.birthday.dept || '--';
+                    }
+
+                    // Actualizar Deadlines
+                    if (data.reminders) {
+                        const list = document.getElementById('deadline-list');
+                        list.innerHTML = '';
+                        data.reminders.forEach(r => {
+                            let statusClass = "pending";
+                            if (r.time.toLowerCase().includes('hoy')) statusClass = "urgent";
+                            if (r.time.toLowerCase().includes('completado')) statusClass = "done";
+
+                            list.innerHTML += `
+                                <li class="task-item">
+                                    <span class="status-dot ${statusClass}"></span>
+                                    <div>
+                                        <div style="font-weight: 600;">${r.title}</div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">${r.time}</div>
+                                    </div>
+                                </li>`;
+                        });
+                    }
+
+                    // Actualizar Media
+                    if (data.mediaId && data.mediaId !== currentVideoId) {
+                        currentVideoId = data.mediaId;
+                        const iframe = document.getElementById('main-video');
+                        // Suponemos que es play de YouTube
+                        iframe.src = `https://www.youtube.com/embed/${currentVideoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${currentVideoId}`;
+                    }
+
+                }
+            });
+        }).catch(err => {
+            console.error("Error conectando a Firebase: ", err);
+        });
+
     </script>
 </body>
 
