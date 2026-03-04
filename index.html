@@ -409,17 +409,112 @@
         import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Simple clock functionality
+        let lastDay = new Date().getDate();
+
         function updateClock() {
             const now = new Date();
             let hours = now.getHours().toString().padStart(2, '0');
             let minutes = now.getMinutes().toString().padStart(2, '0');
             let seconds = now.getSeconds().toString().padStart(2, '0');
             document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+
+            // Actualizar cumpleaños a medianoche automáticamente
+            let currentDay = now.getDate();
+            if (currentDay !== lastDay) {
+                lastDay = currentDay;
+                if (cachedBirthdays) renderBirthdays();
+            }
         }
         setInterval(updateClock, 1000);
         updateClock();
 
         let currentVideoId = "";
+        let currentSheetUrl = "";
+        let cachedBirthdays = null;
+
+        async function fetchAndProcessSheet(url) {
+            try {
+                const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                if (!match) return;
+                const sheetId = match[1];
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+
+                const res = await fetch(csvUrl);
+                const text = await res.text();
+
+                const meses = { "ENERO": 0, "FEBRERO": 1, "MARZO": 2, "ABRIL": 3, "MAYO": 4, "JUNIO": 5, "JULIO": 6, "AGOSTO": 7, "SEPTIEMBRE": 8, "OCTUBRE": 9, "NOVIEMBRE": 10, "DICIEMBRE": 11 };
+                let lines = text.split('\n');
+                let birthdays = [];
+                let currentMonth = -1;
+
+                for (let line of lines) {
+                    if (line.trim() === '') continue;
+                    let cols = line.split(',');
+                    if (cols.length < 4) continue;
+
+                    let col1 = cols[1]?.trim().toUpperCase();
+                    if (meses[col1] !== undefined) currentMonth = meses[col1];
+
+                    let dayStr = cols[2]?.trim();
+                    let nameStr = cols[3]?.trim();
+                    let day = parseInt(dayStr);
+                    if (!isNaN(day) && nameStr && currentMonth !== -1) {
+                        birthdays.push({ month: currentMonth, day: day, name: nameStr });
+                    }
+                }
+
+                cachedBirthdays = birthdays;
+                renderBirthdays();
+            } catch (e) {
+                console.error("Error leyendo Sheet de Cumpleaños:", e);
+            }
+        }
+
+        function renderBirthdays() {
+            if (!cachedBirthdays) return;
+            let today = new Date();
+            let m = today.getMonth();
+            let d = today.getDate();
+
+            cachedBirthdays.forEach(b => {
+                let nextDate = new Date(today.getFullYear(), b.month, b.day);
+                // Si ya pasó en este año, calculamos para el siguiente año
+                if (nextDate < new Date(today.getFullYear(), m, d)) {
+                    nextDate.setFullYear(today.getFullYear() + 1);
+                }
+                b.nextDate = nextDate;
+            });
+
+            cachedBirthdays.sort((a, b) => a.nextDate - b.nextDate);
+
+            // Los de Hoy
+            let todayBirthdays = cachedBirthdays.filter(b => b.month === m && b.day === d);
+            // Los Próximos 3 que NO sean hoy
+            let nextBirthdays = cachedBirthdays.filter(b => !(b.month === m && b.day === d)).slice(0, 3);
+
+            if (todayBirthdays.length > 0) {
+                document.getElementById('bday-main').innerHTML = `🎂 ${todayBirthdays.map(b => b.name).join(', ')}`;
+                document.getElementById('bday-dept').innerHTML = "¡Muchas Felicidades!";
+            } else {
+                document.getElementById('bday-main').innerHTML = `--`;
+                document.getElementById('bday-dept').innerHTML = "Nadie cumple hoy";
+            }
+
+            const nextList = document.getElementById('bday-next-list');
+            nextList.innerHTML = '';
+            const mesesNombres = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            nextBirthdays.forEach(b => {
+                nextList.innerHTML += `
+                    <li class="task-item" style="border: none; margin-bottom: 0; padding-bottom: 8px;">
+                        <span class="status-dot done"></span>
+                        <div>
+                            <div style="font-weight: 600; font-size: 1.1rem;">${b.name}</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">${b.day} de ${mesesNombres[b.month]}</div>
+                        </div>
+                    </li>
+                 `;
+            });
+        }
 
         // Inicializar Firebase
         initFirebase().then(({ docRef }) => {
@@ -459,10 +554,18 @@
                         tickerContentBox.innerHTML = `<div class="ticker-text" id="ticker-text">${innerHtml}</div>`;
                     }
 
-                    // Actualizar Cumpleaños
-                    if (data.birthday) {
+                    // Actualizar Cumpleaños (Automático Google Sheets si existe, o manual si no)
+                    if (data.sheetUrl) {
+                        if (data.sheetUrl !== currentSheetUrl) {
+                            currentSheetUrl = data.sheetUrl;
+                            fetchAndProcessSheet(currentSheetUrl);
+                            // También recargar cada cierto tiempo (ej. 3 horas)
+                            setInterval(() => { fetchAndProcessSheet(currentSheetUrl); }, 10800000);
+                        }
+                    } else if (data.birthday) {
                         document.getElementById('bday-main').innerHTML = `🎂 ${data.birthday.name || '--'}`;
                         document.getElementById('bday-dept').innerHTML = data.birthday.dept || '--';
+                        document.getElementById('bday-next-list').innerHTML = ''; // Limpia siguientes si es entrada manual
                     }
 
                     // Actualizar Personal En Junta
