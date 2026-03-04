@@ -461,23 +461,7 @@
             </div>
         </div>
 
-        <div class="widget">
-            <h3>🎉 Cumpleaños</h3>
-            <div style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                <div style="font-size: 1.4rem; color: var(--text-muted); text-transform: uppercase;">Hoy celebramos a:
-                </div>
-                <div id="bday-main"
-                    style="font-size: 2.8rem; font-weight: 700; color: #ffaa00; margin-top: 4px; line-height: 1.1;">🎂
-                    Cargando...</div>
-                <div id="bday-dept" style="font-size: 1.6rem; color: var(--text-main); margin-top: 5px;"></div>
-            </div>
-            <div>
-                <div style="font-size: 1.4rem; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
-                <ul class="task-list" id="bday-next-list" style="margin-top: 15px;">
-                    <!-- Se inyecta desde FB -->
-                </ul>
-            </div>
-        </div>
+
 
         <div class="widget">
             <h3>🔇 En Junta / Ocupados</h3>
@@ -523,6 +507,23 @@
                 <!-- Se inyecta desde DB -->
             </ul>
         </div>
+        <div class="widget">
+            <h3>🎉 Cumpleaños</h3>
+            <div style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <div style="font-size: 1.4rem; color: var(--text-muted); text-transform: uppercase;">Hoy celebramos a:
+                </div>
+                <div id="bday-main"
+                    style="font-size: 2.8rem; font-weight: 700; color: #ffaa00; margin-top: 4px; line-height: 1.1;">🎂
+                    Cargando...</div>
+                <div id="bday-dept" style="font-size: 1.6rem; color: var(--text-main); margin-top: 5px;"></div>
+            </div>
+            <div>
+                <div style="font-size: 1.4rem; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
+                <ul class="task-list" id="bday-next-list" style="margin-top: 15px;">
+                    <!-- Se inyecta desde FB -->
+                </ul>
+            </div>
+        </div>
     </aside>
 
     <!-- Bottom Ticker -->
@@ -544,10 +545,14 @@
 
         function updateClock() {
             const now = new Date();
-            let hours = now.getHours().toString().padStart(2, '0');
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            let seconds = now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+            let h = now.getHours();
+            let m = now.getMinutes().toString().padStart(2, '0');
+            let s = now.getSeconds().toString().padStart(2, '0');
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12; // 0 debe ser 12
+
+            document.getElementById('clock').textContent = `${h}:${m}:${s} ${ampm}`;
 
             // Actualizar Relojes Mundiales (Validando Working Hours)
             const optsTime = { hour: 'numeric', minute: '2-digit', hour12: true };

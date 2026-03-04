@@ -360,7 +360,10 @@
                         encuentra de vacaciones o sale pronto.</p>
                     <div class="flex-row">
                         <input type="text" id="vac-name" placeholder="Nombre...">
-                        <input type="text" id="vac-dates" placeholder="Detalle (Ej: Actual, Cierra Vie)...">
+                        <input type="date" id="vac-start" title="Inicio"
+                            style="padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                        <input type="date" id="vac-end" title="Fin"
+                            style="padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
                         <button onclick="addVacation()">Añadir</button>
                     </div>
                     <div id="vacation-list" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
@@ -539,12 +542,18 @@
 
         window.addVacation = async function addVacation() {
             const name = document.getElementById('vac-name').value;
-            const dates = document.getElementById('vac-dates').value;
+            const start = document.getElementById('vac-start').value;
+            const end = document.getElementById('vac-end').value;
             if (name) {
                 if (!globalState.vacations) globalState.vacations = [];
-                globalState.vacations.push({ name, dates: dates || 'Actual' });
+                let datesStr = start ? `Del ${start}` : 'Descanso';
+                if (end && start) datesStr += ` al ${end}`;
+                else if (end && !start) datesStr = `Hasta el ${end}`;
+
+                globalState.vacations.push({ name, dates: datesStr });
                 document.getElementById('vac-name').value = '';
-                document.getElementById('vac-dates').value = '';
+                document.getElementById('vac-start').value = '';
+                document.getElementById('vac-end').value = '';
                 renderLists();
                 await saveToFirebase();
             }
