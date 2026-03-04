@@ -364,6 +364,16 @@
             color: #00ff88;
         }
 
+        .world-clock.off-hours {
+            border: 2px solid var(--danger);
+            background: rgba(255, 0, 85, 0.05);
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.15);
+        }
+
+        .world-clock.off-hours .wc-time {
+            color: var(--danger);
+        }
+
         .world-clock .wc-label {
             display: block;
             font-size: 1rem;
@@ -374,7 +384,7 @@
 
         .world-clock .wc-time {
             display: block;
-            font-size: 2.2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             font-family: 'Space Grotesk', sans-serif;
             color: var(--text-main);
@@ -382,26 +392,26 @@
         }
 
         .weather-banner {
-            margin-top: 25px;
+            margin-top: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 25px;
+            gap: 15px;
             background: rgba(0, 240, 255, 0.05);
-            padding: 20px;
-            border-radius: 16px;
+            padding: 10px 15px;
+            border-radius: 12px;
             border: 1px solid rgba(0, 240, 255, 0.2);
         }
 
         .weather-banner .temp {
-            font-size: 4rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: var(--accent);
             line-height: 1;
         }
 
         .weather-banner .loc {
-            font-size: 1.6rem;
+            font-size: 1.1rem;
             color: var(--text-muted);
             text-transform: uppercase;
             line-height: 1.2;
@@ -540,7 +550,7 @@
             document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
 
             // Actualizar Relojes Mundiales (Validando Working Hours)
-            const optsTime = { hour: '2-digit', minute: '2-digit', hour12: false };
+            const optsTime = { hour: 'numeric', minute: '2-digit', hour12: true };
             const optsHourOnly = { hour: 'numeric', hour12: false };
 
             const tzs = [
@@ -562,8 +572,10 @@
                 // Horario laboral entre 9 y 17:59
                 if (!isNaN(hr) && hr >= 9 && hr < 18) {
                     container.classList.add('working');
+                    container.classList.remove('off-hours');
                 } else {
                     container.classList.remove('working');
+                    container.classList.add('off-hours');
                 }
             });
 
