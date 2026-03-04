@@ -34,8 +34,8 @@
             color: var(--text-main);
             height: 100vh;
             display: grid;
-            grid-template-columns: 1fr 500px;
-            grid-template-rows: 1fr 70px;
+            grid-template-columns: 1fr 650px;
+            grid-template-rows: 1fr 100px;
             overflow: hidden;
         }
 
@@ -57,20 +57,20 @@
 
         .header h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
         .live-badge {
             background-color: var(--danger);
             color: white;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 1rem;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 1.4rem;
             font-weight: bold;
             letter-spacing: 2px;
             animation: pulse 2s infinite;
@@ -113,7 +113,7 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
-            padding: 20px;
+            padding: 30px;
             transition: all 0.3s ease;
         }
 
@@ -140,11 +140,11 @@
 
         .widget h3 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.6rem;
             color: var(--text-muted);
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
 
         /* Stats Widget */
@@ -155,13 +155,15 @@
         }
 
         .stat-box .value {
-            font-size: 2.8rem;
+            font-size: 3.8rem;
             font-weight: 800;
             color: var(--accent);
+            line-height: 1;
+            margin-bottom: 8px;
         }
 
         .stat-box .label {
-            font-size: 1.1rem;
+            font-size: 1.4rem;
             color: var(--text-muted);
         }
 
@@ -173,9 +175,9 @@
         .task-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
+            gap: 18px;
+            margin-bottom: 18px;
+            padding-bottom: 18px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
@@ -186,8 +188,8 @@
         }
 
         .status-dot {
-            width: 14px;
-            height: 14px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
         }
 
@@ -228,8 +230,8 @@
             color: #000;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 1.4rem;
-            padding: 0 30px;
+            font-size: 2.2rem;
+            padding: 0 40px;
             height: 100%;
             display: flex;
             align-items: center;
@@ -255,8 +257,8 @@
         .ticker-text {
             display: inline-block;
             padding-left: 100%;
-            animation: ticker 30s linear infinite;
-            font-size: 1.8rem;
+            animation: ticker 25s linear infinite;
+            font-size: 2.6rem;
             font-weight: 400;
         }
 
@@ -280,7 +282,7 @@
             justify-content: center;
             width: 100%;
             height: 100%;
-            font-size: 1.8rem;
+            font-size: 2.8rem;
             font-weight: 700;
             color: white;
             animation: pulse 2s infinite;
@@ -314,67 +316,74 @@
         /* Clock & Weather Widget */
         #clock {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 3.5rem;
+            font-size: 5rem;
             font-weight: 700;
             text-align: center;
             color: #fff;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-            letter-spacing: 2px;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
         }
 
         .world-clocks {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 15px;
-            margin-top: 15px;
-            padding-top: 15px;
+            padding-top: 25px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .world-clock {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 12px;
             text-align: center;
+            flex: 1 1 calc(33.333% - 15px);
+            min-width: 120px;
         }
 
         .world-clock .wc-label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 1rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            font-weight: 600;
         }
 
         .world-clock .wc-time {
             display: block;
-            font-size: 1.4rem;
+            font-size: 2.2rem;
             font-weight: 700;
             font-family: 'Space Grotesk', sans-serif;
             color: var(--text-main);
+            margin-top: 5px;
         }
 
         .weather-banner {
-            margin-top: 15px;
+            margin-top: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 25px;
             background: rgba(0, 240, 255, 0.05);
-            padding: 15px;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 16px;
             border: 1px solid rgba(0, 240, 255, 0.2);
         }
 
         .weather-banner .temp {
-            font-size: 2.5rem;
+            font-size: 4rem;
             font-weight: 800;
             color: var(--accent);
+            line-height: 1;
         }
 
         .weather-banner .loc {
-            font-size: 1rem;
+            font-size: 1.6rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            line-height: 1.2;
         }
     </style>
 </head>
@@ -385,7 +394,7 @@
     <main class="main-content">
         <header class="header">
             <h1><span class="live-badge">LIVE</span> Company Broadcast</h1>
-            <div style="color: var(--text-muted);">Q3 Global Kickoff</div>
+            <div style="color: var(--text-muted); font-size: 2rem;">Q3 Global Kickoff</div>
         </header>
 
         <div class="video-container">
@@ -411,26 +420,29 @@
                         id="wc-jamaica">--:--</span></div>
                 <div class="world-clock"><span class="wc-label">Punta Cana</span><span class="wc-time"
                         id="wc-punta">--:--</span></div>
+                <div class="world-clock"><span class="wc-label">Milán</span><span class="wc-time"
+                        id="wc-milan">--:--</span></div>
             </div>
 
             <div class="weather-banner">
                 <div class="temp" id="weather-temp">--°C</div>
-                <div class="loc">Mérida<br><span style="font-size:0.8rem;">Clima Actual</span></div>
+                <div class="loc">Cancún<br><span style="font-size:1.1rem;">Clima Actual</span></div>
             </div>
         </div>
 
         <div class="widget">
             <h3>🎉 Cumpleaños</h3>
-            <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                <div style="font-size: 1rem; color: var(--text-muted); text-transform: uppercase;">Hoy celebramos a:
+            <div style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                <div style="font-size: 1.4rem; color: var(--text-muted); text-transform: uppercase;">Hoy celebramos a:
                 </div>
-                <div id="bday-main" style="font-size: 1.8rem; font-weight: 700; color: #ffaa00; margin-top: 4px;">🎂
+                <div id="bday-main"
+                    style="font-size: 2.8rem; font-weight: 700; color: #ffaa00; margin-top: 4px; line-height: 1.1;">🎂
                     Cargando...</div>
-                <div id="bday-dept" style="font-size: 1.1rem; color: var(--text-main); margin-top: 2px;"></div>
+                <div id="bday-dept" style="font-size: 1.6rem; color: var(--text-main); margin-top: 5px;"></div>
             </div>
             <div>
-                <div style="font-size: 1rem; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
-                <ul class="task-list" id="bday-next-list" style="margin-top: 8px;">
+                <div style="font-size: 1.4rem; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
+                <ul class="task-list" id="bday-next-list" style="margin-top: 15px;">
                     <!-- Se inyecta desde FB -->
                 </ul>
             </div>
@@ -495,6 +507,7 @@
             document.getElementById('wc-cabos').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Mazatlan' }).format(now);
             document.getElementById('wc-jamaica').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Jamaica' }).format(now);
             document.getElementById('wc-punta').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Santo_Domingo' }).format(now);
+            document.getElementById('wc-milan').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'Europe/Rome' }).format(now);
 
             // Actualizar cumpleaños a medianoche automáticamente
             let currentDay = now.getDate();
@@ -583,11 +596,11 @@
             const mesesNombres = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             nextBirthdays.forEach(b => {
                 nextList.innerHTML += `
-                    <li class="task-item" style="border: none; margin-bottom: 0; padding-bottom: 8px;">
+                    <li class="task-item" style="border: none; margin-bottom: 0; padding-bottom: 12px;">
                         <span class="status-dot done"></span>
                         <div>
-                            <div style="font-weight: 600; font-size: 1.1rem;">${b.name}</div>
-                            <div style="font-size: 0.9rem; color: var(--text-muted);">${b.day} de ${mesesNombres[b.month]}</div>
+                            <div style="font-weight: 600; font-size: 1.6rem;">${b.name}</div>
+                            <div style="font-size: 1.3rem; color: var(--text-muted);">${b.day} de ${mesesNombres[b.month]}</div>
                         </div>
                     </li>
                  `;
@@ -596,8 +609,8 @@
 
         async function fetchWeather() {
             try {
-                // Clima Mérida (Open Meteo Free API)
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=20.9674&longitude=-89.6236&current_weather=true');
+                // Clima Cancún (Open Meteo Free API)
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=21.1619&longitude=-86.8515&current_weather=true');
                 const data = await res.json();
                 if (data && data.current_weather) {
                     document.getElementById('weather-temp').textContent = Math.round(data.current_weather.temperature) + '°C';
@@ -672,14 +685,14 @@
                                 <li class="task-item">
                                     <span class="status-dot urgent"></span>
                                     <div>
-                                        <div style="font-weight: 600; font-size: 1.2rem;">${b.name}</div>
-                                        <div style="font-size: 0.9rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
+                                        <div style="font-weight: 600; font-size: 1.8rem;">${b.name}</div>
+                                        <div style="font-size: 1.3rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
                                     </div>
                                 </li>`;
                         });
                     } else {
                         document.querySelector('.sidebar').classList.remove('busy-mode');
-                        document.getElementById('busy-list').innerHTML = '<div style="font-size: 0.9rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>';
+                        document.getElementById('busy-list').innerHTML = '<div style="font-size: 1.4rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>';
                     }
 
                     // Actualizar Deadlines
@@ -695,8 +708,8 @@
                                 <li class="task-item">
                                     <span class="status-dot ${statusClass}"></span>
                                     <div>
-                                        <div style="font-weight: 600; font-size: 1.2rem;">${r.title}</div>
-                                        <div style="font-size: 0.9rem; color: var(--text-muted);">${r.time}</div>
+                                        <div style="font-weight: 600; font-size: 1.8rem;">${r.title}</div>
+                                        <div style="font-size: 1.3rem; color: var(--text-muted);">${r.time}</div>
                                     </div>
                                 </li>`;
                         });
