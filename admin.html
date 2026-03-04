@@ -383,6 +383,17 @@
         import { setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         let dbDocRef = null;
+        let loggedInUser = null;
+        const appUsers = {
+            "admin": { pass: "admin", role: "Admin", color: "#00f0ff" },
+            "rsantarosa": { pass: "diseno123", role: "Diseño Industrial y 3D", color: "#ff9900" },
+            "kmunoz": { pass: "proyectos123", role: "Proyectos Especiales", color: "#00ffcc" },
+            "enoya": { pass: "foto123", role: "Foto", color: "#ff3366" },
+            "pamcastillo": { pass: "ayb123", role: "AyB", color: "#cc99ff" },
+            "lcabrera": { pass: "gerente123", role: "Gerente Diseño", color: "#ffcc00" },
+            "mbarquin": { pass: "taller123", role: "Jefe de Taller", color: "#33ccff" },
+            "itrujillo": { pass: "admin123", role: "Administración", color: "#ff66cc" }
+        };
         let globalState = {
             mediaIds: ["jfKfPfyJRdk"],
             tickers: [],
@@ -414,10 +425,11 @@
 
         // --- EXPORT TO WINDOW FOR HTML ONCLICK ---
         window.login = function login() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
 
-            if (user === 'admin' && pass === 'admin') {
+            if (appUsers[user] && appUsers[user].pass === pass) {
+                loggedInUser = appUsers[user];
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('dashboard-section').style.display = 'block';
                 renderLists();
@@ -427,6 +439,7 @@
         }
 
         window.logout = function logout() {
+            loggedInUser = null;
             document.getElementById('dashboard-section').style.display = 'none';
             document.getElementById('login-section').style.display = 'flex';
         }
@@ -571,8 +584,12 @@
 
         window.addTicker = async function addTicker() {
             const val = document.getElementById('new-ticker').value;
-            if (val) {
-                globalState.tickers.push(val);
+            if (val && loggedInUser) {
+                let styledMsg = val;
+                // Agrega el departamento solo si no es admin, o como gustes (aquí para todos)
+                styledMsg = `<span style="color:${loggedInUser.color}; font-size: 0.9em; margin-right: 5px;">[${loggedInUser.role}]</span> ${val}`;
+
+                globalState.tickers.push(styledMsg);
                 document.getElementById('new-ticker').value = '';
                 renderLists();
                 await saveToFirebase();
@@ -605,8 +622,11 @@
 
         window.updateManagerMsg = async function updateManagerMsg() {
             const msg = document.getElementById('manager-msg').value;
-            if (msg) {
-                globalState.managerMsg = msg;
+            if (msg && loggedInUser) {
+                let styledMsg = msg;
+                styledMsg = `<span style="color:${loggedInUser.color}; margin-right: 8px;">[${loggedInUser.role}]</span> ${msg}`;
+
+                globalState.managerMsg = styledMsg;
                 document.getElementById('manager-msg').value = '';
                 await saveToFirebase();
                 alert('Mensaje de gerencia publicado.');
