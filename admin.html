@@ -353,6 +353,21 @@
                     </div>
                 </div>
 
+                <!-- VACACIONES CONTROL -->
+                <div class="card">
+                    <h2>🏖️ Vacaciones</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">Especifica quién se
+                        encuentra de vacaciones o sale pronto.</p>
+                    <div class="flex-row">
+                        <input type="text" id="vac-name" placeholder="Nombre...">
+                        <input type="text" id="vac-dates" placeholder="Detalle (Ej: Actual, Cierra Vie)...">
+                        <button onclick="addVacation()">Añadir</button>
+                    </div>
+                    <div id="vacation-list" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                        <!-- Items se inyectan acá -->
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -362,12 +377,12 @@
         import { initFirebase } from './firebase-config.js';
         import { setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        let dbDocRef = null;
         let globalState = {
             mediaIds: ["jfKfPfyJRdk"],
             tickers: [],
             reminders: [],
             busy: [],
+            vacations: [],
             managerMsg: "",
             sheetUrl: "",
             birthday: { name: "", dept: "" }
@@ -464,6 +479,21 @@
                     </div>
                 `;
             });
+
+            // Render Vacaciones
+            const vacList = document.getElementById('vacation-list');
+            vacList.innerHTML = '';
+            (globalState.vacations || []).forEach((v, index) => {
+                vacList.innerHTML += `
+                    <div class="list-item">
+                        <div>
+                            <p style="font-weight: 600; color: #00ff88;">${v.name}</p>
+                            <p style="color: var(--text-muted); font-size: 0.8rem;">${v.dates}</p>
+                        </div>
+                        <button class="delete-btn" onclick="deleteVacation(${index})">Quitar</button>
+                    </div>
+                `;
+            });
         }
 
         window.addMedia = async function addMedia() {
@@ -503,6 +533,25 @@
 
         window.deleteBusy = async function deleteBusy(index) {
             globalState.busy.splice(index, 1);
+            renderLists();
+            await saveToFirebase();
+        }
+
+        window.addVacation = async function addVacation() {
+            const name = document.getElementById('vac-name').value;
+            const dates = document.getElementById('vac-dates').value;
+            if (name) {
+                if (!globalState.vacations) globalState.vacations = [];
+                globalState.vacations.push({ name, dates: dates || 'Actual' });
+                document.getElementById('vac-name').value = '';
+                document.getElementById('vac-dates').value = '';
+                renderLists();
+                await saveToFirebase();
+            }
+        }
+
+        window.deleteVacation = async function deleteVacation(index) {
+            globalState.vacations.splice(index, 1);
             renderLists();
             await saveToFirebase();
         }

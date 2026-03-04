@@ -34,7 +34,7 @@
             color: var(--text-main);
             height: 100vh;
             display: grid;
-            grid-template-columns: 1fr 650px;
+            grid-template-columns: 1fr 400px 400px;
             grid-template-rows: 1fr 100px;
             overflow: hidden;
         }
@@ -57,7 +57,7 @@
 
         .header h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 3.5rem;
+            font-size: 2.2rem;
             letter-spacing: 1px;
             text-transform: uppercase;
             display: flex;
@@ -96,8 +96,6 @@
 
         /* --- SIDEBAR DASHBOARD --- */
         .sidebar {
-            grid-column: 2 / 3;
-            grid-row: 1 / 2;
             background: var(--glass-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -106,7 +104,18 @@
             display: flex;
             flex-direction: column;
             gap: 24px;
-            overflow-y: auto;
+            overflow-y: hidden;
+            /* Sin scroll para forzar layout */
+        }
+
+        #sidebar-1 {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+        }
+
+        #sidebar-2 {
+            grid-column: 3 / 4;
+            grid-row: 1 / 2;
         }
 
         .widget {
@@ -316,7 +325,7 @@
         /* Clock & Weather Widget */
         #clock {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 5rem;
+            font-size: 4rem;
             font-weight: 700;
             text-align: center;
             color: #fff;
@@ -339,8 +348,20 @@
             padding: 15px;
             border-radius: 12px;
             text-align: center;
-            flex: 1 1 calc(33.333% - 15px);
+            flex: 1 1 calc(50% - 15px);
             min-width: 120px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .world-clock.working {
+            border: 2px solid #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.15);
+        }
+
+        .world-clock.working .wc-time {
+            color: #00ff88;
         }
 
         .world-clock .wc-label {
@@ -394,7 +415,7 @@
     <main class="main-content">
         <header class="header">
             <h1><span class="live-badge">LIVE</span> Company Broadcast</h1>
-            <div style="color: var(--text-muted); font-size: 2rem;">Q3 Global Kickoff</div>
+            <div style="color: var(--text-muted); font-size: 1.2rem;">Q3 Global Kickoff</div>
         </header>
 
         <div class="video-container">
@@ -405,22 +426,22 @@
         </div>
     </main>
 
-    <!-- Sidebar Dashboard -->
-    <aside class="sidebar">
+    <!-- Sidebar Dashboard 1 -->
+    <aside class="sidebar" id="sidebar-1">
         <div class="widget">
             <h3>🌍 Reloj Mundial y Clima</h3>
             <div id="clock">12:00:00</div>
 
             <div class="world-clocks">
-                <div class="world-clock"><span class="wc-label">Mérida</span><span class="wc-time"
+                <div class="world-clock" id="cw-merida"><span class="wc-label">Mérida</span><span class="wc-time"
                         id="wc-merida">--:--</span></div>
-                <div class="world-clock"><span class="wc-label">Los Cabos</span><span class="wc-time"
+                <div class="world-clock" id="cw-cabos"><span class="wc-label">Los Cabos</span><span class="wc-time"
                         id="wc-cabos">--:--</span></div>
-                <div class="world-clock"><span class="wc-label">Jamaica</span><span class="wc-time"
+                <div class="world-clock" id="cw-jamaica"><span class="wc-label">Jamaica</span><span class="wc-time"
                         id="wc-jamaica">--:--</span></div>
-                <div class="world-clock"><span class="wc-label">Punta Cana</span><span class="wc-time"
+                <div class="world-clock" id="cw-punta"><span class="wc-label">Punta Cana</span><span class="wc-time"
                         id="wc-punta">--:--</span></div>
-                <div class="world-clock"><span class="wc-label">Milán</span><span class="wc-time"
+                <div class="world-clock" id="cw-milan"><span class="wc-label">Milán</span><span class="wc-time"
                         id="wc-milan">--:--</span></div>
             </div>
 
@@ -456,6 +477,16 @@
         </div>
 
         <div class="widget">
+            <h3>🏖️ Vacaciones</h3>
+            <ul class="task-list" id="vacation-list">
+                <!-- Se inyecta desde DB -->
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Sidebar Dashboard 2 -->
+    <aside class="sidebar" id="sidebar-2">
+        <div class="widget">
             <h3>Métricas de Evento</h3>
             <div class="stat-grid">
                 <div class="stat-box">
@@ -472,6 +503,13 @@
         <div class="widget">
             <h3>Próximos Deadlines</h3>
             <ul class="task-list" id="deadline-list">
+                <!-- Se inyecta desde DB -->
+            </ul>
+        </div>
+
+        <div class="widget">
+            <h3>🔇 En Junta / Ocupados</h3>
+            <ul class="task-list" id="busy-list">
                 <!-- Se inyecta desde DB -->
             </ul>
         </div>
@@ -501,13 +539,33 @@
             let seconds = now.getSeconds().toString().padStart(2, '0');
             document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
 
-            // Actualizar Relojes Mundiales
-            const opts = { hour: '2-digit', minute: '2-digit', hour12: false };
-            document.getElementById('wc-merida').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Merida' }).format(now);
-            document.getElementById('wc-cabos').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Mazatlan' }).format(now);
-            document.getElementById('wc-jamaica').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Jamaica' }).format(now);
-            document.getElementById('wc-punta').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'America/Santo_Domingo' }).format(now);
-            document.getElementById('wc-milan').textContent = new Intl.DateTimeFormat('es-MX', { ...opts, timeZone: 'Europe/Rome' }).format(now);
+            // Actualizar Relojes Mundiales (Validando Working Hours)
+            const optsTime = { hour: '2-digit', minute: '2-digit', hour12: false };
+            const optsHourOnly = { hour: 'numeric', hour12: false };
+
+            const tzs = [
+                { clockId: 'wc-merida', containerId: 'cw-merida', tz: 'America/Merida' },
+                { clockId: 'wc-cabos', containerId: 'cw-cabos', tz: 'America/Mazatlan' },
+                { clockId: 'wc-jamaica', containerId: 'cw-jamaica', tz: 'America/Jamaica' },
+                { clockId: 'wc-punta', containerId: 'cw-punta', tz: 'America/Santo_Domingo' },
+                { clockId: 'wc-milan', containerId: 'cw-milan', tz: 'Europe/Rome' }
+            ];
+
+            tzs.forEach(zone => {
+                document.getElementById(zone.clockId).textContent = new Intl.DateTimeFormat('es-MX', { ...optsTime, timeZone: zone.tz }).format(now);
+                let hourStr = new Intl.DateTimeFormat('en-US', { ...optsHourOnly, timeZone: zone.tz }).format(now);
+                // Extract digits since it could format as "15" or "15 o'clock" or "3 PM", force en-US avoids strange AM/PM mostly if 24hr, but let's parse raw.
+                // Using hour12: false normally yields "0" to "23".
+                let hr = parseInt(hourStr);
+
+                let container = document.getElementById(zone.containerId);
+                // Horario laboral entre 9 y 17:59
+                if (!isNaN(hr) && hr >= 9 && hr < 18) {
+                    container.classList.add('working');
+                } else {
+                    container.classList.remove('working');
+                }
+            });
 
             // Actualizar cumpleaños a medianoche automáticamente
             let currentDay = now.getDate();
@@ -677,7 +735,7 @@
 
                     // Actualizar Personal En Junta
                     if (data.busy && data.busy.length > 0) {
-                        document.querySelector('.sidebar').classList.add('busy-mode');
+                        document.querySelectorAll('.sidebar').forEach(s => s.classList.add('busy-mode'));
                         const busyList = document.getElementById('busy-list');
                         busyList.innerHTML = '';
                         data.busy.forEach(b => {
@@ -685,14 +743,36 @@
                                 <li class="task-item">
                                     <span class="status-dot urgent"></span>
                                     <div>
-                                        <div style="font-weight: 600; font-size: 1.8rem;">${b.name}</div>
-                                        <div style="font-size: 1.3rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
+                                        <div style="font-weight: 600; font-size: 1.6rem;">${b.name}</div>
+                                        <div style="font-size: 1.2rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
                                     </div>
                                 </li>`;
                         });
                     } else {
-                        document.querySelector('.sidebar').classList.remove('busy-mode');
-                        document.getElementById('busy-list').innerHTML = '<div style="font-size: 1.4rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>';
+                        document.querySelectorAll('.sidebar').forEach(s => s.classList.remove('busy-mode'));
+                        document.getElementById('busy-list').innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>';
+                    }
+
+                    // Actualizar Vacaciones
+                    if (data.vacations) {
+                        const vacList = document.getElementById('vacation-list');
+                        vacList.innerHTML = '';
+                        if (data.vacations.length > 0) {
+                            data.vacations.forEach(v => {
+                                vacList.innerHTML += `
+                                    <li class="task-item">
+                                        <span class="status-dot done"></span>
+                                        <div>
+                                            <div style="font-weight: 600; font-size: 1.6rem; color: var(--success);">${v.name}</div>
+                                            <div style="font-size: 1.2rem; color: var(--text-muted);">${v.dates}</div>
+                                        </div>
+                                    </li>`;
+                            });
+                        } else {
+                            vacList.innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal de vacaciones.</div>';
+                        }
+                    } else {
+                        document.getElementById('vacation-list').innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal de vacaciones.</div>';
                     }
 
                     // Actualizar Deadlines
