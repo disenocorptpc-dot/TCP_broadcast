@@ -547,12 +547,11 @@
             const now = new Date();
             let h = now.getHours();
             let m = now.getMinutes().toString().padStart(2, '0');
-            let s = now.getSeconds().toString().padStart(2, '0');
             let ampm = h >= 12 ? 'PM' : 'AM';
             h = h % 12;
             h = h ? h : 12; // 0 debe ser 12
 
-            document.getElementById('clock').textContent = `${h}:${m}:${s} ${ampm}`;
+            document.getElementById('clock').textContent = `${h}:${m} ${ampm}`;
 
             // Actualizar Relojes Mundiales (Validando Working Hours)
             const optsTime = { hour: 'numeric', minute: '2-digit', hour12: true };

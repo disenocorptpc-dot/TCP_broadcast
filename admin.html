@@ -358,13 +358,15 @@
                     <h2>🏖️ Vacaciones</h2>
                     <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">Especifica quién se
                         encuentra de vacaciones o sale pronto.</p>
-                    <div class="flex-row">
-                        <input type="text" id="vac-name" placeholder="Nombre...">
-                        <input type="date" id="vac-start" title="Inicio"
-                            style="padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
-                        <input type="date" id="vac-end" title="Fin"
-                            style="padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
-                        <button onclick="addVacation()">Añadir</button>
+                    <div class="flex-row" style="flex-wrap: wrap;">
+                        <input type="text" id="vac-name" placeholder="Nombre completo..." style="flex: 1 1 100%;">
+                        <div style="display: flex; gap: 10px; flex: 1 1 100%;">
+                            <input type="date" id="vac-start" title="Inicio"
+                                style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                            <input type="date" id="vac-end" title="Fin"
+                                style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                        </div>
+                        <button onclick="addVacation()" style="flex: 1 1 100%;">Añadir</button>
                     </div>
                     <div id="vacation-list" style="display: grid; grid-template-columns: 1fr; gap: 10px;">
                         <!-- Items se inyectan acá -->
