@@ -361,13 +361,10 @@
                     <div class="flex-row" style="flex-wrap: wrap;">
                         <input type="text" id="vac-name" placeholder="Nombre completo..." style="flex: 1 1 100%;">
                         <div style="display: flex; gap: 10px; flex: 1 1 100%;">
-                            <select id="vac-status"
-                                style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px; font-family: 'Outfit', sans-serif;">
-                                <option value="De vacaciones">De vacaciones</option>
-                                <option value="Próxima semana">Próxima semana</option>
-                            </select>
-                            <input type="text" id="vac-dates" placeholder="Ej: Regresa el Lunes"
-                                style="flex: 2; margin-bottom: 0;">
+                            <input type="date" id="vac-start" title="Inicio"
+                                style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                            <input type="date" id="vac-end" title="Fin"
+                                style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
                         </div>
                         <button onclick="addVacation()" style="flex: 1 1 100%;">Añadir</button>
                     </div>
@@ -493,11 +490,14 @@
             const vacList = document.getElementById('vacation-list');
             vacList.innerHTML = '';
             (globalState.vacations || []).forEach((v, index) => {
+                let display = v.dates; // Retro-compatibilidad manuales antiguos
+                if (v.start && v.end) display = `Días: ${v.start} al ${v.end}`;
+
                 vacList.innerHTML += `
                     <div class="list-item">
                         <div>
                             <p style="font-weight: 600; color: #00ff88;">${v.name}</p>
-                            <p style="color: var(--text-muted); font-size: 0.8rem;">${v.dates}</p>
+                            <p style="color: var(--text-muted); font-size: 0.8rem;">${display}</p>
                         </div>
                         <button class="delete-btn" onclick="deleteVacation(${index})">Quitar</button>
                     </div>
@@ -548,18 +548,18 @@
 
         window.addVacation = async function addVacation() {
             const name = document.getElementById('vac-name').value;
-            const status = document.getElementById('vac-status').value;
-            const dates = document.getElementById('vac-dates').value;
-            if (name) {
+            const start = document.getElementById('vac-start').value;
+            const end = document.getElementById('vac-end').value;
+            if (name && start && end) {
                 if (!globalState.vacations) globalState.vacations = [];
-                let finalStr = status;
-                if (dates) finalStr += ' - ' + dates;
-
-                globalState.vacations.push({ name, dates: finalStr });
+                globalState.vacations.push({ name, start, end, dates: '' });
                 document.getElementById('vac-name').value = '';
-                document.getElementById('vac-dates').value = '';
+                document.getElementById('vac-start').value = '';
+                document.getElementById('vac-end').value = '';
                 renderLists();
                 await saveToFirebase();
+            } else {
+                alert('Ingresa el nombre y las 2 fechas completas.');
             }
         }
 

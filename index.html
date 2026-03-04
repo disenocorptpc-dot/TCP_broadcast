@@ -781,19 +781,60 @@
                     if (data.vacations) {
                         const vacList = document.getElementById('vacation-list');
                         vacList.innerHTML = '';
+
+                        const now = new Date();
+                        const twoWeeksFromNow = new Date();
+                        twoWeeksFromNow.setDate(now.getDate() + 14);
+
+                        const formatVacationDate = (dateStr) => {
+                            const d = new Date(dateStr + "T12:00:00");
+                            const day = d.getDate();
+                            const month = d.toLocaleString('es-MX', { month: 'short' });
+                            return { day, month };
+                        };
+
+                        let activeCount = 0;
                         if (data.vacations.length > 0) {
                             data.vacations.forEach(v => {
-                                vacList.innerHTML += `
-                                    <li class="task-item">
-                                        <span class="status-dot done"></span>
-                                        <div>
-                                            <div style="font-weight: 600; font-size: 1.6rem; color: var(--success);">${v.name}</div>
-                                            <div style="font-size: 1.2rem; color: var(--text-muted);">${v.dates}</div>
-                                        </div>
-                                    </li>`;
+                                let displayStr = v.dates || ""; // Compatibilidad vieja
+                                let isRelevant = true;
+
+                                if (v.start && v.end) {
+                                    const startDate = new Date(v.start + "T12:00:00");
+                                    const endDate = new Date(v.end + "T23:59:59");
+
+                                    // Filtrar vacaciones: Ignorar si ya terminó o si empieza en más de 14 días
+                                    if (endDate < now) {
+                                        isRelevant = false;
+                                    } else if (startDate > twoWeeksFromNow) {
+                                        isRelevant = false;
+                                    } else {
+                                        const s = formatVacationDate(v.start);
+                                        const e = formatVacationDate(v.end);
+                                        if (s.month === e.month) {
+                                            displayStr = `Del ${s.day} al ${e.day} de ${s.month}`;
+                                        } else {
+                                            displayStr = `Del ${s.day} de ${s.month} al ${e.day} de ${e.month}`;
+                                        }
+                                    }
+                                }
+
+                                if (isRelevant) {
+                                    activeCount++;
+                                    vacList.innerHTML += `
+                                        <li class="task-item">
+                                            <span class="status-dot done"></span>
+                                            <div>
+                                                <div style="font-weight: 600; font-size: 1.6rem; color: var(--success);">${v.name}</div>
+                                                <div style="font-size: 1.2rem; color: var(--text-muted);">${displayStr}</div>
+                                            </div>
+                                        </li>`;
+                                }
                             });
-                        } else {
-                            vacList.innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal de vacaciones.</div>';
+                        }
+
+                        if (activeCount === 0) {
+                            vacList.innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal programado.</div>';
                         }
                     } else {
                         document.getElementById('vacation-list').innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal de vacaciones.</div>';
