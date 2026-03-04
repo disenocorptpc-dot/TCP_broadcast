@@ -648,8 +648,12 @@
 
             // Los de Hoy
             let todayBirthdays = cachedBirthdays.filter(b => b.month === m && b.day === d);
-            // Los Próximos 3 que NO sean hoy
-            let nextBirthdays = cachedBirthdays.filter(b => !(b.month === m && b.day === d)).slice(0, 3);
+            // Los Próximos 3 que NO sean hoy y que sean de este mes o el próximo
+            let nextMonth = (m + 1) % 12;
+            let nextBirthdays = cachedBirthdays.filter(b =>
+                !(b.month === m && b.day === d) &&
+                (b.month === m || b.month === nextMonth)
+            ).slice(0, 3);
 
             if (todayBirthdays.length > 0) {
                 document.getElementById('bday-main').innerHTML = `🎂 ${todayBirthdays.map(b => b.name).join(', ')}`;
