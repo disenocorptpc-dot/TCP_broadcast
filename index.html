@@ -591,6 +591,45 @@
         let currentSheetUrl = "";
         let cachedBirthdays = null;
 
+        let rotatorConfig = {
+            busy: { currentIdx: 0, itemsHtml: [], containerId: 'busy-list', fallback: '<div style="font-size: 1.2rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>' },
+            vacations: { currentIdx: 0, itemsHtml: [], containerId: 'vacation-list', fallback: '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal programado.</div>' },
+            reminders: { currentIdx: 0, itemsHtml: [], containerId: 'deadline-list', fallback: '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin pendientes.</div>' },
+            birthdays: { currentIdx: 0, itemsHtml: [], containerId: 'bday-next-list', fallback: '' }
+        };
+
+        function renderRotatorSlice(confKey) {
+            let conf = rotatorConfig[confKey];
+            const container = document.getElementById(conf.containerId);
+            if (!container) return;
+
+            if (conf.itemsHtml.length === 0) {
+                container.innerHTML = conf.fallback;
+                return;
+            }
+
+            let slice = conf.itemsHtml.slice(conf.currentIdx, conf.currentIdx + 2);
+            if (slice.length === 1 && conf.itemsHtml.length > 1) {
+                // If odd number of items, wrap the last item with the first one to always show 2
+                slice.push(conf.itemsHtml[0]);
+            }
+
+            container.innerHTML = slice.join('');
+        }
+
+        setInterval(() => {
+            Object.keys(rotatorConfig).forEach(key => {
+                let conf = rotatorConfig[key];
+                if (conf.itemsHtml.length > 2) {
+                    conf.currentIdx += 2;
+                    if (conf.currentIdx >= conf.itemsHtml.length) {
+                        conf.currentIdx = 0;
+                    }
+                    renderRotatorSlice(key);
+                }
+            });
+        }, 60000); // Rota cada 1 minuto (60,000 ms)
+
         async function fetchAndProcessSheet(url) {
             try {
                 const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
@@ -648,12 +687,12 @@
 
             // Los de Hoy
             let todayBirthdays = cachedBirthdays.filter(b => b.month === m && b.day === d);
-            // Los Próximos 3 que NO sean hoy y que sean de este mes o el próximo
+            // Los Próximos que NO sean hoy y que sean de este mes o el próximo
             let nextMonth = (m + 1) % 12;
             let nextBirthdays = cachedBirthdays.filter(b =>
                 !(b.month === m && b.day === d) &&
                 (b.month === m || b.month === nextMonth)
-            ).slice(0, 3);
+            );
 
             if (todayBirthdays.length > 0) {
                 document.getElementById('bday-main').innerHTML = `🎂 ${todayBirthdays.map(b => b.name).join(', ')}`;
@@ -663,11 +702,13 @@
                 document.getElementById('bday-dept').innerHTML = "Nadie en el equipo";
             }
 
-            const nextList = document.getElementById('bday-next-list');
-            nextList.innerHTML = '';
             const mesesNombres = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+            rotatorConfig.birthdays.itemsHtml = [];
+            rotatorConfig.birthdays.currentIdx = 0;
+
             nextBirthdays.forEach(b => {
-                nextList.innerHTML += `
+                rotatorConfig.birthdays.itemsHtml.push(`
                     <li class="task-item" style="border: none; margin-bottom: 0; padding-bottom: 12px;">
                         <span class="status-dot done"></span>
                         <div>
@@ -675,8 +716,9 @@
                             <div style="font-size: 1.3rem; color: var(--text-muted);">${b.day} de ${mesesNombres[b.month]}</div>
                         </div>
                     </li>
-                 `;
+                 `);
             });
+            renderRotatorSlice('birthdays');
         }
 
         async function fetchWeather() {
@@ -757,34 +799,36 @@
                     } else if (data.birthday) {
                         document.getElementById('bday-main').innerHTML = `🎂 ${data.birthday.name || '--'}`;
                         document.getElementById('bday-dept').innerHTML = data.birthday.dept || '--';
-                        document.getElementById('bday-next-list').innerHTML = ''; // Limpia siguientes si es entrada manual
+                        rotatorConfig.birthdays.itemsHtml = []; // Limpia siguientes si es entrada manual
+                        renderRotatorSlice('birthdays');
                     }
 
                     // Actualizar Personal En Junta
+                    rotatorConfig.busy.itemsHtml = [];
+                    rotatorConfig.busy.currentIdx = 0;
+
                     if (data.busy && data.busy.length > 0) {
                         document.querySelectorAll('.sidebar').forEach(s => s.classList.add('busy-mode'));
-                        const busyList = document.getElementById('busy-list');
-                        busyList.innerHTML = '';
                         data.busy.forEach(b => {
-                            busyList.innerHTML += `
+                            rotatorConfig.busy.itemsHtml.push(`
                                 <li class="task-item">
                                     <span class="status-dot urgent"></span>
                                     <div>
                                         <div style="font-weight: 600; font-size: 1.6rem;">${b.name}</div>
                                         <div style="font-size: 1.2rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
                                     </div>
-                                </li>`;
+                                </li>`);
                         });
                     } else {
                         document.querySelectorAll('.sidebar').forEach(s => s.classList.remove('busy-mode'));
-                        document.getElementById('busy-list').innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>';
                     }
+                    renderRotatorSlice('busy');
 
                     // Actualizar Vacaciones
-                    if (data.vacations) {
-                        const vacList = document.getElementById('vacation-list');
-                        vacList.innerHTML = '';
+                    rotatorConfig.vacations.itemsHtml = [];
+                    rotatorConfig.vacations.currentIdx = 0;
 
+                    if (data.vacations && data.vacations.length > 0) {
                         const now = new Date();
                         const twoWeeksFromNow = new Date();
                         twoWeeksFromNow.setDate(now.getDate() + 14);
@@ -796,80 +840,72 @@
                             return { day, month };
                         };
 
-                        let activeCount = 0;
-                        if (data.vacations.length > 0) {
-                            data.vacations.forEach(v => {
-                                let displayStr = v.dates || ""; // Compatibilidad vieja
-                                let isRelevant = true;
+                        data.vacations.forEach(v => {
+                            let displayStr = v.dates || "";
+                            let isRelevant = true;
 
-                                if (v.start && v.end) {
-                                    const startDate = new Date(v.start + "T12:00:00");
-                                    const endDate = new Date(v.end + "T23:59:59");
+                            if (v.start && v.end) {
+                                const startDate = new Date(v.start + "T12:00:00");
+                                const endDate = new Date(v.end + "T23:59:59");
 
-                                    // Filtrar vacaciones: Ignorar si ya terminó o si empieza en más de 14 días
-                                    if (endDate < now) {
-                                        isRelevant = false;
-                                    } else if (startDate > twoWeeksFromNow) {
-                                        isRelevant = false;
+                                if (endDate < now) {
+                                    isRelevant = false;
+                                } else if (startDate > twoWeeksFromNow) {
+                                    isRelevant = false;
+                                } else {
+                                    const s = formatVacationDate(v.start);
+                                    const e = formatVacationDate(v.end);
+                                    if (s.month === e.month) {
+                                        displayStr = `Del ${s.day} al ${e.day} de ${s.month}`;
                                     } else {
-                                        const s = formatVacationDate(v.start);
-                                        const e = formatVacationDate(v.end);
-                                        if (s.month === e.month) {
-                                            displayStr = `Del ${s.day} al ${e.day} de ${s.month}`;
-                                        } else {
-                                            displayStr = `Del ${s.day} de ${s.month} al ${e.day} de ${e.month}`;
-                                        }
-                                    }
-                                } else if (v.start && !v.end) {
-                                    const startDate = new Date(v.start + "T12:00:00");
-                                    if (startDate > twoWeeksFromNow || startDate < new Date(now.getTime() - 86400000)) {
-                                        isRelevant = false;
-                                    } else {
-                                        const s = formatVacationDate(v.start);
-                                        displayStr = `El ${s.day} de ${s.month}`;
+                                        displayStr = `Del ${s.day} de ${s.month} al ${e.day} de ${e.month}`;
                                     }
                                 }
-
-                                if (isRelevant) {
-                                    activeCount++;
-                                    vacList.innerHTML += `
-                                        <li class="task-item">
-                                            <span class="status-dot done"></span>
-                                            <div>
-                                                <div style="font-weight: 600; font-size: 1.6rem; color: var(--success);">${v.name}</div>
-                                                <div style="font-size: 1.2rem; color: var(--text-muted);">${displayStr}</div>
-                                            </div>
-                                        </li>`;
+                            } else if (v.start && !v.end) {
+                                const startDate = new Date(v.start + "T12:00:00");
+                                if (startDate > twoWeeksFromNow || startDate < new Date(now.getTime() - 86400000)) {
+                                    isRelevant = false;
+                                } else {
+                                    const s = formatVacationDate(v.start);
+                                    displayStr = `El ${s.day} de ${s.month}`;
                                 }
-                            });
-                        }
+                            }
 
-                        if (activeCount === 0) {
-                            vacList.innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal programado.</div>';
-                        }
-                    } else {
-                        document.getElementById('vacation-list').innerHTML = '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal de vacaciones.</div>';
+                            if (isRelevant) {
+                                rotatorConfig.vacations.itemsHtml.push(`
+                                    <li class="task-item">
+                                        <span class="status-dot done"></span>
+                                        <div>
+                                            <div style="font-weight: 600; font-size: 1.6rem; color: var(--success);">${v.name}</div>
+                                            <div style="font-size: 1.2rem; color: var(--text-muted);">${displayStr}</div>
+                                        </div>
+                                    </li>`);
+                            }
+                        });
                     }
+                    renderRotatorSlice('vacations');
 
                     // Actualizar Deadlines
-                    if (data.reminders) {
-                        const list = document.getElementById('deadline-list');
-                        list.innerHTML = '';
+                    rotatorConfig.reminders.itemsHtml = [];
+                    rotatorConfig.reminders.currentIdx = 0;
+
+                    if (data.reminders && data.reminders.length > 0) {
                         data.reminders.forEach(r => {
                             let statusClass = "pending";
                             if (r.time.toLowerCase().includes('hoy')) statusClass = "urgent";
                             if (r.time.toLowerCase().includes('completado')) statusClass = "done";
 
-                            list.innerHTML += `
+                            rotatorConfig.reminders.itemsHtml.push(`
                                 <li class="task-item">
                                     <span class="status-dot ${statusClass}"></span>
                                     <div>
                                         <div style="font-weight: 600; font-size: 1.8rem;">${r.title}</div>
                                         <div style="font-size: 1.3rem; color: var(--text-muted);">${r.time}</div>
                                     </div>
-                                </li>`;
+                                </li>`);
                         });
                     }
+                    renderRotatorSlice('reminders');
 
                     // Actualizar Media Playlist
                     if (data.mediaIds && data.mediaIds.length > 0) {
