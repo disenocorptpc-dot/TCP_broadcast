@@ -373,6 +373,20 @@
                     </div>
                 </div>
 
+                <!-- CELEBRATION / CONFETTI CONTROL -->
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>🎊 Celebración en Pantalla Completa</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">Lanza confeti y
+                        muestra un mensaje gigante por 10 segundos en la televisión.</p>
+                    <div class="flex-row">
+                        <input type="text" id="celebration-msg"
+                            placeholder="Ej: ¡Felicidades al equipo de Diseño por el premio!">
+                        <button onclick="triggerCelebration()"
+                            style="background: linear-gradient(45deg, #ff0055, #00f0ff); color: white;">¡Lanzar
+                            Confeti!</button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -403,7 +417,8 @@
             vacations: [],
             managerMsg: "",
             sheetUrl: "",
-            birthday: { name: "", dept: "" }
+            birthday: { name: "", dept: "" },
+            celebration: { msg: "", timestamp: 0 }
         };
 
         initFirebase().then(async ({ docRef }) => {
@@ -650,6 +665,21 @@
                 };
                 await saveToFirebase();
                 alert('Cumpleañero actualizado a: ' + globalState.birthday.name);
+            }
+        }
+
+        window.triggerCelebration = async function triggerCelebration() {
+            const msg = document.getElementById('celebration-msg').value;
+            if (msg) {
+                globalState.celebration = {
+                    msg: msg,
+                    timestamp: Date.now() // Forzamos un cambio para que la TV lo detecte
+                };
+                document.getElementById('celebration-msg').value = '';
+                await saveToFirebase();
+                alert('¡Confeti lanzado! 🎉');
+            } else {
+                alert('Escribe un mensaje de celebración primero.');
             }
         }
 
