@@ -397,7 +397,7 @@
                     <div class="form-group" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
                         <input type="file" id="hero-file" accept="image/*" style="margin-bottom: 10px; color: white;">
                         <div class="flex-row">
-                            <input type="text" id="hero-title"
+                            <input type="text" id="hero-title" spellcheck="true" lang="es"
                                 placeholder="Titular Grande (Ej: URGENTE: Junta General)">
                         </div>
                         <div class="flex-row" style="margin-top: 10px;">
@@ -409,9 +409,10 @@
                                 </option>
                                 <option value="Operaciones" data-color="#00ff66">Operaciones</option>
                                 <option value="Foto" data-color="#ff3366">Foto</option>
+                                <option value="AyB" data-color="#cc99ff">AyB</option>
                             </select>
                             <input type="text" id="hero-desc" placeholder="Descripción Breve (Opcional)..."
-                                style="flex: 2;">
+                                spellcheck="true" lang="es" style="flex: 2;">
                         </div>
                         <div class="flex-row" style="margin-top: 10px;">
                             <button onclick="uploadGalleryItem()"
