@@ -388,7 +388,7 @@
                 </div>
 
                 <!-- HERO GALLERY CONTROL -->
-                <div class="card" style="grid-column: 1 / -1;">
+                <div class="card gallery-card" style="grid-column: 1 / -1;">
                     <h2>🎬 Portadas Principales (TV Centro)</h2>
                     <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Sube una imagen para
                         mostrarla en el reproductor principal. Se comprimirá automáticamente sin usar almacenamiento
@@ -401,9 +401,21 @@
                                 placeholder="Titular Grande (Ej: URGENTE: Junta General)">
                         </div>
                         <div class="flex-row" style="margin-top: 10px;">
-                            <input type="text" id="hero-desc" placeholder="Descripción Breve (Opcional)...">
-                            <button onclick="uploadGalleryItem()" style="background: var(--accent);">Publicar en
-                                Pantalla</button>
+                            <select id="hero-dept"
+                                style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); color: white; outline: none; flex: 1; margin-right: 10px;">
+                                <option value="" disabled selected>Coordinación / Área...</option>
+                                <option value="Proyectos Especiales" data-color="#00ffcc">Proyectos Especiales</option>
+                                <option value="Diseño Industrial y 3D" data-color="#ff9900">Diseño Industrial y 3D
+                                </option>
+                                <option value="Operaciones" data-color="#00ff66">Operaciones</option>
+                                <option value="Foto" data-color="#ff3366">Foto</option>
+                            </select>
+                            <input type="text" id="hero-desc" placeholder="Descripción Breve (Opcional)..."
+                                style="flex: 2;">
+                        </div>
+                        <div class="flex-row" style="margin-top: 10px;">
+                            <button onclick="uploadGalleryItem()"
+                                style="background: var(--accent); width: 100%;">Publicar en Pantalla</button>
                         </div>
                     </div>
 
@@ -433,7 +445,8 @@
             "lcabrera": { pass: "gerente123", role: "Gerente Diseño", color: "#ffcc00" },
             "mbarquin": { pass: "taller123", role: "Jefe de Taller", color: "#33ccff" },
             "itrujillo": { pass: "admin123", role: "Administración", color: "#ff66cc" },
-            "operaciones": { pass: "operaciones123", role: "Operaciones", color: "#00ff66" }
+            "operaciones": { pass: "operaciones123", role: "Operaciones", color: "#00ff66" },
+            "disenador": { pass: "galeria2026", role: "Diseñador General", color: "#ffffff", galleryOnly: true }
         };
         let globalState = {
             mediaIds: ["jfKfPfyJRdk"],
@@ -476,6 +489,18 @@
 
             if (appUsers[user] && appUsers[user].pass === pass) {
                 loggedInUser = appUsers[user];
+                loggedInUser.username = user;
+
+                // Hide other cards if user is restricted to gallery only
+                const allCards = document.querySelectorAll('.card');
+                allCards.forEach(c => {
+                    if (loggedInUser.galleryOnly && !c.classList.contains('gallery-card')) {
+                        c.style.display = 'none';
+                    } else {
+                        c.style.display = 'block';
+                    }
+                });
+
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('dashboard-section').style.display = 'block';
                 renderLists();
@@ -694,8 +719,11 @@
             const file = fileInput.files[0];
             const title = document.getElementById('hero-title').value.trim();
             const desc = document.getElementById('hero-desc').value.trim();
+            const deptSelect = document.getElementById('hero-dept');
+            const selectedDept = deptSelect.value;
 
             if (!file) { alert("Por favor selecciona una imagen primero."); return; }
+            if (loggedInUser && loggedInUser.galleryOnly && !selectedDept) { alert("Por favor selecciona tu Coordinación / Área."); return; }
             if (file.size > 15 * 1024 * 1024) { alert("Por favor sube fotos menores a 15MB."); return; }
 
             // Lógica de canvas thumbnail y compresión Base64
@@ -718,7 +746,14 @@
                     // Comprimir en JPEG calidad del 70% (basta y sobra para evitar saturar base de datos)
                     const base64Jpeg = canvas.toDataURL('image/jpeg', 0.7);
 
-                    const authorData = appUsers[loggedInUser.username] || { role: "Sistemas", color: "#ffffff" }; // Use loggedInUser.username
+                    let finalRole = (appUsers[loggedInUser.username] || { role: "Sistemas" }).role;
+                    let finalColor = (appUsers[loggedInUser.username] || { color: "#ffffff" }).color;
+
+                    if (selectedDept) {
+                        finalRole = selectedDept;
+                        finalColor = deptSelect.options[deptSelect.selectedIndex].getAttribute('data-color');
+                    }
+
                     if (!globalState.gallery) globalState.gallery = [];
 
                     globalState.gallery.push({
@@ -726,8 +761,8 @@
                         image: base64Jpeg,
                         title: title,
                         desc: desc,
-                        author: authorData.role,
-                        color: authorData.color,
+                        author: finalRole,
+                        color: finalColor,
                         expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // CADUCA EN 7 DÍAS EXACTOS
                     });
 
