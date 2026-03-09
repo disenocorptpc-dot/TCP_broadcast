@@ -489,11 +489,29 @@
             <div style="color: var(--text-muted); font-size: 1.2rem;">Q3 Global Kickoff</div>
         </header>
 
-        <div class="video-container">
+        <div class="video-container" id="video-layer"
+            style="transition: opacity 1.5s ease; position: relative; z-index: 1;">
             <iframe id="main-video"
                 src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen></iframe>
+        </div>
+
+        <!-- The Dynamic Hero Gallery Layer -->
+        <div id="gallery-layer"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; opacity: 0; background-size: cover; background-position: center; display: flex; align-items: flex-end; transition: opacity 1.5s ease; border-radius: 16px; overflow: hidden;">
+            <div
+                style="width: 100%; padding: 120px 80px 80px 80px; background: linear-gradient(to top, rgba(0,0,0,0.98) 0%, rgba(0,0,0,0.5) 70%, transparent 100%);">
+                <div id="gallery-author"
+                    style="display: none; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 1.2rem; margin-bottom: 20px; color: white;">
+                </div>
+                <h1 id="gallery-title"
+                    style="font-family: 'Space Grotesk', sans-serif; font-size: 5rem; font-weight: 800; color: white; margin-bottom: 20px; line-height: 1.1; text-shadow: 0 4px 15px rgba(0,0,0,1);">
+                </h1>
+                <p id="gallery-desc"
+                    style="font-size: 2.2rem; color: rgba(255,255,255,0.85); font-weight: 300; max-width: 90%; line-height: 1.4; text-shadow: 0 2px 10px rgba(0,0,0,1);">
+                </p>
+            </div>
         </div>
     </main>
 
@@ -658,6 +676,55 @@
         let currentSheetUrl = "";
         let cachedBirthdays = null;
         let lastCelebrationTime = 0; // Para no repetir viejo confeti al recargar
+
+        // Controladores de Galería
+        let activeGalleryItems = [];
+        let currentGalleryIdx = -1; // -1 significa que el Video está sonando
+        let galleryTimer = null;
+
+        function runGalleryCycle() {
+            clearTimeout(galleryTimer);
+            if (activeGalleryItems.length === 0) {
+                // Solo video
+                currentGalleryIdx = -1;
+                document.getElementById('gallery-layer').style.opacity = '0';
+                document.getElementById('video-layer').style.opacity = '1';
+                return;
+            }
+
+            currentGalleryIdx++;
+            if (currentGalleryIdx >= activeGalleryItems.length) {
+                // Volver a dar un respiro con el video por 30 segundos
+                currentGalleryIdx = -1;
+                document.getElementById('gallery-layer').style.opacity = '0';
+                document.getElementById('video-layer').style.opacity = '1';
+                galleryTimer = setTimeout(runGalleryCycle, 30000);
+            } else {
+                // Inyectar datos a la foto actual
+                let slide = activeGalleryItems[currentGalleryIdx];
+                let layer = document.getElementById('gallery-layer');
+                let authorBadge = document.getElementById('gallery-author');
+
+                document.getElementById('gallery-title').innerText = slide.title || '';
+                document.getElementById('gallery-desc').innerText = slide.desc || '';
+
+                if (slide.author) {
+                    authorBadge.style.display = "inline-block";
+                    authorBadge.innerText = `Aviso de: ${slide.author}`;
+                    authorBadge.style.backgroundColor = slide.color || "#ff0055";
+                    authorBadge.style.boxShadow = `0 4px 15px ${slide.color || "#ff0055"}66`;
+                } else {
+                    authorBadge.style.display = "none";
+                }
+
+                layer.style.backgroundImage = `url(${slide.image})`;
+                document.getElementById('video-layer').style.opacity = '0';
+                layer.style.opacity = '1';
+
+                // Mostrarla por 15 segundos
+                galleryTimer = setTimeout(runGalleryCycle, 15000);
+            }
+        }
 
         let rotatorConfig = {
             busy: { currentIdx: 0, itemsHtml: [], containerId: 'busy-list', fallback: '<div style="font-size: 1.2rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>' },
@@ -1030,6 +1097,24 @@
                             iframe.src = `https://www.youtube.com/embed/${firstId}?autoplay=1&mute=1&controls=0&loop=1${othersParams}`;
                         }
                     }
+
+                    // Actualizar Galería Dinámica Hero
+                    if (data.gallery) {
+                        const now = Date.now();
+                        const validGallery = data.gallery.filter(item => item.expiresAt > now);
+
+                        // Solo reiniciar el ciclo si hubo un cambio de tamaño en la galería para no interrumpir
+                        if (validGallery.length !== activeGalleryItems.length) {
+                            activeGalleryItems = validGallery;
+                            currentGalleryIdx = -1;
+                            runGalleryCycle();
+                        } else {
+                            activeGalleryItems = validGallery;
+                            // Prevenir que si borran todo se quede atorada
+                            if (activeGalleryItems.length === 0) { runGalleryCycle(); }
+                        }
+                    }
+
 
                 }
             });
