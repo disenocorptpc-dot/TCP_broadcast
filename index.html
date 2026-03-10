@@ -6,17 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Broadcast Command Center</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;700;800&display=swap');
 
         :root {
-            --bg-color: #0b0f19;
-            --glass-bg: rgba(17, 25, 40, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.125);
-            --accent: #00f0ff;
-            --accent-glow: rgba(0, 240, 255, 0.4);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --danger: #ff0055;
+            --bg-color: #EDECE4;
+            --glass-bg: rgba(224, 229, 229, 0.5);
+            --glass-border: rgba(184, 143, 105, 0.3);
+            --accent: #B88F69;
+            --accent-glow: rgba(184, 143, 105, 0.4);
+            --text-main: #254D6E;
+            --text-muted: rgba(37, 77, 110, 0.7);
+            --danger: #dc2626;
+            --success: #22c55e;
         }
 
         * {
@@ -26,11 +27,8 @@
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Public Sans', sans-serif;
             background-color: var(--bg-color);
-            background-image:
-                radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(255, 0, 85, 0.05), transparent 25%);
             color: var(--text-main);
             height: 100vh;
             display: grid;
@@ -56,7 +54,7 @@
         }
 
         .header h1 {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Public Sans', sans-serif;
             font-size: 1.5rem;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -80,7 +78,7 @@
             flex-grow: 1;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--glass-border);
+            box-shadow: 0 10px 30px rgba(37, 77, 110, 0.15), 0 0 0 1px var(--glass-border);
             position: relative;
             background: #000;
         }
@@ -143,13 +141,13 @@
 
         .widget:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 0 15px var(--accent-glow);
-            border-color: rgba(0, 240, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(37, 77, 110, 0.1);
+            border-color: rgba(184, 143, 105, 0.5);
         }
 
         .widget h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.0rem;
+            font-family: 'Public Sans', sans-serif;
+            font-size: 0.9rem;
             font-weight: 700;
             color: var(--text-muted);
             margin-bottom: 20px;
@@ -220,27 +218,23 @@
         .ticker-bar {
             grid-column: 1 / 3;
             grid-row: 2 / 3;
-            background: #050810;
-            border-top: 1px solid var(--accent);
+            background: #254D6E;
             display: flex;
             align-items: center;
             position: relative;
             z-index: 10;
-            box-shadow: 0 -5px 20px rgba(0, 240, 255, 0.1);
         }
 
         .ticker-bar.alert-mode {
-            background: #4a0011;
-            border-top: 2px solid var(--danger);
-            box-shadow: 0 -10px 30px rgba(255, 0, 85, 0.4);
+            background: #dc2626;
         }
 
         .ticker-label {
             background: var(--accent);
-            color: #000;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 2.2rem;
+            color: #EDECE4;
+            font-family: 'Public Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.8rem;
             padding: 0 40px;
             height: 100%;
             display: flex;
@@ -248,7 +242,6 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             z-index: 2;
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
         }
 
@@ -268,8 +261,9 @@
             display: inline-block;
             padding-left: 100%;
             animation: ticker 25s linear infinite;
-            font-size: 2.6rem;
+            font-size: 1.8rem;
             font-weight: 400;
+            color: #EDECE4;
         }
 
         .ticker-text span {
@@ -278,7 +272,7 @@
 
         .ticker-text .highlight {
             color: var(--accent);
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .ticker-text .alert {
@@ -384,15 +378,17 @@
 
         /* Clock & Weather Widget */
         #clock {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: 'Public Sans', sans-serif;
             font-size: 4rem;
-            font-weight: 700;
+            font-weight: 800;
             text-align: center;
-            color: #fff;
+            color: var(--text-main);
             white-space: nowrap;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             margin-bottom: 20px;
+            background: rgba(37, 77, 110, 0.05);
+            padding: 20px;
+            border-radius: 12px;
         }
 
         .world-clocks {
@@ -401,55 +397,64 @@
             justify-content: center;
             gap: 15px;
             padding-top: 25px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--glass-border);
         }
 
         .world-clock {
-            background: rgba(0, 0, 0, 0.3);
+            background: transparent;
             padding: 15px;
             border-radius: 12px;
-            text-align: center;
+            text-align: left;
             flex: 1 1 calc(50% - 15px);
             min-width: 120px;
-            border: 2px solid transparent;
+            border: 1px solid var(--accent);
             transition: all 0.3s ease;
         }
 
         .world-clock.working {
-            border: 2px solid #00ff88;
-            background: rgba(0, 255, 136, 0.05);
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.15);
+            border: 1px solid var(--text-main);
+            background: rgba(37, 77, 110, 1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .world-clock.working .wc-label {
+            color: rgba(237, 236, 228, 0.8);
         }
 
         .world-clock.working .wc-time {
-            color: #00ff88;
+            color: #EDECE4;
         }
 
         .world-clock.off-hours {
-            border: 2px solid var(--danger);
-            background: rgba(255, 0, 85, 0.05);
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.15);
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: none;
+        }
+
+        .world-clock.off-hours .wc-label {
+            color: var(--text-muted);
         }
 
         .world-clock.off-hours .wc-time {
-            color: var(--danger);
+            color: var(--text-muted);
         }
 
         .world-clock .wc-label {
             display: block;
-            font-size: 1rem;
-            color: var(--text-muted);
+            font-size: 0.8rem;
+            color: var(--text-main);
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 800;
+            margin-bottom: 5px;
         }
 
         .world-clock .wc-time {
             display: block;
-            font-size: 1.6rem;
-            font-weight: 700;
-            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Public Sans', sans-serif;
             color: var(--text-main);
-            margin-top: 5px;
+            margin-top: 2px;
         }
 
         .weather-mini {
@@ -463,16 +468,16 @@
         .weather-mini .temp {
             font-size: 2.2rem;
             font-weight: 800;
-            color: var(--accent);
+            color: var(--text-main);
             line-height: 1;
         }
 
         .weather-mini .cond {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             text-transform: uppercase;
             line-height: 1.2;
-            font-weight: 600;
+            font-weight: 800;
             letter-spacing: 1px;
         }
     </style>
@@ -584,16 +589,19 @@
         </div>
         <div class="widget">
             <h3>🎉 Cumpleaños</h3>
-            <div style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                <div style="font-size: 1.4rem; color: var(--text-muted); text-transform: uppercase;">Hoy celebramos a:
+            <div style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--glass-border);">
+                <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">Hoy
+                    celebramos a:
                 </div>
                 <div id="bday-main"
-                    style="font-size: 2.8rem; font-weight: 700; color: #ffaa00; margin-top: 4px; line-height: 1.1;">🎂
+                    style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-top: 4px; line-height: 1.1;">
+                    🎂
                     Cargando...</div>
-                <div id="bday-dept" style="font-size: 1.6rem; color: var(--text-main); margin-top: 5px;"></div>
+                <div id="bday-dept" style="font-size: 1.1rem; color: var(--text-muted); margin-top: 5px;"></div>
             </div>
             <div>
-                <div style="font-size: 1.4rem; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">
+                    Próximos:</div>
                 <ul class="task-list" id="bday-next-list" style="margin-top: 15px;">
                     <!-- Se inyecta desde FB -->
                 </ul>
@@ -728,9 +736,9 @@
         }
 
         let rotatorConfig = {
-            busy: { currentIdx: 0, itemsHtml: [], containerId: 'busy-list', fallback: '<div style="font-size: 1.2rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>' },
-            vacations: { currentIdx: 0, itemsHtml: [], containerId: 'vacation-list', fallback: '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin personal programado.</div>' },
-            reminders: { currentIdx: 0, itemsHtml: [], containerId: 'deadline-list', fallback: '<div style="font-size: 1.2rem; color: var(--text-muted);">Sin pendientes.</div>' },
+            busy: { currentIdx: 0, itemsHtml: [], containerId: 'busy-list', fallback: '<div style="font-size: 1rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>' },
+            vacations: { currentIdx: 0, itemsHtml: [], containerId: 'vacation-list', fallback: '<div style="font-size: 1rem; color: var(--text-muted);">Sin personal programado.</div>' },
+            reminders: { currentIdx: 0, itemsHtml: [], containerId: 'deadline-list', fallback: '<div style="font-size: 1rem; color: var(--text-muted);">Sin pendientes.</div>' },
             birthdays: { currentIdx: 0, itemsHtml: [], containerId: 'bday-next-list', fallback: '' }
         };
 
@@ -848,8 +856,8 @@
                     <li class="task-item" style="border: none; margin-bottom: 0; padding-bottom: 12px;">
                         <span class="status-dot done"></span>
                         <div>
-                            <div style="font-weight: 600; font-size: 1.6rem;">${b.name}</div>
-                            <div style="font-size: 1.3rem; color: var(--text-muted);">${b.day} de ${mesesNombres[b.month]}</div>
+                            <div style="font-weight: 800; font-size: 1.2rem; color: var(--text-main); margin-bottom: 3px;">${b.name}</div>
+                            <div style="font-size: 1rem; color: var(--text-muted);">${b.day} de ${mesesNombres[b.month]}</div>
                         </div>
                     </li>
                  `);
@@ -992,8 +1000,8 @@
                                 <li class="task-item">
                                     <span class="status-dot urgent"></span>
                                     <div>
-                                        <div style="font-weight: 600; font-size: 1.6rem;">${b.name}</div>
-                                        <div style="font-size: 1.2rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
+                                        <div style="font-weight: 800; font-size: 1.2rem; color: var(--text-main);">${b.name}</div>
+                                        <div style="font-size: 1rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
                                     </div>
                                 </li>`);
                         });
@@ -1054,8 +1062,8 @@
                                     <li class="task-item">
                                         <span class="status-dot done"></span>
                                         <div>
-                                            <div style="font-weight: 600; font-size: 1.6rem; color: var(--success);">${v.name}</div>
-                                            <div style="font-size: 1.2rem; color: var(--text-muted);">${displayStr}</div>
+                                            <div style="font-weight: 800; font-size: 1.2rem; color: var(--text-main);">${v.name}</div>
+                                            <div style="font-size: 1rem; color: var(--text-muted);">${displayStr}</div>
                                         </div>
                                     </li>`);
                             }
@@ -1077,8 +1085,8 @@
                                 <li class="task-item">
                                     <span class="status-dot ${statusClass}"></span>
                                     <div>
-                                        <div style="font-weight: 600; font-size: 1.8rem;">${r.title}</div>
-                                        <div style="font-size: 1.3rem; color: var(--text-muted);">${r.time}</div>
+                                        <div style="font-weight: 800; font-size: 1.2rem; color: var(--text-main);">${r.title}</div>
+                                        <div style="font-size: 1rem; color: var(--text-muted);">${r.time}</div>
                                     </div>
                                 </li>`);
                         });
