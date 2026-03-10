@@ -9,15 +9,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap');
 
         :root {
-            --bg-color: #0b0f19;
-            --glass-bg: rgba(17, 25, 40, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.125);
-            --accent: #00f0ff;
-            --accent-glow: rgba(0, 240, 255, 0.4);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --danger: #ff0055;
-            --success: #00ff88;
+            --bg-color: #EDECE4;
+            --glass-bg: rgba(224, 229, 229, 0.5);
+            --glass-border: rgba(184, 143, 105, 0.3);
+            --accent: #B88F69;
+            --accent-glow: rgba(184, 143, 105, 0.4);
+            --text-main: #254D6E;
+            --text-muted: rgba(37, 77, 110, 0.7);
+            --danger: #dc2626;
+            --success: #627264;
+            --marine: #254D6E;
         }
 
         * {
@@ -27,11 +28,8 @@
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Public Sans', sans-serif;
             background-color: var(--bg-color);
-            background-image:
-                radial-gradient(circle at 15% 50%, rgba(0, 240, 255, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(255, 0, 85, 0.05), transparent 25%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -381,8 +379,7 @@
                     <div class="flex-row">
                         <input type="text" id="celebration-msg"
                             placeholder="Ej: ¡Felicidades al equipo de Diseño por el premio!">
-                        <button onclick="triggerCelebration()"
-                            style="background: linear-gradient(45deg, #ff0055, #00f0ff); color: white;">¡Lanzar
+                        <button onclick="triggerCelebration()" style="background: var(--marine); color: white;">¡Lanzar
                             Confeti!</button>
                     </div>
                 </div>
@@ -404,12 +401,12 @@
                             <select id="hero-dept"
                                 style="padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); color: white; outline: none; flex: 1; margin-right: 10px;">
                                 <option value="" disabled selected>Coordinación / Área...</option>
-                                <option value="Proyectos Especiales" data-color="#00ffcc">Proyectos Especiales</option>
-                                <option value="Diseño Industrial y 3D" data-color="#ff9900">Diseño Industrial y 3D
+                                <option value="Proyectos Especiales" data-color="#4A6E82">Proyectos Especiales</option>
+                                <option value="Diseño Industrial y 3D" data-color="#C9A079">Diseño Industrial y 3D
                                 </option>
-                                <option value="Operaciones" data-color="#00ff66">Operaciones</option>
-                                <option value="Foto" data-color="#ff3366">Foto</option>
-                                <option value="AyB" data-color="#cc99ff">AyB</option>
+                                <option value="Operaciones" data-color="#627264">Operaciones</option>
+                                <option value="Foto" data-color="#8C6A5D">Foto</option>
+                                <option value="AyB" data-color="#95A2A5">AyB</option>
                             </select>
                             <input type="text" id="hero-desc" placeholder="Descripción Breve (Opcional)..."
                                 spellcheck="true" lang="es" style="flex: 2;">
@@ -438,16 +435,16 @@
         let dbDocRef = null;
         let loggedInUser = null;
         const appUsers = {
-            "admin": { pass: "admin", role: "Admin", color: "#00f0ff" },
-            "rsantarosa": { pass: "diseno123", role: "Diseño Industrial y 3D", color: "#ff9900" },
-            "kmunoz": { pass: "proyectos123", role: "Proyectos Especiales", color: "#00ffcc" },
-            "enoya": { pass: "foto123", role: "Foto", color: "#ff3366" },
-            "pamcastillo": { pass: "ayb123", role: "AyB", color: "#cc99ff" },
-            "lcabrera": { pass: "gerente123", role: "Gerente Diseño", color: "#ffcc00" },
-            "mbarquin": { pass: "taller123", role: "Jefe de Taller", color: "#33ccff" },
-            "itrujillo": { pass: "admin123", role: "Administración", color: "#ff66cc" },
-            "operaciones": { pass: "operaciones123", role: "Operaciones", color: "#00ff66" },
-            "disenador": { pass: "galeria2026", role: "Diseñador General", color: "#ffffff", galleryOnly: true }
+            "admin": { pass: "admin", role: "Admin", color: "#254D6E" },
+            "rsantarosa": { pass: "diseno123", role: "Diseño Industrial y 3D", color: "#C9A079" },
+            "kmunoz": { pass: "proyectos123", role: "Proyectos Especiales", color: "#4A6E82" },
+            "enoya": { pass: "foto123", role: "Foto", color: "#8C6A5D" },
+            "pamcastillo": { pass: "ayb123", role: "AyB", color: "#95A2A5" },
+            "lcabrera": { pass: "gerente123", role: "Gerente Diseño", color: "#A4B5C4" },
+            "mbarquin": { pass: "taller123", role: "Jefe de Taller", color: "#6A7B82" },
+            "itrujillo": { pass: "admin123", role: "Administración", color: "#546E7A" },
+            "operaciones": { pass: "operaciones123", role: "Operaciones", color: "#627264" },
+            "disenador": { pass: "galeria2026", role: "Diseñador General", color: "#B88F69", galleryOnly: true }
         };
         let globalState = {
             mediaIds: ["jfKfPfyJRdk"],
@@ -582,7 +579,7 @@
                 vacList.innerHTML += `
                     <div class="list-item">
                         <div>
-                            <p style="font-weight: 600; color: #00ff88;">${v.name}</p>
+                            <p style="font-weight: 800; color: var(--success);">${v.name}</p>
                             <p style="color: var(--text-muted); font-size: 0.8rem;">${display}</p>
                         </div>
                         <button class="delete-btn" onclick="deleteVacation(${index})">Quitar</button>
