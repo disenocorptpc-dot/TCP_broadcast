@@ -605,7 +605,6 @@
 
         window.deleteMedia = async function deleteMedia(index) {
             globalState.mediaIds.splice(index, 1);
-            if (globalState.mediaIds.length === 0) globalState.mediaIds.push('jfKfPfyJRdk'); // Fallback
             renderLists();
             await saveToFirebase();
         }
