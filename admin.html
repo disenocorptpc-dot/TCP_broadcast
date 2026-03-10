@@ -754,6 +754,15 @@
 
                     if (!globalState.gallery) globalState.gallery = [];
 
+                    // Comprobar límite de 4 trabajos en total por departamento
+                    if (loggedInUser && loggedInUser.galleryOnly) {
+                        const myUploads = globalState.gallery.filter(item => item.author === finalRole);
+                        if (myUploads.length >= 4) {
+                            alert(`Tu departamento ya ha alcanzado el límite de 4 publicaciones simultáneas. Borra alguna anterior para publicar una nueva.`);
+                            return;
+                        }
+                    }
+
                     globalState.gallery.push({
                         id: Date.now().toString(),
                         image: base64Jpeg,
