@@ -566,26 +566,49 @@
             <h3>🌍 Relojes</h3>
             <div id="clock">12:00:00</div>
 
-            <div class="world-clocks">
-                <div class="world-clock" id="cw-merida"><span class="wc-label">Mérida</span><span class="wc-time"
-                        id="wc-merida">--:--</span></div>
-                <div class="world-clock" id="cw-cabos"><span class="wc-label">Los Cabos</span><span class="wc-time"
-                        id="wc-cabos">--:--</span></div>
-                <div class="world-clock" id="cw-jamaica"><span class="wc-label">Jamaica</span><span class="wc-time"
-                        id="wc-jamaica">--:--</span></div>
-                <div class="world-clock" id="cw-punta"><span class="wc-label">Punta Cana</span><span class="wc-time"
-                        id="wc-punta">--:--</span></div>
-                <div class="world-clock" id="cw-milan">
-                    <span class="wc-label">Milán</span>
-                    <span class="wc-time" id="wc-milan">--:--</span>
+            <!-- Horarios Múltiples en 1 Sola Línea -->
+            <div
+                style="display: flex; justify-content: space-between; border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); padding: 15px 5px; margin-bottom: 20px;">
+                <div style="text-align: center; line-height: 1.2;">
+                    <span
+                        style="font-size: 0.70rem; color: var(--text-main); font-weight: 800; text-transform: uppercase;">Mérida</span><br>
+                    <span id="wc-merida"
+                        style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">--:--</span>
                 </div>
-                <div class="world-clock"
-                    style="display: flex; flex-direction: column; justify-content: center; border-color: rgba(0,240,255,0.2);">
-                    <div class="weather-mini">
-                        <span class="temp" id="weather-temp">--°C</span>
-                        <span class="cond" id="weather-cond" style="margin-top:2px;">Cargando...</span>
-                    </div>
+                <div style="text-align: center; line-height: 1.2;">
+                    <span
+                        style="font-size: 0.70rem; color: var(--text-main); font-weight: 800; text-transform: uppercase;">Cabos</span><br>
+                    <span id="wc-cabos"
+                        style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">--:--</span>
                 </div>
+                <div style="text-align: center; line-height: 1.2;">
+                    <span
+                        style="font-size: 0.70rem; color: var(--text-main); font-weight: 800; text-transform: uppercase;">Jamaica</span><br>
+                    <span id="wc-jamaica"
+                        style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">--:--</span>
+                </div>
+                <div style="text-align: center; line-height: 1.2;">
+                    <span
+                        style="font-size: 0.70rem; color: var(--text-main); font-weight: 800; text-transform: uppercase;">Punta
+                        C.</span><br>
+                    <span id="wc-punta"
+                        style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">--:--</span>
+                </div>
+                <div style="text-align: center; line-height: 1.2;">
+                    <span
+                        style="font-size: 0.70rem; color: var(--text-main); font-weight: 800; text-transform: uppercase;">Milán</span><br>
+                    <span id="wc-milan"
+                        style="font-size: 1.1rem; font-weight: 800; color: var(--text-main);">--:--</span>
+                </div>
+            </div>
+
+            <!-- Widget original de Clima -->
+            <div
+                style="background: transparent; padding: 15px; border-radius: 12px; border: 1px solid var(--accent); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;">
+                <span id="weather-temp"
+                    style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); line-height: 1;">--°C</span>
+                <span id="weather-cond"
+                    style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; line-height: 1.2; font-weight: 800; letter-spacing: 1px; text-align: center;">Cargando...</span>
             </div>
         </div>
 
