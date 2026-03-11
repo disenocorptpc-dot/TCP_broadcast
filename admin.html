@@ -214,6 +214,20 @@
             background: var(--danger);
         }
 
+        .edit-btn {
+            width: auto;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            background: transparent;
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .edit-btn:hover {
+            background: var(--success);
+            color: var(--bg-color);
+        }
+
         .flex-row {
             display: flex;
             gap: 10px;
@@ -534,7 +548,10 @@
                 tickerList.innerHTML += `
                     <div class="list-item">
                         <p>${t}</p>
-                        <button class="delete-btn" onclick="deleteTicker(${index})">Eliminar</button>
+                        <div style="display:flex; gap: 8px; flex-shrink: 0; margin-left:15px;">
+                            <button class="edit-btn" onclick="editTicker(${index})">Editar</button>
+                            <button class="delete-btn" onclick="deleteTicker(${index})">Eliminar</button>
+                        </div>
                     </div>
                 `;
             });
@@ -669,6 +686,28 @@
             globalState.tickers.splice(index, 1);
             renderLists();
             await saveToFirebase();
+        }
+
+        window.editTicker = async function editTicker(index) {
+            let currentHTML = globalState.tickers[index];
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = currentHTML;
+            
+            // Clean HTML to extract pure text
+            let cleanText = tempDiv.textContent || tempDiv.innerText || "";
+            // Remove "[Rango]" tag if it exists in the raw text so user edits pure message
+            cleanText = cleanText.replace(/^\[.*?\]\s*/, '');
+            
+            const newVal = prompt("Modificar mensaje:", cleanText);
+            if (newVal !== null && newVal.trim() !== "") {
+                if (loggedInUser) {
+                    globalState.tickers[index] = `<span style="color:${loggedInUser.color};"><span style="font-weight: 700; font-size: 0.9em; margin-right: 5px;">[${loggedInUser.role}]</span> ${newVal.trim()}</span>`;
+                } else {
+                    globalState.tickers[index] = newVal.trim();
+                }
+                renderLists();
+                await saveToFirebase();
+            }
         }
 
         window.addReminder = async function addReminder() {
