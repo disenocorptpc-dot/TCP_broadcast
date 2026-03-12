@@ -490,7 +490,12 @@
 
         async function saveToFirebase() {
             if (dbDocRef) {
-                await setDoc(dbDocRef, globalState, { merge: true });
+                try {
+                    await setDoc(dbDocRef, globalState, { merge: true });
+                } catch (e) {
+                    console.error("Firebase Save Error:", e);
+                    throw e;
+                }
             }
         }
 
@@ -767,50 +772,53 @@
             reader.onload = function (event) {
                 const img = new Image();
                 img.onload = async function () {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1200; // Calidad aceptable para fondos de tele pesando muy poco
-                    const scaleSize = MAX_WIDTH / img.width;
-                    const w = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
-                    const h = img.width > MAX_WIDTH ? img.height * scaleSize : img.height;
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 1000; // Calidad aceptable para tele pesando minúsculo
+                        const scaleSize = MAX_WIDTH / img.width;
+                        const w = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
+                        const h = img.width > MAX_WIDTH ? img.height * scaleSize : img.height;
 
-                    canvas.width = w;
-                    canvas.height = h;
+                        canvas.width = w;
+                        canvas.height = h;
 
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
 
-                    // Comprimir en JPEG calidad del 70% (basta y sobra para evitar saturar base de datos)
-                    const base64Jpeg = canvas.toDataURL('image/jpeg', 0.7);
+                        // Comprimir en JPEG calidad del 60% agresivo (evitar saturar Firestore de 1MB)
+                        const base64Jpeg = canvas.toDataURL('image/jpeg', 0.6);
 
-                    let finalRole = (appUsers[loggedInUser.username] || { role: "Sistemas" }).role;
-                    let finalColor = (appUsers[loggedInUser.username] || { color: "#ffffff" }).color;
+                        let finalRole = (appUsers[loggedInUser.username] || { role: "Sistemas" }).role;
+                        let finalColor = (appUsers[loggedInUser.username] || { color: "#ffffff" }).color;
 
-                    if (selectedDept) {
-                        finalRole = selectedDept;
-                        finalColor = deptSelect.options[deptSelect.selectedIndex].getAttribute('data-color');
+                        if (selectedDept) {
+                            finalRole = selectedDept;
+                            finalColor = deptSelect.options[deptSelect.selectedIndex].getAttribute('data-color');
+                        }
+
+                        if (!globalState.gallery) globalState.gallery = [];
+
+                        globalState.gallery.push({
+                            id: Date.now().toString(),
+                            image: base64Jpeg,
+                            title: title,
+                            desc: desc,
+                            author: finalRole,
+                            color: finalColor,
+                            expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // CADUCA EN 7 DÍAS EXACTOS
+                        });
+
+                        await saveToFirebase();
+
+                        document.getElementById('hero-file').value = "";
+                        document.getElementById('hero-title').value = "";
+                        document.getElementById('hero-desc').value = "";
+                        alert("¡Portada empujada a la Televisión! 🚀");
+                        renderGallery();
+                    } catch (error) {
+                        console.error("Error cargando imagen a Firebase:", error);
+                        alert("❌ Error: Posiblemente tu imagen es demasiado pesada o se llenó la memoria global de portadas (Límite 1MB de base de datos). Elimina algunas portadas e intenta de nuevo.");
                     }
-
-                    if (!globalState.gallery) globalState.gallery = [];
-
-
-
-                    globalState.gallery.push({
-                        id: Date.now().toString(),
-                        image: base64Jpeg,
-                        title: title,
-                        desc: desc,
-                        author: finalRole,
-                        color: finalColor,
-                        expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // CADUCA EN 7 DÍAS EXACTOS
-                    });
-
-                    await saveToFirebase();
-
-                    document.getElementById('hero-file').value = "";
-                    document.getElementById('hero-title').value = "";
-                    document.getElementById('hero-desc').value = "";
-                    alert("¡Portada empujada a la Televisión! 🚀");
-                    renderGallery();
                 }
                 img.src = event.target.result;
             }
