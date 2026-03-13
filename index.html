@@ -233,6 +233,16 @@
             margin-bottom: 18px;
             padding-bottom: 18px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .task-item > div {
+            flex: 1;
+            min-width: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
         }
 
         .task-item:last-child {
