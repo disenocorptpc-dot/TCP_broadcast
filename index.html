@@ -1218,7 +1218,7 @@
                     // Actualizar Galería Dinámica Hero
                     if (data.gallery) {
                         const now = Date.now();
-                        const validGallery = data.gallery.filter(item => item.expiresAt > now);
+                        const validGallery = data.gallery.filter(item => item.expiresAt > now && !item.isPaused);
 
                         // Solo reiniciar el ciclo si hubo un cambio de tamaño en la galería para no interrumpir
                         if (validGallery.length !== activeGalleryItems.length) {
