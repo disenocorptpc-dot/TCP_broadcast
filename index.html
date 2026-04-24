@@ -723,7 +723,10 @@
 
     <script type="module">
         import { initFirebase } from './firebase-config.js';
-        import { onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { onSnapshot, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        let db = null;
+        let imageCache = {};
 
         // Simple clock functionality
         let lastDay = new Date().getDate();
@@ -829,9 +832,27 @@
                     authorBadge.style.display = "none";
                 }
 
-                layer.style.backgroundImage = `url(${slide.image})`;
-                document.getElementById('video-layer').style.opacity = '0';
-                layer.style.opacity = '1';
+                if (slide.image && slide.image.length > 1000) {
+                    layer.style.backgroundImage = `url(${slide.image})`;
+                    document.getElementById('video-layer').style.opacity = '0';
+                    layer.style.opacity = '1';
+                } else if (imageCache[slide.id]) {
+                    layer.style.backgroundImage = `url(${imageCache[slide.id]})`;
+                    document.getElementById('video-layer').style.opacity = '0';
+                    layer.style.opacity = '1';
+                } else {
+                    layer.style.backgroundImage = 'none';
+                    document.getElementById('video-layer').style.opacity = '0';
+                    layer.style.opacity = '1';
+                    getDoc(doc(db, "projects/broadcast_gallery/images", slide.id)).then(snap => {
+                        if (snap.exists()) {
+                            imageCache[slide.id] = snap.data().image;
+                            if (activeGalleryItems[currentGalleryIdx] && activeGalleryItems[currentGalleryIdx].id === slide.id) {
+                                layer.style.backgroundImage = `url(${imageCache[slide.id]})`;
+                            }
+                        }
+                    }).catch(e => console.error(e));
+                }
 
                 // Mostrarla por 15 segundos
                 galleryTimer = setTimeout(runGalleryCycle, 15000);
@@ -998,7 +1019,8 @@
         setInterval(fetchWeather, 1800000); // 30 minutos
 
         // Inicializar Firebase
-        initFirebase().then(({ docRef }) => {
+        initFirebase().then(({ db: database, docRef }) => {
+            db = database;
             console.log("Firebase Conectado. Escuchando cambios en vivo...");
 
             onSnapshot(docRef, (doc) => {
