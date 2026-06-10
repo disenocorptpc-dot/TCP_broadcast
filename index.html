@@ -1132,13 +1132,11 @@
 
         async function fetchPulseMetrics() {
             const urls = [
-                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/get-broadcast-metrics/functions/v1/get-broadcast-metrics",
-                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/get-broadcast-metrics/functions/v1/getbroadcast-metrics",
-                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/get-broadcast-metrics",
-                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/getbroadcast-metrics"
+                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/get-broadcast-metrics"
             ];
             const apiKey = "814c46a71eed489888f2606c70de9d18";
 
+            console.log("Starting fetch of Pulse metrics...");
             for (const url of urls) {
                 try {
                     const response = await fetch(url, {
@@ -1153,17 +1151,21 @@
                         if (data && data.total_active !== undefined) {
                             metricsState = data;
                             renderMetricsWidget();
-                            console.log(`Pulse metrics fetched successfully from: ${url}`);
+                            console.log(`[Pulse API] Successfully loaded. Total active: ${data.total_active}`);
                             return;
+                        } else {
+                            console.warn(`[Pulse API] Response succeeded but data structure is unexpected:`, data);
                         }
                     } else {
-                        console.warn(`Fetch to ${url} returned status: ${response.status}`);
+                        console.error(`[Pulse API] Fetch returned status error: ${response.status} ${response.statusText}`);
+                        const errorText = await response.text().catch(() => "");
+                        console.error(`[Pulse API] Error response body:`, errorText);
                     }
                 } catch (error) {
-                    console.error(`Error fetching metrics from ${url}:`, error);
+                    console.error(`[Pulse API] Network or CORS error fetching from ${url}:`, error);
                 }
             }
-            console.error("All metric URLs failed. Keeping previous/demo state.");
+            console.error("[Pulse API] All attempts failed. Keeping previous/demo state.");
         }
 
         function renderMetricsWidget() {
