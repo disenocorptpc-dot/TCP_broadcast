@@ -1106,6 +1106,9 @@
 
         // Lógica de Métricas Pulse (Supabase)
         let metricsState = {
+            "isDemo": true,
+            "isLoading": true,
+            "hasError": false,
             "updated_at": new Date().toISOString(),
             "total_active": 754,
             "total_archived": 35,
@@ -1172,6 +1175,11 @@
                 }
             }
             console.error("[Pulse API] All attempts failed. Keeping previous/demo state.");
+            if (metricsState && metricsState.isDemo) {
+                metricsState.isLoading = false;
+                metricsState.hasError = true;
+                renderMetricsWidget();
+            }
         }
 
         function renderMetricsWidget() {
@@ -1185,6 +1193,15 @@
                 const enDiseno = metricsState.by_status?.en_diseno?.count ?? 0;
                 const enProduccion = metricsState.by_status?.en_produccion?.count ?? 0;
                 const total = metricsState.total_active ?? 0;
+
+                let updateLabel = `Actualizado: ${formatTime(metricsState.updated_at)}`;
+                if (metricsState.isDemo) {
+                    if (metricsState.isLoading) {
+                        updateLabel = `<span style="color:var(--accent); font-weight:800;">[Cargando desde Pulse...]</span>`;
+                    } else if (metricsState.hasError) {
+                        updateLabel = `<span style="color:var(--danger); font-weight:800;">[Sin Conexión a Pulse]</span>`;
+                    }
+                }
 
                 statusContainer.innerHTML = `
                     <div class="pulse-card-total">
@@ -1209,7 +1226,7 @@
                             <span class="label">En Producción</span>
                         </div>
                     </div>
-                    <div class="metrics-last-update">Actualizado: ${formatTime(metricsState.updated_at)}</div>
+                    <div class="metrics-last-update">${updateLabel}</div>
                 `;
             }
 
