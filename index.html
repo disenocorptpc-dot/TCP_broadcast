@@ -257,8 +257,8 @@
         }
         .pulse-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
             margin-bottom: 12px;
         }
         .pulse-card {
@@ -291,8 +291,6 @@
         .pulse-blue { color: #4fa8ff; text-shadow: 0 0 10px rgba(79, 168, 255, 0.25); }
         .pulse-purple { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.25); }
         .pulse-orange { color: #ffb020; text-shadow: 0 0 10px rgba(255, 176, 32, 0.25); }
-        .pulse-green { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.25); }
-        .pulse-white { color: #ffffff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.25); }
 
         .module-item {
             margin-bottom: 8px;
@@ -1192,9 +1190,7 @@
                 const aceptadas = isLoading ? '--' : (metricsState.by_status?.aceptadas?.count ?? 0);
                 const enDiseno = isLoading ? '--' : (metricsState.by_status?.en_diseno?.count ?? 0);
                 const enProduccion = isLoading ? '--' : (metricsState.by_status?.en_produccion?.count ?? 0);
-                
-                const totalActive = isLoading ? '--' : (metricsState.total_active ?? 0);
-                const totalTasks = isLoading ? '--' : (totalActive + (metricsState.total_archived ?? 0));
+                const total = isLoading ? '--' : ((metricsState.total_active ?? 0) + (metricsState.total_archived ?? 0));
 
                 let updateLabel = isLoading ? `<span style="color:var(--accent); font-weight:800;">[Cargando desde Pulse...]</span>` : `Actualizado: ${formatTime(metricsState.updated_at)}`;
                 if (metricsState.isDemo && !isLoading) {
@@ -1204,6 +1200,10 @@
                 }
 
                 statusContainer.innerHTML = `
+                    <div class="pulse-card-total">
+                        <span class="value">${total}</span>
+                        <span class="label">Tareas Totales</span>
+                    </div>
                     <div class="pulse-grid">
                         <div class="pulse-card">
                             <span class="value pulse-red">${sinAtender}</span>
@@ -1220,14 +1220,6 @@
                         <div class="pulse-card">
                             <span class="value pulse-orange">${enProduccion}</span>
                             <span class="label">En Producción</span>
-                        </div>
-                        <div class="pulse-card">
-                            <span class="value pulse-green">${totalActive}</span>
-                            <span class="label">Tareas Activas</span>
-                        </div>
-                        <div class="pulse-card">
-                            <span class="value pulse-white">${totalTasks}</span>
-                            <span class="label">Tareas Totales</span>
                         </div>
                     </div>
                     <div class="metrics-last-update">${updateLabel}</div>
@@ -1248,7 +1240,7 @@
                         "Sin módulo": "rgba(237, 236, 228, 0.5)"
                     };
 
-                    const total = metricsState.isLoading ? 1 : (metricsState.total_active ?? 1);
+                    const total = metricsState.total_active ?? 1;
 
                     modulesContainer.innerHTML = `
                         <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
