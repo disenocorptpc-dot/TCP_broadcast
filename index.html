@@ -1110,20 +1110,22 @@
             "isLoading": true,
             "hasError": false,
             "updated_at": new Date().toISOString(),
-            "total_active": 754,
-            "total_archived": 35,
+            "total_active": 628,
+            "total_archived": 128,
             "by_status": {
-                "sin_atender": { "label": "Sin Atender", "count": 37 },
-                "aceptadas": { "label": "Nueva / Aceptada", "count": 79 },
-                "en_diseno": { "label": "En Diseño", "count": 218 },
-                "en_produccion": { "label": "En Producción", "count": 238 },
-                "terminadas": { "label": "Terminada", "count": 182 }
+                "sin_atender": { "label": "Sin Atender", "count": 36 },
+                "aceptadas": { "label": "Nueva / Aceptada", "count": 70 },
+                "en_diseno": { "label": "En Diseño", "count": 225 },
+                "en_produccion": { "label": "En Producción", "count": 241 },
+                "terminadas": { "label": "Terminada", "count": 54 },
+                "canceladas": { "label": "Cancelada", "count": 2 },
+                "archivadas": { "label": "Archivada", "count": 128 }
             },
             "by_module": {
-                "Diseño": 380,
-                "Fotografía": 190,
-                "Palace Productions": 134,
-                "Sin módulo": 50
+                "Diseño": 601,
+                "Fotografía": 27,
+                "Palace Productions": 0,
+                "Sin módulo": 0
             }
         };
 
@@ -1192,7 +1194,7 @@
                 const aceptadas = metricsState.by_status?.aceptadas?.count ?? 0;
                 const enDiseno = metricsState.by_status?.en_diseno?.count ?? 0;
                 const enProduccion = metricsState.by_status?.en_produccion?.count ?? 0;
-                const total = metricsState.total_active ?? 0;
+                const total = (metricsState.total_active ?? 0) + (metricsState.total_archived ?? 0);
 
                 let updateLabel = `Actualizado: ${formatTime(metricsState.updated_at)}`;
                 if (metricsState.isDemo) {
