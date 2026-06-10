@@ -1193,9 +1193,8 @@
                 const enDiseno = isLoading ? '--' : (metricsState.by_status?.en_diseno?.count ?? 0);
                 const enProduccion = isLoading ? '--' : (metricsState.by_status?.en_produccion?.count ?? 0);
                 
-                // Compensación temporal de +1 activa y +2 archivada para igualar los datos oficiales de Monday.com (626 y 756)
-                const totalActive = isLoading ? '--' : ((metricsState.total_active ?? 0) + 1);
-                const totalTasks = isLoading ? '--' : (totalActive + (metricsState.total_archived ?? 0) + 2);
+                const totalActive = isLoading ? '--' : (metricsState.total_active ?? 0);
+                const totalTasks = isLoading ? '--' : (totalActive + (metricsState.total_archived ?? 0));
 
                 let updateLabel = isLoading ? `<span style="color:var(--accent); font-weight:800;">[Cargando desde Pulse...]</span>` : `Actualizado: ${formatTime(metricsState.updated_at)}`;
                 if (metricsState.isDemo && !isLoading) {
@@ -1249,7 +1248,7 @@
                         "Sin módulo": "rgba(237, 236, 228, 0.5)"
                     };
 
-                    const total = metricsState.isLoading ? 1 : ((metricsState.total_active ?? 0) + 1);
+                    const total = metricsState.isLoading ? 1 : (metricsState.total_active ?? 1);
 
                     modulesContainer.innerHTML = `
                         <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
