@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Disable aggressive browser caching for kiosk/TV displays -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Broadcast Command Center</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;700;800&display=swap');
@@ -1139,8 +1143,10 @@
             console.log("Starting fetch of Pulse metrics...");
             for (const url of urls) {
                 try {
-                    const response = await fetch(url, {
+                    // Bypass browser cache completely using cache: 'no-store' and a timestamp param
+                    const response = await fetch(`${url}?t=${Date.now()}`, {
                         method: 'GET',
+                        cache: 'no-store',
                         headers: {
                             'x-api-key': apiKey,
                             'Accept': 'application/json'
