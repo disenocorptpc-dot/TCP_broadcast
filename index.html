@@ -221,6 +221,111 @@
             opacity: 0.8;
         }
 
+        /* Pulse Metrics Styles */
+        .pulse-card-total {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .pulse-card-total .value {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+            letter-spacing: -1.5px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+        .pulse-card-total .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+        .pulse-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .pulse-card {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .pulse-card .value {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        .pulse-card .label {
+            font-size: 0.52rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            opacity: 0.75;
+        }
+        .pulse-red { color: #ff4a5a; text-shadow: 0 0 10px rgba(255, 74, 90, 0.25); }
+        .pulse-blue { color: #4fa8ff; text-shadow: 0 0 10px rgba(79, 168, 255, 0.25); }
+        .pulse-purple { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.25); }
+        .pulse-orange { color: #ffb020; text-shadow: 0 0 10px rgba(255, 176, 32, 0.25); }
+
+        .module-item {
+            margin-bottom: 8px;
+        }
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .module-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .module-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            border-radius: 3px;
+            transition: width 1s ease-in-out;
+        }
+        .metrics-last-update {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.6;
+        }
+
         /* Tasks Widget */
         .task-list {
             list-style: none;
@@ -650,55 +755,32 @@
 
     <!-- Sidebar Dashboard 2 -->
     <aside class="sidebar" id="sidebar-2">
-        <div class="widget">
-            <h3>Métricas de Evento</h3>
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <div class="label">Viendo ahora</div>
-                    <div style="display: flex; align-items: flex-end;">
-                        <span class="value">1,204</span>
-                        <span class="trend">▲ 12%</span>
-                    </div>
-                </div>
-                <div class="stat-box" style="border-left-color: var(--success);">
-                    <div class="label">Estabilidad de red</div>
-                    <div style="display: flex; align-items: flex-end;">
-                        <span class="value" style="color: var(--success);">98<span
-                                style="font-size: 1.5rem; letter-spacing: 0;">%</span></span>
-                        <span class="trend" style="opacity: 0.8;">ÓPTIMO</span>
-                    </div>
-                </div>
+        <!-- Widget 1: Tareas por Estatus (Pulse) -->
+        <div class="widget" id="pulse-status-widget">
+            <h3>Tareas por Estatus</h3>
+            <div id="pulse-status-container">
+                <!-- Se inyecta dinámicamente -->
             </div>
         </div>
 
-        <div class="widget">
-            <h3>Próximos Deadlines</h3>
-            <ul class="task-list" id="deadline-list">
-                <!-- Se inyecta desde DB -->
-            </ul>
+        <!-- Widget 2: Distribución por Módulo (Pulse) -->
+        <div class="widget" id="pulse-modules-widget">
+            <h3>Distribución por Módulo</h3>
+            <div id="pulse-modules-container">
+                <!-- Se inyecta dinámicamente -->
+            </div>
         </div>
 
-        <div class="widget">
-            <h3>🔇 En Junta / Ocupados</h3>
-            <ul class="task-list" id="busy-list">
-                <!-- Se inyecta desde DB -->
-            </ul>
-        </div>
-        <div class="widget">
+        <!-- Widget 3: Cumpleaños -->
+        <div class="widget" id="birthday-widget">
             <h3>🎉 Cumpleaños</h3>
             <div style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--glass-border);">
-                <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">Hoy
-                    celebramos a:
-                </div>
-                <div id="bday-main"
-                    style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-top: 4px; line-height: 1.1;">
-                    🎂
-                    Cargando...</div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">Hoy celebramos a:</div>
+                <div id="bday-main" style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-top: 4px; line-height: 1.1;">🎂 Cargando...</div>
                 <div id="bday-dept" style="font-size: 1.1rem; color: var(--text-muted); margin-top: 5px;"></div>
             </div>
             <div>
-                <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">
-                    Próximos:</div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Próximos:</div>
                 <ul class="task-list" id="bday-next-list" style="margin-top: 15px;">
                     <!-- Se inyecta desde FB -->
                 </ul>
@@ -1017,6 +1099,151 @@
 
         fetchWeather();
         setInterval(fetchWeather, 1800000); // 30 minutos
+
+        // Lógica de Métricas Pulse (Supabase)
+        let metricsState = {
+            "updated_at": new Date().toISOString(),
+            "total_active": 754,
+            "total_archived": 35,
+            "by_status": {
+                "sin_atender": { "label": "Sin Atender", "count": 37 },
+                "aceptadas": { "label": "Nueva / Aceptada", "count": 79 },
+                "en_diseno": { "label": "En Diseño", "count": 218 },
+                "en_produccion": { "label": "En Producción", "count": 238 },
+                "terminadas": { "label": "Terminada", "count": 182 }
+            },
+            "by_module": {
+                "Diseño": 380,
+                "Fotografía": 190,
+                "Palace Productions": 134,
+                "Sin módulo": 50
+            }
+        };
+
+        function formatTime(isoString) {
+            if (!isoString) return '--:--';
+            try {
+                const date = new Date(isoString);
+                return date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true });
+            } catch (e) {
+                return '--:--';
+            }
+        }
+
+        async function fetchPulseMetrics() {
+            const urls = [
+                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/get-broadcast-metrics/functions/v1/get-broadcast-metrics",
+                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/get-broadcast-metrics/functions/v1/getbroadcast-metrics",
+                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/get-broadcast-metrics",
+                "https://erzslftfrqqiadumbpod.supabase.co/functions/v1/getbroadcast-metrics"
+            ];
+            const apiKey = "814c46a71eed489888f2606c70de9d18";
+
+            for (const url of urls) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'x-api-key': apiKey,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data && data.total_active !== undefined) {
+                            metricsState = data;
+                            renderMetricsWidget();
+                            console.log(`Pulse metrics fetched successfully from: ${url}`);
+                            return;
+                        }
+                    } else {
+                        console.warn(`Fetch to ${url} returned status: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error(`Error fetching metrics from ${url}:`, error);
+                }
+            }
+            console.error("All metric URLs failed. Keeping previous/demo state.");
+        }
+
+        function renderMetricsWidget() {
+            const statusContainer = document.getElementById('pulse-status-container');
+            const modulesContainer = document.getElementById('pulse-modules-container');
+            if (!metricsState) return;
+
+            if (statusContainer) {
+                const sinAtender = metricsState.by_status?.sin_atender?.count ?? 0;
+                const aceptadas = metricsState.by_status?.aceptadas?.count ?? 0;
+                const enDiseno = metricsState.by_status?.en_diseno?.count ?? 0;
+                const enProduccion = metricsState.by_status?.en_produccion?.count ?? 0;
+                const total = metricsState.total_active ?? 0;
+
+                statusContainer.innerHTML = `
+                    <div class="pulse-card-total">
+                        <span class="value">${total}</span>
+                        <span class="label">Tareas Totales</span>
+                    </div>
+                    <div class="pulse-grid">
+                        <div class="pulse-card">
+                            <span class="value pulse-red">${sinAtender}</span>
+                            <span class="label">Sin Atender</span>
+                        </div>
+                        <div class="pulse-card">
+                            <span class="value pulse-blue">${aceptadas}</span>
+                            <span class="label">Nueva / Aceptada</span>
+                        </div>
+                        <div class="pulse-card">
+                            <span class="value pulse-purple">${enDiseno}</span>
+                            <span class="label">En Diseño</span>
+                        </div>
+                        <div class="pulse-card">
+                            <span class="value pulse-orange">${enProduccion}</span>
+                            <span class="label">En Producción</span>
+                        </div>
+                    </div>
+                    <div class="metrics-last-update">Actualizado: ${formatTime(metricsState.updated_at)}</div>
+                `;
+            }
+
+            if (modulesContainer) {
+                const modules = Object.entries(metricsState.by_module || {})
+                    .sort((a, b) => b[1] - a[1]);
+
+                const moduleColors = {
+                    "Diseño": "var(--accent)",
+                    "Fotografía": "#E0E5E5",
+                    "Palace Productions": "#3b82f6",
+                    "Sin módulo": "rgba(237, 236, 228, 0.5)"
+                };
+
+                const total = metricsState.total_active ?? 1;
+
+                modulesContainer.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                        ${modules.map(([name, count]) => {
+                            const color = moduleColors[name] || "var(--accent)";
+                            const pct = total > 0 ? Math.min(100, Math.round((count / total) * 100)) : 0;
+                            return `
+                                <div class="module-item">
+                                    <div class="module-header">
+                                        <span>${name}</span>
+                                        <span>${count}</span>
+                                    </div>
+                                    <div class="module-bar-container">
+                                        <div class="module-bar-fill" style="width: ${pct}%; background-color: ${color};"></div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // Render inicial, fetch inicial y pooling cada 45 segundos (limite cache es 30s)
+        renderMetricsWidget();
+        fetchPulseMetrics();
+        setInterval(fetchPulseMetrics, 45000);
 
         // Inicializar Firebase
         initFirebase().then(({ db: database, docRef }) => {
