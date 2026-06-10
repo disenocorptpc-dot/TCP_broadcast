@@ -755,6 +755,17 @@
                 <!-- Se inyecta desde DB -->
             </ul>
         </div>
+
+        <!-- Widget: Tránsito Waze (Sólo de 5:50 PM a 6:30 PM) -->
+        <div class="widget" id="waze-traffic-widget" style="display: none;">
+            <h3>🚗 Tránsito a Cancún</h3>
+            <div style="border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); height: 280px;">
+                <iframe src="https://embed.waze.com/iframe?zoom=11&lat=21.0747&lon=-86.8459&pin=1" width="100%" height="100%" style="border: none;"></iframe>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; text-align: center;">
+                Ruta activa: Moon Palace ➡️ Centro Cancún
+            </div>
+        </div>
     </aside>
 
     <!-- Sidebar Dashboard 2 -->
@@ -862,6 +873,36 @@
             if (currentDay !== lastDay) {
                 lastDay = currentDay;
                 if (cachedBirthdays) renderBirthdays();
+            }
+
+            // Actualizar visibilidad del mapa de Waze
+            updateWazeWidgetVisibility();
+        }
+
+        function updateWazeWidgetVisibility() {
+            const wazeWidget = document.getElementById('waze-traffic-widget');
+            if (!wazeWidget) return;
+
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const timeVal = hours * 60 + minutes;
+
+            // Rango de 5:50 PM (17:50 = 1070m) a 6:30 PM (18:30 = 1110m)
+            const startVal = 17 * 60 + 50;
+            const endVal = 18 * 60 + 30;
+
+            if (timeVal >= startVal && timeVal <= endVal) {
+                if (wazeWidget.style.display === 'none') {
+                    wazeWidget.style.display = 'block';
+                    // Forzar recarga del iframe para cargar tráfico fresco
+                    const iframe = wazeWidget.querySelector('iframe');
+                    if (iframe) {
+                        iframe.src = iframe.src;
+                    }
+                }
+            } else {
+                wazeWidget.style.display = 'none';
             }
         }
         setInterval(updateClock, 1000);
@@ -1110,23 +1151,18 @@
             "isLoading": true,
             "hasError": false,
             "updated_at": new Date().toISOString(),
-            "total_active": 628,
-            "total_archived": 128,
+            "total_active": 0,
+            "total_archived": 0,
             "by_status": {
-                "sin_atender": { "label": "Sin Atender", "count": 36 },
-                "aceptadas": { "label": "Nueva / Aceptada", "count": 70 },
-                "en_diseno": { "label": "En Diseño", "count": 225 },
-                "en_produccion": { "label": "En Producción", "count": 241 },
-                "terminadas": { "label": "Terminada", "count": 54 },
-                "canceladas": { "label": "Cancelada", "count": 2 },
-                "archivadas": { "label": "Archivada", "count": 128 }
+                "sin_atender": { "label": "Sin Atender", "count": 0 },
+                "aceptadas": { "label": "Nueva / Aceptada", "count": 0 },
+                "en_diseno": { "label": "En Diseño", "count": 0 },
+                "en_produccion": { "label": "En Producción", "count": 0 },
+                "terminadas": { "label": "Terminada", "count": 0 },
+                "canceladas": { "label": "Cancelada", "count": 0 },
+                "archivadas": { "label": "Archivada", "count": 0 }
             },
-            "by_module": {
-                "Diseño": 601,
-                "Fotografía": 27,
-                "Palace Productions": 0,
-                "Sin módulo": 0
-            }
+            "by_module": {}
         };
 
         function formatTime(isoString) {
@@ -1190,17 +1226,16 @@
             if (!metricsState) return;
 
             if (statusContainer) {
-                const sinAtender = metricsState.by_status?.sin_atender?.count ?? 0;
-                const aceptadas = metricsState.by_status?.aceptadas?.count ?? 0;
-                const enDiseno = metricsState.by_status?.en_diseno?.count ?? 0;
-                const enProduccion = metricsState.by_status?.en_produccion?.count ?? 0;
-                const total = (metricsState.total_active ?? 0) + (metricsState.total_archived ?? 0);
+                const isLoading = metricsState.isLoading;
+                const sinAtender = isLoading ? '--' : (metricsState.by_status?.sin_atender?.count ?? 0);
+                const aceptadas = isLoading ? '--' : (metricsState.by_status?.aceptadas?.count ?? 0);
+                const enDiseno = isLoading ? '--' : (metricsState.by_status?.en_diseno?.count ?? 0);
+                const enProduccion = isLoading ? '--' : (metricsState.by_status?.en_produccion?.count ?? 0);
+                const total = isLoading ? '--' : ((metricsState.total_active ?? 0) + (metricsState.total_archived ?? 0));
 
-                let updateLabel = `Actualizado: ${formatTime(metricsState.updated_at)}`;
-                if (metricsState.isDemo) {
-                    if (metricsState.isLoading) {
-                        updateLabel = `<span style="color:var(--accent); font-weight:800;">[Cargando desde Pulse...]</span>`;
-                    } else if (metricsState.hasError) {
+                let updateLabel = isLoading ? `<span style="color:var(--accent); font-weight:800;">[Cargando desde Pulse...]</span>` : `Actualizado: ${formatTime(metricsState.updated_at)}`;
+                if (metricsState.isDemo && !isLoading) {
+                    if (metricsState.hasError) {
                         updateLabel = `<span style="color:var(--danger); font-weight:800;">[Sin Conexión a Pulse]</span>`;
                     }
                 }
@@ -1233,37 +1268,41 @@
             }
 
             if (modulesContainer) {
-                const modules = Object.entries(metricsState.by_module || {})
-                    .sort((a, b) => b[1] - a[1]);
+                if (metricsState.isLoading) {
+                    modulesContainer.innerHTML = `<div style="text-align: center; padding: 15px; color: var(--text-muted); font-size: 0.9rem;">Cargando distribución...</div>`;
+                } else {
+                    const modules = Object.entries(metricsState.by_module || {})
+                        .sort((a, b) => b[1] - a[1]);
 
-                const moduleColors = {
-                    "Diseño": "var(--accent)",
-                    "Fotografía": "#E0E5E5",
-                    "Palace Productions": "#3b82f6",
-                    "Sin módulo": "rgba(237, 236, 228, 0.5)"
-                };
+                    const moduleColors = {
+                        "Diseño": "var(--accent)",
+                        "Fotografía": "#E0E5E5",
+                        "Palace Productions": "#3b82f6",
+                        "Sin módulo": "rgba(237, 236, 228, 0.5)"
+                    };
 
-                const total = metricsState.total_active ?? 1;
+                    const total = metricsState.total_active ?? 1;
 
-                modulesContainer.innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
-                        ${modules.map(([name, count]) => {
-                            const color = moduleColors[name] || "var(--accent)";
-                            const pct = total > 0 ? Math.min(100, Math.round((count / total) * 100)) : 0;
-                            return `
-                                <div class="module-item">
-                                    <div class="module-header">
-                                        <span>${name}</span>
-                                        <span>${count}</span>
+                    modulesContainer.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                            ${modules.map(([name, count]) => {
+                                const color = moduleColors[name] || "var(--accent)";
+                                const pct = total > 0 ? Math.min(100, Math.round((count / total) * 100)) : 0;
+                                return `
+                                    <div class="module-item">
+                                        <div class="module-header">
+                                            <span>${name}</span>
+                                            <span>${count}</span>
+                                        </div>
+                                        <div class="module-bar-container">
+                                            <div class="module-bar-fill" style="width: ${pct}%; background-color: ${color};"></div>
+                                        </div>
                                     </div>
-                                    <div class="module-bar-container">
-                                        <div class="module-bar-fill" style="width: ${pct}%; background-color: ${color};"></div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                }
             }
         }
 
