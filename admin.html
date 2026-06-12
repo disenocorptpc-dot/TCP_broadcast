@@ -348,7 +348,17 @@
                         <input type="text" id="new-ticker" placeholder="Ej: URGENTE: Revisar...">
                         <button onclick="addTicker()">Añadir</button>
                     </div>
-                    <div id="ticker-list">
+                    <div class="flex-row" style="margin-top: 8px; gap: 8px;">
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Mostrar desde (Opcional):</label>
+                            <input type="datetime-local" id="ticker-start" style="padding: 8px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                        </div>
+                        <div style="flex: 1; display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">Mostrar hasta (Opcional):</label>
+                            <input type="datetime-local" id="ticker-end" style="padding: 8px; background: rgba(0,0,0,0.3); color: white; border: 1px solid var(--glass-border); border-radius: 8px;">
+                        </div>
+                    </div>
+                    <div id="ticker-list" style="margin-top: 15px;">
                         <!-- Items se inyectan acá -->
                     </div>
                 </div>
@@ -588,9 +598,22 @@
             const tickerList = document.getElementById('ticker-list');
             tickerList.innerHTML = '';
             globalState.tickers.forEach((t, index) => {
+                let text = t;
+                let scheduleInfo = '';
+                if (typeof t === 'object' && t !== null) {
+                    text = t.text;
+                    if (t.showAt || t.hideAt) {
+                        const startStr = t.showAt ? new Date(t.showAt).toLocaleString('es-MX', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : 'Inmediato';
+                        const endStr = t.hideAt ? new Date(t.hideAt).toLocaleString('es-MX', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : 'Indefinido';
+                        scheduleInfo = `<div style="font-size:0.75rem; color:var(--accent); margin-top:4px;">⏱️ Programado: ${startStr} al ${endStr}</div>`;
+                    }
+                }
                 tickerList.innerHTML += `
                     <div class="list-item">
-                        <p>${t}</p>
+                        <div>
+                            <p>${text}</p>
+                            ${scheduleInfo}
+                        </div>
                         <div style="display:flex; gap: 8px; flex-shrink: 0; margin-left:15px;">
                             <button class="edit-btn" onclick="editTicker(${index})">Editar</button>
                             <button class="delete-btn" onclick="deleteTicker(${index})">Eliminar</button>
@@ -713,13 +736,24 @@
 
         window.addTicker = async function addTicker() {
             const val = document.getElementById('new-ticker').value;
+            const startVal = document.getElementById('ticker-start').value;
+            const endVal = document.getElementById('ticker-end').value;
+
             if (val && loggedInUser) {
                 let styledMsg = val;
                 // Agrega el departamento y colorea TODO el mensaje
                 styledMsg = `<span style="color:${loggedInUser.color};"><span style="font-weight: 700; font-size: 0.9em; margin-right: 5px;">[${loggedInUser.role}]</span> ${val}</span>`;
 
-                globalState.tickers.push(styledMsg);
+                const tickerObj = {
+                    text: styledMsg,
+                    showAt: startVal ? new Date(startVal).getTime() : null,
+                    hideAt: endVal ? new Date(endVal).getTime() : null
+                };
+
+                globalState.tickers.push(tickerObj);
                 document.getElementById('new-ticker').value = '';
+                document.getElementById('ticker-start').value = '';
+                document.getElementById('ticker-end').value = '';
                 renderLists();
                 await saveToFirebase();
             }
@@ -732,7 +766,12 @@
         }
 
         window.editTicker = async function editTicker(index) {
-            let currentHTML = globalState.tickers[index];
+            let currentItem = globalState.tickers[index];
+            let currentHTML = currentItem;
+            if (typeof currentItem === 'object' && currentItem !== null) {
+                currentHTML = currentItem.text;
+            }
+
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = currentHTML;
             
@@ -743,10 +782,15 @@
             
             const newVal = prompt("Modificar mensaje:", cleanText);
             if (newVal !== null && newVal.trim() !== "") {
+                let updatedHTML = newVal.trim();
                 if (loggedInUser) {
-                    globalState.tickers[index] = `<span style="color:${loggedInUser.color};"><span style="font-weight: 700; font-size: 0.9em; margin-right: 5px;">[${loggedInUser.role}]</span> ${newVal.trim()}</span>`;
+                    updatedHTML = `<span style="color:${loggedInUser.color};"><span style="font-weight: 700; font-size: 0.9em; margin-right: 5px;">[${loggedInUser.role}]</span> ${newVal.trim()}</span>`;
+                }
+                
+                if (typeof globalState.tickers[index] === 'object' && globalState.tickers[index] !== null) {
+                    globalState.tickers[index].text = updatedHTML;
                 } else {
-                    globalState.tickers[index] = newVal.trim();
+                    globalState.tickers[index] = updatedHTML;
                 }
                 renderLists();
                 await saveToFirebase();
