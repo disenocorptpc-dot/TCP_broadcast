@@ -292,6 +292,14 @@
         .pulse-purple { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.25); }
         .pulse-orange { color: #ffb020; text-shadow: 0 0 10px rgba(255, 176, 32, 0.25); }
 
+        .pulse-card-row {
+            transition: all 0.2s ease-in-out;
+        }
+        .pulse-card-row:hover {
+            transform: translateX(4px);
+            filter: brightness(1.2);
+        }
+
         .module-item {
             margin-bottom: 8px;
         }
@@ -714,38 +722,11 @@
 
     <!-- Sidebar Dashboard 1 -->
     <aside class="sidebar" id="sidebar-1">
-        <div class="widget">
-            <h3>🌍 Relojes</h3>
-            <div id="clock">12:00:00</div>
-
-            <div class="world-clocks">
-                <div class="world-clock" id="cw-merida">
-                    <span class="wc-label">Mérida</span>
-                    <span class="wc-time" id="wc-merida">--:--</span>
-                </div>
-                <div class="world-clock" id="cw-cabos">
-                    <span class="wc-label">Los Cabos</span>
-                    <span class="wc-time" id="wc-cabos">--:--</span>
-                </div>
-                <div class="world-clock" id="cw-jamaica">
-                    <span class="wc-label">Jamaica</span>
-                    <span class="wc-time" id="wc-jamaica">--:--</span>
-                </div>
-                <div class="world-clock" id="cw-punta">
-                    <span class="wc-label">Punta Cana</span>
-                    <span class="wc-time" id="wc-punta">--:--</span>
-                </div>
-                <div class="world-clock" id="cw-milan">
-                    <span class="wc-label">Milán</span>
-                    <span class="wc-time" id="wc-milan">--:--</span>
-                </div>
-            </div>
-
-            <div style="margin-top: 15px; border-top: 1px solid var(--glass-border); padding-top: 20px;">
-                <div class="weather-mini">
-                    <span class="temp" id="weather-temp">--°C</span>
-                    <span class="cond" id="weather-cond">Cargando...</span>
-                </div>
+        <!-- Widget 1: Tareas por Estatus (Pulse) -->
+        <div class="widget" id="pulse-status-widget">
+            <h3>📈 Tareas por Estatus</h3>
+            <div id="pulse-status-container">
+                <!-- Se inyecta dinámicamente -->
             </div>
         </div>
 
@@ -759,11 +740,39 @@
 
     <!-- Sidebar Dashboard 2 -->
     <aside class="sidebar" id="sidebar-2">
-        <!-- Widget 1: Tareas por Estatus (Pulse) -->
-        <div class="widget" id="pulse-status-widget">
-            <h3>Tareas por Estatus</h3>
-            <div id="pulse-status-container">
-                <!-- Se inyecta dinámicamente -->
+        <!-- Widget 1: 🌍 Relojes -->
+        <div class="widget" id="clocks-widget">
+            <h3>🌍 Relojes</h3>
+            <div id="clock" style="font-family: monospace; font-size: 2.8rem; font-weight: 800; color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.25); text-align: center; margin: 12px 0 18px 0; line-height: 1;">12:00:00</div>
+
+            <div class="world-clocks" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 15px; border-top: 1px solid var(--glass-border);">
+                <div class="world-clock" id="cw-merida" style="padding: 6px 10px; flex-direction: column; align-items: flex-start; gap: 2px;">
+                    <span class="wc-label" style="font-size: 0.65rem;">Mérida</span>
+                    <span class="wc-time" id="wc-merida" style="font-size: 1rem;">--:--</span>
+                </div>
+                <div class="world-clock" id="cw-cabos" style="padding: 6px 10px; flex-direction: column; align-items: flex-start; gap: 2px;">
+                    <span class="wc-label" style="font-size: 0.65rem;">Los Cabos</span>
+                    <span class="wc-time" id="wc-cabos" style="font-size: 1rem;">--:--</span>
+                </div>
+                <div class="world-clock" id="cw-jamaica" style="padding: 6px 10px; flex-direction: column; align-items: flex-start; gap: 2px;">
+                    <span class="wc-label" style="font-size: 0.65rem;">Jamaica</span>
+                    <span class="wc-time" id="wc-jamaica" style="font-size: 1rem;">--:--</span>
+                </div>
+                <div class="world-clock" id="cw-punta" style="padding: 6px 10px; flex-direction: column; align-items: flex-start; gap: 2px;">
+                    <span class="wc-label" style="font-size: 0.65rem;">Punta Cana</span>
+                    <span class="wc-time" id="wc-punta" style="font-size: 1rem;">--:--</span>
+                </div>
+                <div class="world-clock" id="cw-milan" style="grid-column: span 2; padding: 6px 10px; flex-direction: row; justify-content: space-between; align-items: center;">
+                    <span class="wc-label" style="font-size: 0.65rem;">Milán</span>
+                    <span class="wc-time" id="wc-milan" style="font-size: 1rem;">--:--</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 10px;">
+                <div class="weather-mini" style="padding: 8px; flex-direction: row; justify-content: space-between; font-size: 0.75rem;">
+                    <span class="cond" id="weather-cond">Cargando...</span>
+                    <span class="temp" id="weather-temp" style="font-weight: 800; color: var(--accent);">--°C</span>
+                </div>
             </div>
         </div>
 
@@ -1186,10 +1195,14 @@
 
             if (statusContainer) {
                 const isLoading = metricsState.isLoading;
-                const sinAtender = isLoading ? '--' : (metricsState.by_status?.sin_atender?.count ?? 0);
-                const aceptadas = isLoading ? '--' : (metricsState.by_status?.aceptadas?.count ?? 0);
-                const enDiseno = isLoading ? '--' : (metricsState.by_status?.en_diseno?.count ?? 0);
-                const enProduccion = isLoading ? '--' : (metricsState.by_status?.en_produccion?.count ?? 0);
+                const rawSinAtender = metricsState.by_status?.sin_atender?.count ?? 0;
+                const rawEnDiseno = metricsState.by_status?.en_diseno?.count ?? 0;
+                const rawEnProduccion = metricsState.by_status?.en_produccion?.count ?? 0;
+
+                const totalActive = isLoading ? '--' : (metricsState.total_active ?? 0);
+                const enProduccion = isLoading ? '--' : rawEnProduccion;
+                const enDiseno = isLoading ? '--' : rawEnDiseno;
+                const sinAtender = isLoading ? '--' : rawSinAtender;
 
                 let updateLabel = isLoading ? `<span style="color:var(--accent); font-weight:800;">[Cargando desde Pulse...]</span>` : `Actualizado: ${formatTime(metricsState.updated_at)}`;
                 if (metricsState.isDemo && !isLoading) {
@@ -1199,25 +1212,29 @@
                 }
 
                 statusContainer.innerHTML = `
-                    <div class="pulse-grid">
-                        <div class="pulse-card">
-                            <span class="value pulse-red">${sinAtender}</span>
-                            <span class="label">Sin Atender</span>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 5px;">
+                        <!-- Tareas Activas -->
+                        <div class="pulse-card-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(74, 222, 128, 0.04); border: 1px solid rgba(74, 222, 128, 0.25); border-radius: 10px; padding: 12px 18px; cursor: default;">
+                            <span style="font-size: 0.85rem; color: #4ade80; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Tareas Activas</span>
+                            <span style="font-size: 3rem; font-weight: 800; color: #4ade80; text-shadow: 0 0 15px rgba(74, 222, 128, 0.35); line-height: 1;">${totalActive}</span>
                         </div>
-                        <div class="pulse-card">
-                            <span class="value pulse-blue">${aceptadas}</span>
-                            <span class="label">Nueva / Aceptada</span>
+                        <!-- En Producción -->
+                        <div class="pulse-card-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 176, 32, 0.2); border-radius: 10px; padding: 12px 18px; cursor: default;">
+                            <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">En Producción</span>
+                            <span class="pulse-orange" style="font-size: 2.6rem; font-weight: 800; line-height: 1;">${enProduccion}</span>
                         </div>
-                        <div class="pulse-card">
-                            <span class="value pulse-purple">${enDiseno}</span>
-                            <span class="label">En Diseño</span>
+                        <!-- En Diseño -->
+                        <div class="pulse-card-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(192, 132, 252, 0.2); border-radius: 10px; padding: 12px 18px; cursor: default;">
+                            <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">En Diseño</span>
+                            <span class="pulse-purple" style="font-size: 2.6rem; font-weight: 800; line-height: 1;">${enDiseno}</span>
                         </div>
-                        <div class="pulse-card">
-                            <span class="value pulse-orange">${enProduccion}</span>
-                            <span class="label">En Producción</span>
+                        <!-- Sin Atender -->
+                        <div class="pulse-card-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 74, 90, 0.2); border-radius: 10px; padding: 12px 18px; cursor: default;">
+                            <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">Sin Atender</span>
+                            <span class="pulse-red" style="font-size: 2.6rem; font-weight: 800; line-height: 1;">${sinAtender}</span>
                         </div>
                     </div>
-                    <div class="metrics-last-update">${updateLabel}</div>
+                    <div class="metrics-last-update" style="margin-top: 12px; text-align: center;">${updateLabel}</div>
                 `;
             }
 
