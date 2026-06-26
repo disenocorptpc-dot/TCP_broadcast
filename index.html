@@ -1119,14 +1119,15 @@
             "isLoading": true,
             "hasError": false,
             "updated_at": new Date().toISOString(),
-            "total_active": 0,
+            "total_tareas": 0,
             "total_archived": 0,
             "by_status": {
-                "sin_atender": { "label": "Sin Atender", "count": 0 },
-                "aceptadas": { "label": "Nueva / Aceptada", "count": 0 },
+                "sin_avance": { "label": "Sin Avance", "count": 0 },
                 "en_diseno": { "label": "En Diseño", "count": 0 },
+                "en_produccion_taller": { "label": "En Producción (Taller)", "count": 0 },
+                "en_produccion_externa": { "label": "En Producción (Externas)", "count": 0 },
                 "en_produccion": { "label": "En Producción", "count": 0 },
-                "terminadas": { "label": "Terminada", "count": 0 },
+                "entregadas": { "label": "Entregadas", "count": 0 },
                 "canceladas": { "label": "Cancelada", "count": 0 },
                 "archivadas": { "label": "Archivada", "count": 0 }
             },
@@ -1163,10 +1164,10 @@
                     });
                     if (response.ok) {
                         const data = await response.json();
-                        if (data && data.total_active !== undefined) {
+                        if (data && (data.total_tareas !== undefined || data.total_active !== undefined)) {
                             metricsState = data;
                             renderMetricsWidget();
-                            console.log(`[Pulse API] Successfully loaded. Total active: ${data.total_active}`);
+                            console.log(`[Pulse API] Successfully loaded. Total tasks: ${data.total_tareas || data.total_active}`);
                             return;
                         } else {
                             console.warn(`[Pulse API] Response succeeded but data structure is unexpected:`, data);
@@ -1195,14 +1196,18 @@
 
             if (statusContainer) {
                 const isLoading = metricsState.isLoading;
-                const rawSinAtender = metricsState.by_status?.sin_atender?.count ?? 0;
+                const rawSinAvance = metricsState.by_status?.sin_avance?.count ?? 0;
                 const rawEnDiseno = metricsState.by_status?.en_diseno?.count ?? 0;
                 const rawEnProduccion = metricsState.by_status?.en_produccion?.count ?? 0;
+                const rawEnProduccionTaller = metricsState.by_status?.en_produccion_taller?.count ?? 0;
+                const rawEnProduccionExterna = metricsState.by_status?.en_produccion_externa?.count ?? 0;
 
-                const totalActive = isLoading ? '--' : (metricsState.total_active ?? 0);
+                const totalActive = isLoading ? '--' : (metricsState.total_tareas ?? metricsState.total_active ?? 0);
                 const enProduccion = isLoading ? '--' : rawEnProduccion;
+                const enProduccionTaller = isLoading ? '--' : rawEnProduccionTaller;
+                const enProduccionExterna = isLoading ? '--' : rawEnProduccionExterna;
                 const enDiseno = isLoading ? '--' : rawEnDiseno;
-                const sinAtender = isLoading ? '--' : rawSinAtender;
+                const sinAvance = isLoading ? '--' : rawSinAvance;
 
                 let updateLabel = isLoading ? `<span style="color:var(--accent); font-weight:800;">[Cargando desde Pulse...]</span>` : `Actualizado: ${formatTime(metricsState.updated_at)}`;
                 if (metricsState.isDemo && !isLoading) {
@@ -1220,7 +1225,10 @@
                         </div>
                         <!-- En Producción -->
                         <div class="pulse-card-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 176, 32, 0.2); border-radius: 10px; padding: 12px 18px; cursor: default;">
-                            <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">En Producción</span>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">En Producción</span>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 2px;">Taller: ${enProduccionTaller} | Ext: ${enProduccionExterna}</span>
+                            </div>
                             <span class="pulse-orange" style="font-size: 2.6rem; font-weight: 800; line-height: 1;">${enProduccion}</span>
                         </div>
                         <!-- En Diseño -->
@@ -1228,10 +1236,10 @@
                             <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">En Diseño</span>
                             <span class="pulse-purple" style="font-size: 2.6rem; font-weight: 800; line-height: 1;">${enDiseno}</span>
                         </div>
-                        <!-- Sin Atender -->
+                        <!-- Sin Avance -->
                         <div class="pulse-card-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 74, 90, 0.2); border-radius: 10px; padding: 12px 18px; cursor: default;">
-                            <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">Sin Atender</span>
-                            <span class="pulse-red" style="font-size: 2.6rem; font-weight: 800; line-height: 1;">${sinAtender}</span>
+                            <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">Sin Avance</span>
+                            <span class="pulse-red" style="font-size: 2.6rem; font-weight: 800; line-height: 1;">${sinAvance}</span>
                         </div>
                     </div>
                     <div class="metrics-last-update" style="margin-top: 12px; text-align: center;">${updateLabel}</div>
@@ -1252,7 +1260,7 @@
                         "Sin módulo": "rgba(237, 236, 228, 0.5)"
                     };
 
-                    const total = metricsState.total_active ?? 1;
+                    const total = metricsState.total_tareas ?? metricsState.total_active ?? 1;
 
                     modulesContainer.innerHTML = `
                         <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
