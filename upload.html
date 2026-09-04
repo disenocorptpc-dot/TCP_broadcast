@@ -513,7 +513,10 @@
             <span class="success-icon">🎉</span>
             <h2>¡Tu portada está en vivo!</h2>
             <p>Tu imagen fue optimizada y guardada con éxito. Ya forma parte del ciclo dinámico de las pantallas corporativas.</p>
-            <button type="button" class="btn-secondary" onclick="resetForm()">Subir otra imagen</button>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+                <a href="index.html" target="_blank" class="btn-submit" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 14px 24px;">📺 Ver en Pantalla</a>
+                <button type="button" class="btn-secondary" onclick="resetForm()" style="width: auto; padding: 14px 24px;">Subir otra imagen</button>
+            </div>
         </div>
     </div>
 
@@ -523,7 +526,7 @@
 
     <script type="module">
         import { initFirebase } from './firebase-config.js';
-        import { doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { doc, getDoc, setDoc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         let db = null;
         let dbDocRef = null;
@@ -691,27 +694,25 @@
                     createdAt: Date.now()
                 });
 
-                // 2. Obtener estado actual de gallery
-                const snap = await getDoc(dbDocRef);
-                let currentGallery = [];
-                if (snap.exists() && snap.data().gallery) {
-                    currentGallery = snap.data().gallery;
-                }
-
-                // 3. Agregar metadatos al documento maestro
+                // 2. Agregar metadatos con arrayUnion atómico (evita condiciones de carrera y sobreescrituras)
                 const displayAuthor = authorName ? `${authorName} • ${authorDept}` : authorDept;
-                const fullDesc = desc;
-
-                currentGallery.push({
+                const newItem = {
                     id: newId,
                     title: title,
-                    desc: fullDesc,
+                    desc: desc,
                     author: displayAuthor,
                     color: deptColor,
                     expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 días exactos
-                });
+                };
 
-                await setDoc(dbDocRef, { gallery: currentGallery }, { merge: true });
+                try {
+                    await updateDoc(dbDocRef, {
+                        gallery: arrayUnion(newItem)
+                    });
+                } catch (updateErr) {
+                    // Fallback si el campo gallery no existe en el documento
+                    await setDoc(dbDocRef, { gallery: [newItem] }, { merge: true });
+                }
 
                 // Mostrar pantalla de éxito
                 document.getElementById('upload-form-section').style.display = 'none';

@@ -442,6 +442,46 @@
             }
         }
 
+        /* --- KEN BURNS / PAN & SCAN CINEMATIC HERO GALLERY --- */
+        #gallery-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            opacity: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            transition: opacity 1.2s ease-in-out;
+            pointer-events: none;
+            background: #050505;
+        }
+
+        #gallery-image-viewport {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        #gallery-image-elem {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+            will-change: transform;
+            pointer-events: none;
+            max-width: none !important;
+            max-height: none !important;
+            transition: opacity 0.8s ease-in-out;
+            opacity: 0;
+        }
+
         /* Clock & Weather Widget */
         #clock {
             font-family: 'Public Sans', sans-serif;
@@ -586,10 +626,12 @@
             </div>
 
             <!-- The Dynamic Hero Gallery Layer (CONFINED TO VIDEO CONTAINER) -->
-            <div id="gallery-layer"
-                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; opacity: 0; background-size: cover; background-position: center; display: flex; align-items: flex-end; transition: opacity 1.5s ease; pointer-events: none;">
+            <div id="gallery-layer">
+                <div id="gallery-image-viewport">
+                    <img id="gallery-image-elem" src="" alt="Slide">
+                </div>
                 <div
-                    style="width: 100%; padding: 80px 50px 40px 50px; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 75%, transparent 100%); box-sizing: border-box;">
+                    style="position: relative; z-index: 2; width: 100%; padding: 80px 50px 40px 50px; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 75%, transparent 100%); box-sizing: border-box;">
                     <div id="gallery-author"
                         style="display: none; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 1rem; margin-bottom: 12px; color: white;">
                     </div>
@@ -769,12 +811,103 @@
         let activeGalleryItems = [];
         let currentGalleryIdx = -1; // -1 significa que el Video está sonando
         let galleryTimer = null;
+        let currentGalleryAnim = null;
+
+        function setCinematicSlideImage(imgUrl) {
+            const layer = document.getElementById('gallery-layer');
+            const videoLayer = document.getElementById('video-layer');
+            const imgElem = document.getElementById('gallery-image-elem');
+            const viewport = document.getElementById('gallery-image-viewport');
+            if (!layer || !imgElem || !viewport) return;
+
+            if (currentGalleryAnim) {
+                try { currentGalleryAnim.cancel(); } catch (e) { }
+                currentGalleryAnim = null;
+            }
+
+            const tempImg = new Image();
+            tempImg.onload = function () {
+                imgElem.src = imgUrl;
+                imgElem.style.opacity = '1';
+                videoLayer.style.opacity = '0';
+                layer.style.opacity = '1';
+
+                const cWidth = viewport.clientWidth || 1920;
+                const cHeight = viewport.clientHeight || 1080;
+                const containerRatio = cWidth / cHeight;
+                const imgRatio = tempImg.naturalWidth / (tempImg.naturalHeight || 1);
+
+                // Reset transforms
+                imgElem.style.transform = 'none';
+
+                if (imgRatio < (containerRatio - 0.08)) {
+                    // IMAGEN VERTICAL (fotos móviles, afiches, 9:16, 4:5, 1:1)
+                    // Fila el ancho completo y recorre suavemente de arriba hacia abajo
+                    imgElem.style.transformOrigin = 'top center';
+                    imgElem.style.width = `${cWidth}px`;
+                    imgElem.style.height = 'auto';
+                    imgElem.style.objectFit = 'contain';
+
+                    const renderedH = cWidth / imgRatio;
+                    const deltaY = renderedH - cHeight;
+
+                    currentGalleryAnim = imgElem.animate([
+                        { transform: 'translate3d(0, 0px, 0)' },
+                        { transform: `translate3d(0, -${deltaY}px, 0)` }
+                    ], {
+                        duration: 14500,
+                        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+                        fill: 'forwards'
+                    });
+                } else if (imgRatio > (containerRatio + 0.08)) {
+                    // IMAGEN ULTRA-WIDE / PANORAMA (>16:9)
+                    // Fila la altura completa y recorre suavemente de izquierda a derecha
+                    imgElem.style.transformOrigin = 'center left';
+                    imgElem.style.height = `${cHeight}px`;
+                    imgElem.style.width = 'auto';
+                    imgElem.style.objectFit = 'contain';
+
+                    const renderedW = cHeight * imgRatio;
+                    const deltaX = renderedW - cWidth;
+
+                    currentGalleryAnim = imgElem.animate([
+                        { transform: 'translate3d(0px, 0, 0)' },
+                        { transform: `translate3d(-${deltaX}px, 0, 0)` }
+                    ], {
+                        duration: 14500,
+                        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+                        fill: 'forwards'
+                    });
+                } else {
+                    // IMAGEN ESTÁNDAR (~16:9)
+                    // Ken Burns zoom lento con sutil deriva
+                    imgElem.style.transformOrigin = 'center center';
+                    imgElem.style.width = `${cWidth}px`;
+                    imgElem.style.height = `${cHeight}px`;
+                    imgElem.style.objectFit = 'cover';
+
+                    currentGalleryAnim = imgElem.animate([
+                        { transform: 'scale(1.0) translate3d(0, 0, 0)' },
+                        { transform: 'scale(1.10) translate3d(-1.5%, -1.5%, 0)' }
+                    ], {
+                        duration: 14500,
+                        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1.0)',
+                        fill: 'forwards'
+                    });
+                }
+            };
+            tempImg.src = imgUrl;
+        }
 
         function runGalleryCycle() {
             clearTimeout(galleryTimer);
             if (activeGalleryItems.length === 0) {
                 // Solo video
                 currentGalleryIdx = -1;
+                if (currentGalleryAnim) {
+                    try { currentGalleryAnim.cancel(); } catch (e) { }
+                    currentGalleryAnim = null;
+                }
                 document.getElementById('gallery-layer').style.opacity = '0';
                 document.getElementById('video-layer').style.opacity = '1';
                 return;
@@ -786,6 +919,10 @@
 
                 if (window.hasVideos) {
                     // Volver a dar un respiro con el video por 30 segundos
+                    if (currentGalleryAnim) {
+                        try { currentGalleryAnim.cancel(); } catch (e) { }
+                        currentGalleryAnim = null;
+                    }
                     document.getElementById('gallery-layer').style.opacity = '0';
                     document.getElementById('video-layer').style.opacity = '1';
                     galleryTimer = setTimeout(runGalleryCycle, 30000);
@@ -796,7 +933,6 @@
             } else {
                 // Inyectar datos a la foto actual
                 let slide = activeGalleryItems[currentGalleryIdx];
-                let layer = document.getElementById('gallery-layer');
                 let authorBadge = document.getElementById('gallery-author');
 
                 document.getElementById('gallery-title').innerText = slide.title || '';
@@ -812,22 +948,15 @@
                 }
 
                 if (slide.image && slide.image.length > 1000) {
-                    layer.style.backgroundImage = `url(${slide.image})`;
-                    document.getElementById('video-layer').style.opacity = '0';
-                    layer.style.opacity = '1';
+                    setCinematicSlideImage(slide.image);
                 } else if (imageCache[slide.id]) {
-                    layer.style.backgroundImage = `url(${imageCache[slide.id]})`;
-                    document.getElementById('video-layer').style.opacity = '0';
-                    layer.style.opacity = '1';
+                    setCinematicSlideImage(imageCache[slide.id]);
                 } else {
-                    layer.style.backgroundImage = 'none';
-                    document.getElementById('video-layer').style.opacity = '0';
-                    layer.style.opacity = '1';
                     getDoc(doc(db, "projects/broadcast_gallery/images", slide.id)).then(snap => {
                         if (snap.exists()) {
                             imageCache[slide.id] = snap.data().image;
                             if (activeGalleryItems[currentGalleryIdx] && activeGalleryItems[currentGalleryIdx].id === slide.id) {
-                                layer.style.backgroundImage = `url(${imageCache[slide.id]})`;
+                                setCinematicSlideImage(imageCache[slide.id]);
                             }
                         }
                     }).catch(e => console.error(e));
@@ -1385,10 +1514,14 @@
                     // Actualizar Galería Dinámica Hero
                     if (data.gallery) {
                         const now = Date.now();
-                        const validGallery = data.gallery.filter(item => item.expiresAt > now && !item.isPaused);
+                        // Ordenar por ID descendente (lo más nuevo subido primero)
+                        const validGallery = data.gallery
+                            .filter(item => item.expiresAt > now && !item.isPaused)
+                            .sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
 
-                        // Solo reiniciar el ciclo si hubo un cambio de tamaño en la galería para no interrumpir
-                        if (validGallery.length !== activeGalleryItems.length) {
+                        // Si cambia el tamaño o el ID del elemento más nuevo, reiniciar ciclo inmediatamente
+                        const newestIdChanged = validGallery[0]?.id !== activeGalleryItems[0]?.id;
+                        if (validGallery.length !== activeGalleryItems.length || newestIdChanged) {
                             activeGalleryItems = validGallery;
                             currentGalleryIdx = -1;
                             runGalleryCycle();
