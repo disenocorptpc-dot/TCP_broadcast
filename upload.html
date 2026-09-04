@@ -440,17 +440,8 @@
                 <div>
                     <span class="header-badge">Broadcast TV</span>
                 </div>
-                <h1>Presúmenos tu trabajo</h1>
-                <p>Comparte tus renders, fotos o avances para mostrarlos en las pantallas del corporativo.</p>
-            </div>
-
-            <!-- Banner con Tema Dinámico de la Semana (si viene por URL) -->
-            <div id="theme-banner" class="theme-banner">
-                <span class="theme-banner-icon">🎯</span>
-                <div class="theme-banner-text">
-                    <strong>Tema de esta semana:</strong>
-                    <span id="theme-banner-name">Cargando...</span>
-                </div>
+                <h1>Comparte tu trabajo</h1>
+                <p>Comparte tus proyectos, renders, fotos o avances para mostrarlos en las pantallas de la oficina a tus compañeros.</p>
             </div>
 
             <form id="hero-upload-form" onsubmit="event.preventDefault(); submitHeroImage();">
@@ -475,12 +466,6 @@
                             <option value="General" data-color="#ffffff">Otro / General</option>
                         </select>
                     </div>
-                </div>
-
-                <!-- Categoría / Tema -->
-                <div class="form-group">
-                    <label for="hero-theme">Tema o Categoría</label>
-                    <input type="text" id="hero-theme" placeholder="Ej: Render 3D, Lanzamiento, Detrás de Cámaras">
                 </div>
 
                 <!-- Titular Grande -->
@@ -544,18 +529,9 @@
         let dbDocRef = null;
         let compressedBase64 = null;
 
-        // Leer parámetros de URL (?tema=... &dept=...)
+        // Leer parámetros de URL (?dept=...)
         const urlParams = new URLSearchParams(window.location.search);
-        const paramTema = urlParams.get('tema') || urlParams.get('theme');
         const paramDept = urlParams.get('dept') || urlParams.get('area');
-
-        // Configurar tema si viene en la URL
-        if (paramTema) {
-            const cleanTema = decodeURIComponent(paramTema);
-            document.getElementById('theme-banner-name').textContent = cleanTema;
-            document.getElementById('theme-banner').classList.add('visible');
-            document.getElementById('hero-theme').value = cleanTema;
-        }
 
         // Cargar datos previos de localStorage
         const savedName = localStorage.getItem('tcp_author_name');
@@ -684,7 +660,6 @@
             const deptSelect = document.getElementById('author-dept');
             const authorDept = deptSelect.value;
             const deptColor = deptSelect.options[deptSelect.selectedIndex].getAttribute('data-color') || '#B88F69';
-            const theme = document.getElementById('hero-theme').value.trim();
             const title = document.getElementById('hero-title').value.trim();
             const desc = document.getElementById('hero-desc').value.trim();
 
@@ -725,7 +700,7 @@
 
                 // 3. Agregar metadatos al documento maestro
                 const displayAuthor = authorName ? `${authorName} • ${authorDept}` : authorDept;
-                const fullDesc = theme ? `[${theme}] ${desc}` : desc;
+                const fullDesc = desc;
 
                 currentGallery.push({
                     id: newId,
