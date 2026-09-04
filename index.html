@@ -825,40 +825,45 @@
                 currentGalleryAnim = null;
             }
 
+            // Suave desvanecimiento al cambiar de diapositiva
+            imgElem.style.transition = 'opacity 0.6s ease-in-out';
+            imgElem.style.opacity = '0';
+
             const tempImg = new Image();
             tempImg.onload = function () {
-                imgElem.src = imgUrl;
-                imgElem.style.opacity = '1';
-                videoLayer.style.opacity = '0';
-                layer.style.opacity = '1';
-
                 const cWidth = viewport.clientWidth || 1920;
                 const cHeight = viewport.clientHeight || 1080;
                 const containerRatio = cWidth / cHeight;
                 const imgRatio = tempImg.naturalWidth / (tempImg.naturalHeight || 1);
 
-                // Reset transforms
+                imgElem.src = imgUrl;
                 imgElem.style.transform = 'none';
+
+                let slideDuration = 16000;
+                let animKeyframes = [];
+                let animEasing = 'linear';
 
                 if (imgRatio < (containerRatio - 0.08)) {
                     // IMAGEN VERTICAL (fotos móviles, afiches, 9:16, 4:5, 1:1)
-                    // Fila el ancho completo y recorre suavemente de arriba hacia abajo
+                    // Fila el ancho completo y recorre de forma pausada y suave de arriba a abajo
                     imgElem.style.transformOrigin = 'top center';
                     imgElem.style.width = `${cWidth}px`;
                     imgElem.style.height = 'auto';
                     imgElem.style.objectFit = 'contain';
 
                     const renderedH = cWidth / imgRatio;
-                    const deltaY = renderedH - cHeight;
+                    const deltaY = Math.max(0, renderedH - cHeight);
 
-                    currentGalleryAnim = imgElem.animate([
-                        { transform: 'translate3d(0, 0px, 0)' },
-                        { transform: `translate3d(0, -${deltaY}px, 0)` }
-                    ], {
-                        duration: 14500,
-                        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1.0)',
-                        fill: 'forwards'
-                    });
+                    // A mayor distancia, más tiempo para mantener el movimiento sumamente lento y sedoso
+                    slideDuration = deltaY > 300 ? 18000 : 16000;
+
+                    // Pausa inicial en la cabecera (12%), recorrido sinusoidal muy suave y pausa al final (12%)
+                    animKeyframes = [
+                        { transform: 'translate3d(0, 0px, 0)', offset: 0 },
+                        { transform: 'translate3d(0, 0px, 0)', offset: 0.12, easing: 'cubic-bezier(0.37, 0, 0.63, 1)' },
+                        { transform: `translate3d(0, -${deltaY}px, 0)`, offset: 0.88 },
+                        { transform: `translate3d(0, -${deltaY}px, 0)`, offset: 1.0 }
+                    ];
                 } else if (imgRatio > (containerRatio + 0.08)) {
                     // IMAGEN ULTRA-WIDE / PANORAMA (>16:9)
                     // Fila la altura completa y recorre suavemente de izquierda a derecha
@@ -868,33 +873,49 @@
                     imgElem.style.objectFit = 'contain';
 
                     const renderedW = cHeight * imgRatio;
-                    const deltaX = renderedW - cWidth;
+                    const deltaX = Math.max(0, renderedW - cWidth);
 
-                    currentGalleryAnim = imgElem.animate([
-                        { transform: 'translate3d(0px, 0, 0)' },
-                        { transform: `translate3d(-${deltaX}px, 0, 0)` }
-                    ], {
-                        duration: 14500,
-                        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1.0)',
-                        fill: 'forwards'
-                    });
+                    slideDuration = deltaX > 300 ? 18000 : 16000;
+
+                    animKeyframes = [
+                        { transform: 'translate3d(0px, 0, 0)', offset: 0 },
+                        { transform: 'translate3d(0px, 0, 0)', offset: 0.12, easing: 'cubic-bezier(0.37, 0, 0.63, 1)' },
+                        { transform: `translate3d(-${deltaX}px, 0, 0)`, offset: 0.88 },
+                        { transform: `translate3d(-${deltaX}px, 0, 0)`, offset: 1.0 }
+                    ];
                 } else {
                     // IMAGEN ESTÁNDAR (~16:9)
-                    // Ken Burns zoom lento con sutil deriva
+                    // Ken Burns ultra sutil: zoom lento de solo 4.5% con deriva imperceptible
                     imgElem.style.transformOrigin = 'center center';
                     imgElem.style.width = `${cWidth}px`;
                     imgElem.style.height = `${cHeight}px`;
                     imgElem.style.objectFit = 'cover';
 
-                    currentGalleryAnim = imgElem.animate([
+                    slideDuration = 15000;
+                    animEasing = 'cubic-bezier(0.37, 0, 0.63, 1)';
+
+                    animKeyframes = [
                         { transform: 'scale(1.0) translate3d(0, 0, 0)' },
-                        { transform: 'scale(1.10) translate3d(-1.5%, -1.5%, 0)' }
-                    ], {
-                        duration: 14500,
-                        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1.0)',
-                        fill: 'forwards'
-                    });
+                        { transform: 'scale(1.045) translate3d(-0.8%, -0.8%, 0)' }
+                    ];
                 }
+
+                currentGalleryAnim = imgElem.animate(animKeyframes, {
+                    duration: slideDuration - 300,
+                    easing: animEasing,
+                    fill: 'forwards'
+                });
+
+                videoLayer.style.opacity = '0';
+                layer.style.opacity = '1';
+
+                setTimeout(() => {
+                    imgElem.style.opacity = '1';
+                }, 80);
+
+                // Programar el siguiente cambio garantizando la duración completa
+                clearTimeout(galleryTimer);
+                galleryTimer = setTimeout(runGalleryCycle, slideDuration);
             };
             tempImg.src = imgUrl;
         }
@@ -961,9 +982,6 @@
                         }
                     }).catch(e => console.error(e));
                 }
-
-                // Mostrarla por 15 segundos
-                galleryTimer = setTimeout(runGalleryCycle, 15000);
             }
         }
 
