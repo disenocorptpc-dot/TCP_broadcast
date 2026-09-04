@@ -287,7 +287,12 @@
         <div id="dashboard-section">
             <div class="header">
                 <h1>Command Center Panel</h1>
-                <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <a href="upload.html" target="_blank" style="text-decoration: none;">
+                        <button type="button" style="background: var(--accent); color: #081119; padding: 10px 18px; border-radius: 8px; font-weight: 700; width: auto; font-size: 0.85rem;">📱 Portal Colaboradores</button>
+                    </a>
+                    <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+                </div>
             </div>
 
             <div class="grid">
@@ -424,7 +429,10 @@
 
                 <!-- HERO GALLERY CONTROL -->
                 <div class="card gallery-card" style="grid-column: 1 / -1;">
-                    <h2>🎬 Portadas Principales (TV Centro)</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h2 style="margin-bottom: 0;">🎬 Portadas Principales (TV Centro)</h2>
+                        <button type="button" onclick="purgeExpiredGallery()" class="logout-btn" style="width: auto; padding: 6px 14px; font-size: 0.8rem; border-color: rgba(184,143,105,0.4); color: var(--accent);">🧹 Depurar Expiradas</button>
+                    </div>
                     <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Sube una imagen para
                         mostrarla en el reproductor principal. Se comprimirá automáticamente sin usar almacenamiento
                         externo y se borrará sola en 7 días.</p>
@@ -930,18 +938,43 @@
             }
         }
 
+        window.purgeExpiredGallery = async function () {
+            if (!globalState.gallery || globalState.gallery.length === 0) {
+                alert("No hay portadas en la galería.");
+                return;
+            }
+            const now = Date.now();
+            const expired = globalState.gallery.filter(item => item.expiresAt && item.expiresAt <= now);
+            if (expired.length === 0) {
+                alert("✨ No hay portadas expiradas (todas tienen menos de 7 días).");
+                return;
+            }
+
+            if (!confirm(`Se encontraron ${expired.length} portada(s) con más de 7 días de antigüedad.\n\n¿Deseas eliminarlas definitivamente de la base de datos de Firestore?`)) {
+                return;
+            }
+
+            for (const exp of expired) {
+                await deleteDoc(doc(db, "projects/broadcast_gallery/images", exp.id)).catch(e => console.log(e));
+                delete imageCache[exp.id];
+            }
+
+            globalState.gallery = globalState.gallery.filter(item => !item.expiresAt || item.expiresAt > now);
+            await saveToFirebase();
+            alert(`✓ Higiene completada: se eliminaron ${expired.length} portada(s) expirada(s) de Firestore.`);
+            renderGallery();
+        }
+
         function renderGallery() {
             const list = document.getElementById('gallery-list');
             list.innerHTML = '';
             if (!globalState.gallery) return;
 
-            // Limpieza automática caducada
+            // Filtrar visualmente los vigentes
             const now = Date.now();
-            globalState.gallery = globalState.gallery.filter(item => {
-                return (item.expiresAt > now);
-            });
+            const validItems = globalState.gallery.filter(item => !item.expiresAt || item.expiresAt > now);
 
-            globalState.gallery.forEach(item => {
+            validItems.forEach(item => {
                 // Obtener imagen asincronamente si no está en caché
                 const cachedImage = imageCache[item.id] || item.image || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
                 if (!imageCache[item.id] && !item.image) {

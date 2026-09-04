@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Portada • Broadcast Palace</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap');
+
+        :root {
+            --bg-color: #081119;
+            --marine: #0D1B28;
+            --marine-light: #15293d;
+            --glass-bg: rgba(13, 27, 40, 0.75);
+            --glass-border: rgba(184, 143, 105, 0.2);
+            --accent: #B88F69;
+            --accent-glow: rgba(184, 143, 105, 0.35);
+            --text-main: #EDECE4;
+            --text-muted: rgba(237, 236, 228, 0.6);
+            --danger: #dc2626;
+            --success: #4ade80;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 0%, rgba(37, 77, 110, 0.25) 0%, transparent 70%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 580px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 32px 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(184, 143, 105, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header img {
+            height: 22px;
+            margin-bottom: 16px;
+            filter: brightness(1.1);
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: rgba(184, 143, 105, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 14px;
+            border-radius: 50px;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* Banner tema dinámico */
+        .theme-banner {
+            display: none;
+            background: linear-gradient(135deg, rgba(37, 77, 110, 0.3), rgba(184, 143, 105, 0.2));
+            border: 1px dashed var(--accent);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 22px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-banner.visible {
+            display: flex;
+        }
+
+        .theme-banner-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .theme-banner-text {
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .theme-banner-text strong {
+            color: var(--accent);
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        /* Formulario */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 24px 18px;
+            }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        label .required {
+            color: var(--accent);
+            margin-left: 2px;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: var(--marine);
+            color: var(--text-main);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        /* Subida de Imagen */
+        .file-upload-box {
+            border: 2px dashed rgba(184, 143, 105, 0.4);
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .file-upload-box:hover,
+        .file-upload-box.dragover {
+            border-color: var(--accent);
+            background: rgba(184, 143, 105, 0.08);
+        }
+
+        .file-upload-box input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .upload-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .upload-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Preview del archivo */
+        .preview-card {
+            display: none;
+            margin-top: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 14px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview-card.visible {
+            display: flex;
+        }
+
+        .preview-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 6px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border: 1px solid var(--glass-border);
+        }
+
+        .preview-details {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .preview-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-main);
+        }
+
+        .preview-size {
+            font-size: 0.72rem;
+            color: var(--success);
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        .preview-remove {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .preview-remove:hover {
+            background: rgba(220, 38, 38, 0.15);
+        }
+
+        /* Botón de Enviar */
+        .btn-submit {
+            width: 100%;
+            margin-top: 22px;
+            padding: 15px;
+            background: linear-gradient(135deg, #B88F69 0%, #a47c55 100%);
+            color: #081119;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 10px 25px var(--accent-glow);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px var(--accent-glow);
+            filter: brightness(1.08);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(8, 17, 25, 0.3);
+            border-top-color: #081119;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Pantalla de Éxito */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .success-screen.visible {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .success-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: bounce 0.6s ease;
+        }
+
+        .success-screen h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .success-screen p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(184, 143, 105, 0.15);
+            border-color: var(--accent);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- FORMULARIO DE CARGA -->
+        <div id="upload-form-section">
+            <div class="header">
+                <img src="logo.svg" alt="The Palace Company">
+                <div>
+                    <span class="header-badge">Broadcast TV</span>
+                </div>
+                <h1>Presúmenos tu trabajo</h1>
+                <p>Comparte tus renders, fotos o avances para mostrarlos en las pantallas del corporativo.</p>
+            </div>
+
+            <!-- Banner con Tema Dinámico de la Semana (si viene por URL) -->
+            <div id="theme-banner" class="theme-banner">
+                <span class="theme-banner-icon">🎯</span>
+                <div class="theme-banner-text">
+                    <strong>Tema de esta semana:</strong>
+                    <span id="theme-banner-name">Cargando...</span>
+                </div>
+            </div>
+
+            <form id="hero-upload-form" onsubmit="event.preventDefault(); submitHeroImage();">
+                <div class="form-row">
+                    <!-- Diseñador / Colaborador -->
+                    <div class="form-group">
+                        <label for="author-name">Tu Nombre <span class="required">*</span></label>
+                        <input type="text" id="author-name" placeholder="Ej: Roberto S." required>
+                    </div>
+
+                    <!-- Área / Coordinación -->
+                    <div class="form-group">
+                        <label for="author-dept">Área / Coordinación <span class="required">*</span></label>
+                        <select id="author-dept" required>
+                            <option value="" disabled selected>Selecciona tu área...</option>
+                            <option value="Diseño Industrial y 3D" data-color="#B88F69">Diseño Industrial y 3D</option>
+                            <option value="Proyectos Especiales" data-color="#254D6E">Proyectos Especiales</option>
+                            <option value="Operaciones" data-color="#66c5ac">Operaciones</option>
+                            <option value="Foto" data-color="#E0E5E5">Foto</option>
+                            <option value="AyB" data-color="#EDECE4">AyB</option>
+                            <option value="Palace Productions" data-color="#3b82f6">Palace Productions</option>
+                            <option value="General" data-color="#ffffff">Otro / General</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Categoría / Tema -->
+                <div class="form-group">
+                    <label for="hero-theme">Tema o Categoría</label>
+                    <input type="text" id="hero-theme" placeholder="Ej: Render 3D, Lanzamiento, Detrás de Cámaras">
+                </div>
+
+                <!-- Titular Grande -->
+                <div class="form-group">
+                    <label for="hero-title">Titular en Pantalla <span class="required">*</span></label>
+                    <input type="text" id="hero-title" placeholder="Ej: NUEVA SUITE PRESIDENCIAL MOON PALACE" maxlength="70" required>
+                </div>
+
+                <!-- Descripción Opcional -->
+                <div class="form-group">
+                    <label for="hero-desc">Detalle o Descripción Breve (Opcional)</label>
+                    <textarea id="hero-desc" placeholder="Ej: Fase 2 de visualización hiperrealista para aprobación de presidencia." maxlength="140"></textarea>
+                </div>
+
+                <!-- Carga de Imagen -->
+                <div class="form-group">
+                    <label>Imagen para la Pantalla (16:9 Recomendado) <span class="required">*</span></label>
+                    <div class="file-upload-box" id="drop-zone">
+                        <input type="file" id="hero-file-input" accept="image/*" required onchange="handleFileSelect(event)">
+                        <span class="upload-icon">📷</span>
+                        <div class="upload-label">Toca aquí para elegir foto o tomarla</div>
+                        <div class="upload-hint">PNG, JPG, WEBP • Se optimiza automáticamente</div>
+                    </div>
+
+                    <!-- Miniatura de Imagen seleccionada -->
+                    <div class="preview-card" id="preview-card">
+                        <div class="preview-thumb" id="preview-thumb"></div>
+                        <div class="preview-details">
+                            <div class="preview-name" id="preview-filename">archivo.jpg</div>
+                            <div class="preview-size" id="preview-status">Comprimiendo imagen...</div>
+                        </div>
+                        <button type="button" class="preview-remove" onclick="clearSelectedFile()" title="Quitar imagen">✕</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submit-btn">
+                    <span class="spinner" id="btn-spinner"></span>
+                    <span id="btn-text">🚀 Publicar en Pantalla</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- PANTALLA DE ÉXITO -->
+        <div id="success-section" class="success-screen">
+            <span class="success-icon">🎉</span>
+            <h2>¡Tu portada está en vivo!</h2>
+            <p>Tu imagen fue optimizada y guardada con éxito. Ya forma parte del ciclo dinámico de las pantallas corporativas.</p>
+            <button type="button" class="btn-secondary" onclick="resetForm()">Subir otra imagen</button>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        The Palace Company • Broadcast Command Center
+    </div>
+
+    <script type="module">
+        import { initFirebase } from './firebase-config.js';
+        import { doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        let db = null;
+        let dbDocRef = null;
+        let compressedBase64 = null;
+
+        // Leer parámetros de URL (?tema=... &dept=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramTema = urlParams.get('tema') || urlParams.get('theme');
+        const paramDept = urlParams.get('dept') || urlParams.get('area');
+
+        // Configurar tema si viene en la URL
+        if (paramTema) {
+            const cleanTema = decodeURIComponent(paramTema);
+            document.getElementById('theme-banner-name').textContent = cleanTema;
+            document.getElementById('theme-banner').classList.add('visible');
+            document.getElementById('hero-theme').value = cleanTema;
+        }
+
+        // Cargar datos previos de localStorage
+        const savedName = localStorage.getItem('tcp_author_name');
+        const savedDept = localStorage.getItem('tcp_author_dept');
+        if (savedName) document.getElementById('author-name').value = savedName;
+        if (paramDept) {
+            document.getElementById('author-dept').value = decodeURIComponent(paramDept);
+        } else if (savedDept) {
+            document.getElementById('author-dept').value = savedDept;
+        }
+
+        // Conectar a Firebase
+        initFirebase().then(({ db: database, docRef }) => {
+            db = database;
+            dbDocRef = docRef;
+            console.log("[Broadcast Upload] Firebase conectado.");
+            // Ejecutar rutina de higiene automática de imágenes caducadas
+            purgeExpiredGalleryItems();
+        }).catch(err => {
+            console.error("[Broadcast Upload] Error de conexión a Firebase:", err);
+            alert("No se pudo conectar a la base de datos. Por favor recarga la página.");
+        });
+
+        // Higiene de imágenes expiradas (> 7 días)
+        async function purgeExpiredGalleryItems() {
+            try {
+                if (!dbDocRef) return;
+                const snap = await getDoc(dbDocRef);
+                if (!snap.exists()) return;
+                const data = snap.data();
+                if (!data.gallery || !Array.isArray(data.gallery)) return;
+
+                const now = Date.now();
+                const expired = data.gallery.filter(item => item.expiresAt && item.expiresAt <= now);
+                if (expired.length === 0) return;
+
+                console.log(`[Higiene] Purgando ${expired.length} imágenes caducadas de Firestore...`);
+                // Borrar documentos individuales de la colección de imágenes
+                for (const exp of expired) {
+                    await deleteDoc(doc(db, "projects/broadcast_gallery/images", exp.id)).catch(() => {});
+                }
+
+                // Guardar la galería limpia en el estado principal
+                const validGallery = data.gallery.filter(item => !item.expiresAt || item.expiresAt > now);
+                await setDoc(dbDocRef, { gallery: validGallery }, { merge: true });
+                console.log("[Higiene] Galería depurada exitosamente.");
+            } catch (e) {
+                console.warn("[Higiene] Error al ejecutar depuración de imágenes expiradas:", e);
+            }
+        }
+
+        // Drag & Drop visuales
+        const dropZone = document.getElementById('drop-zone');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); }, false);
+        });
+
+        // Manejar selección de archivo y compresión cliente
+        window.handleFileSelect = function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('preview-card').classList.add('visible');
+            document.getElementById('preview-filename').textContent = file.name;
+            document.getElementById('preview-status').textContent = `Optimizando (${(file.size / 1024).toFixed(0)} KB originales)...`;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Máxima resolución 1920x1080 manteniendo proporción
+                    const maxDim = 1920;
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Calidad JPEG al 65% (ideal para TV sin pixelación y peso < 200KB)
+                    compressedBase64 = canvas.toDataURL('image/jpeg', 0.65);
+                    const approxSizeKb = Math.round((compressedBase64.length * (3 / 4)) / 1024);
+
+                    document.getElementById('preview-thumb').style.backgroundImage = `url(${compressedBase64})`;
+                    document.getElementById('preview-status').textContent = `✓ Lista para TV • Optimizado a ${approxSizeKb} KB`;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.clearSelectedFile = function () {
+            compressedBase64 = null;
+            document.getElementById('hero-file-input').value = '';
+            document.getElementById('preview-card').classList.remove('visible');
+        };
+
+        // Enviar a Firebase
+        window.submitHeroImage = async function () {
+            if (!db || !dbDocRef) {
+                alert("Conectando con la base de datos... intenta de nuevo en unos segundos.");
+                return;
+            }
+
+            if (!compressedBase64) {
+                alert("Por favor selecciona una imagen para continuar.");
+                return;
+            }
+
+            const authorName = document.getElementById('author-name').value.trim();
+            const deptSelect = document.getElementById('author-dept');
+            const authorDept = deptSelect.value;
+            const deptColor = deptSelect.options[deptSelect.selectedIndex].getAttribute('data-color') || '#B88F69';
+            const theme = document.getElementById('hero-theme').value.trim();
+            const title = document.getElementById('hero-title').value.trim();
+            const desc = document.getElementById('hero-desc').value.trim();
+
+            if (!title) {
+                alert("El titular en pantalla es obligatorio.");
+                return;
+            }
+
+            // Recordar autor y área en localStorage
+            localStorage.setItem('tcp_author_name', authorName);
+            localStorage.setItem('tcp_author_dept', authorDept);
+
+            // Estado de carga en botón
+            const submitBtn = document.getElementById('submit-btn');
+            const btnSpinner = document.getElementById('btn-spinner');
+            const btnText = document.getElementById('btn-text');
+            submitBtn.disabled = true;
+            btnSpinner.style.display = 'inline-block';
+            btnText.textContent = "Publicando...";
+
+            try {
+                const newId = Date.now().toString();
+
+                // 1. Guardar la imagen comprimida en su propio documento
+                await setDoc(doc(db, "projects/broadcast_gallery/images", newId), {
+                    image: compressedBase64,
+                    uploadedBy: authorName,
+                    dept: authorDept,
+                    createdAt: Date.now()
+                });
+
+                // 2. Obtener estado actual de gallery
+                const snap = await getDoc(dbDocRef);
+                let currentGallery = [];
+                if (snap.exists() && snap.data().gallery) {
+                    currentGallery = snap.data().gallery;
+                }
+
+                // 3. Agregar metadatos al documento maestro
+                const displayAuthor = authorName ? `${authorName} • ${authorDept}` : authorDept;
+                const fullDesc = theme ? `[${theme}] ${desc}` : desc;
+
+                currentGallery.push({
+                    id: newId,
+                    title: title,
+                    desc: fullDesc,
+                    author: displayAuthor,
+                    color: deptColor,
+                    expiresAt: Date.now() + (7 * 24 * 60 * 60 * 1000) // 7 días exactos
+                });
+
+                await setDoc(dbDocRef, { gallery: currentGallery }, { merge: true });
+
+                // Mostrar pantalla de éxito
+                document.getElementById('upload-form-section').style.display = 'none';
+                document.getElementById('success-section').classList.add('visible');
+            } catch (err) {
+                console.error("[Broadcast Upload] Error al guardar imagen:", err);
+                alert("Ocurrió un error al enviar la imagen. Por favor verifica tu conexión e intenta de nuevo.");
+            } finally {
+                submitBtn.disabled = false;
+                btnSpinner.style.display = 'none';
+                btnText.textContent = "🚀 Publicar en Pantalla";
+            }
+        };
+
+        window.resetForm = function () {
+            clearSelectedFile();
+            document.getElementById('hero-title').value = '';
+            document.getElementById('hero-desc').value = '';
+            document.getElementById('success-section').classList.remove('visible');
+            document.getElementById('upload-form-section').style.display = 'block';
+        };
+    </script>
+</body>
+
+</html>

@@ -154,21 +154,6 @@
             transition: all 0.3s ease;
         }
 
-        .sidebar.busy-mode {
-            background: rgba(220, 38, 38, 0.15);
-            border-left: 3px solid rgba(220, 38, 38, 0.8);
-            box-shadow: inset 0 0 120px rgba(220, 38, 38, 0.2);
-        }
-
-        .sidebar.busy-mode h3 {
-            color: #ff6b6b;
-        }
-
-        .sidebar.busy-mode .widget {
-            background: rgba(220, 38, 38, 0.1);
-            border-color: rgba(220, 38, 38, 0.4);
-        }
-
         .widget:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(37, 77, 110, 0.1);
@@ -185,108 +170,7 @@
             letter-spacing: 0.15em;
         }
 
-        /* Stats Widget */
-        .stat-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.03);
-            border-left: 3px solid var(--accent);
-            padding: 1rem;
-            border-radius: 4px;
-        }
-
-        .stat-box .value {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--text-main);
-            line-height: 0.9;
-            margin-right: 10px;
-            letter-spacing: -2px;
-        }
-
-        .stat-box .trend {
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: var(--success);
-            padding-bottom: 4px;
-        }
-
-        .stat-box .label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            font-weight: 800;
-            color: var(--accent);
-            letter-spacing: 1px;
-            margin-bottom: 6px;
-            opacity: 0.8;
-        }
-
-        /* Pulse Metrics Styles */
-        .pulse-card-total {
-            background: rgba(255, 255, 255, 0.015);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .pulse-card-total .value {
-            font-size: 3.2rem;
-            font-weight: 800;
-            color: #ffffff;
-            line-height: 1;
-            letter-spacing: -1.5px;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
-        }
-        .pulse-card-total .label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            font-weight: 800;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin-top: 4px;
-            opacity: 0.8;
-        }
-        .pulse-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .pulse-card {
-            background: rgba(255, 255, 255, 0.015);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 6px;
-            padding: 8px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .pulse-card .value {
-            font-size: 2rem;
-            font-weight: 800;
-            line-height: 1;
-            margin-bottom: 4px;
-            letter-spacing: -0.5px;
-        }
-        .pulse-card .label {
-            font-size: 0.52rem;
-            text-transform: uppercase;
-            font-weight: 800;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-            opacity: 0.75;
-        }
+        /* Pulse Status Colors */
         .pulse-red { color: #ff4a5a; text-shadow: 0 0 10px rgba(255, 74, 90, 0.25); }
         .pulse-blue { color: #4fa8ff; text-shadow: 0 0 10px rgba(79, 168, 255, 0.25); }
         .pulse-purple { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.25); }
@@ -955,9 +839,7 @@
         }
 
         let rotatorConfig = {
-            busy: { currentIdx: 0, itemsHtml: [], containerId: 'busy-list', fallback: '<div style="font-size: 1rem; color: var(--text-muted);">Nadie ocupado actualmente.</div>' },
             vacations: { currentIdx: 0, itemsHtml: [], containerId: 'vacation-list', fallback: '<div style="font-size: 1rem; color: var(--text-muted);">Sin personal programado.</div>' },
-            reminders: { currentIdx: 0, itemsHtml: [], containerId: 'deadline-list', fallback: '<div style="font-size: 1rem; color: var(--text-muted);">Sin pendientes.</div>' },
             birthdays: { currentIdx: 0, itemsHtml: [], containerId: 'bday-next-list', fallback: '' }
         };
 
@@ -1420,27 +1302,6 @@
                         renderRotatorSlice('birthdays');
                     }
 
-                    // Actualizar Personal En Junta
-                    rotatorConfig.busy.itemsHtml = [];
-                    rotatorConfig.busy.currentIdx = 0;
-
-                    if (data.busy && data.busy.length > 0) {
-                        document.querySelectorAll('.sidebar').forEach(s => s.classList.add('busy-mode'));
-                        data.busy.forEach(b => {
-                            rotatorConfig.busy.itemsHtml.push(`
-                                <li class="task-item">
-                                    <span class="status-dot urgent"></span>
-                                    <div>
-                                        <div style="font-weight: 800; font-size: 1.2rem; color: var(--text-main);">${b.name}</div>
-                                        <div style="font-size: 1rem; color: var(--text-muted);">${b.reason || 'Ocupado'}</div>
-                                    </div>
-                                </li>`);
-                        });
-                    } else {
-                        document.querySelectorAll('.sidebar').forEach(s => s.classList.remove('busy-mode'));
-                    }
-                    renderRotatorSlice('busy');
-
                     // Actualizar Vacaciones
                     rotatorConfig.vacations.itemsHtml = [];
                     rotatorConfig.vacations.currentIdx = 0;
@@ -1501,28 +1362,6 @@
                         });
                     }
                     renderRotatorSlice('vacations');
-
-                    // Actualizar Deadlines
-                    rotatorConfig.reminders.itemsHtml = [];
-                    rotatorConfig.reminders.currentIdx = 0;
-
-                    if (data.reminders && data.reminders.length > 0) {
-                        data.reminders.forEach(r => {
-                            let statusClass = "pending";
-                            if (r.time.toLowerCase().includes('hoy')) statusClass = "urgent";
-                            if (r.time.toLowerCase().includes('completado')) statusClass = "done";
-
-                            rotatorConfig.reminders.itemsHtml.push(`
-                                <li class="task-item">
-                                    <span class="status-dot ${statusClass}"></span>
-                                    <div>
-                                        <div style="font-weight: 800; font-size: 1.2rem; color: var(--text-main);">${r.title}</div>
-                                        <div style="font-size: 1rem; color: var(--text-muted);">${r.time}</div>
-                                    </div>
-                                </li>`);
-                        });
-                    }
-                    renderRotatorSlice('reminders');
 
                     // Actualizar Media Playlist
                     window.hasVideos = (data.mediaIds && data.mediaIds.length > 0);
