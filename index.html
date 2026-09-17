@@ -132,8 +132,13 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            overflow-y: hidden;
-            /* Sin scroll para forzar layout */
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            display: none;
         }
 
         #sidebar-1 {
@@ -338,6 +343,299 @@
             opacity: 0.6;
         }
 
+        /* --- SALA DE JUNTAS (HÍBRIDO: DOOR SIGN + SLIDE CARROUSEL) --- */
+        #meeting-room-widget {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .mr-door-sign {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mr-door-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mr-door-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Módulo 1: Estado y Usuario */
+        .mr-status-card {
+            border-radius: 8px;
+            padding: 10px 12px;
+            transition: all 0.3s ease;
+        }
+
+        .mr-status-card.free {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.1) 0%, rgba(13, 27, 40, 0.55) 100%);
+            border: 1.5px solid rgba(74, 222, 128, 0.35);
+        }
+
+        .mr-status-card.busy {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.28) 0%, rgba(13, 27, 40, 0.7) 100%);
+            border: 1.5px solid rgba(255, 74, 90, 0.75);
+            box-shadow: 0 0 18px rgba(220, 38, 38, 0.35), inset 0 0 15px rgba(220, 38, 38, 0.15);
+            animation: mrPulseRedBorder 2s infinite alternate ease-in-out;
+        }
+
+        @keyframes mrPulseRedBorder {
+            0% { border-color: rgba(255, 74, 90, 0.55); box-shadow: 0 0 12px rgba(220, 38, 38, 0.25); }
+            100% { border-color: rgba(255, 74, 90, 0.95); box-shadow: 0 0 24px rgba(220, 38, 38, 0.55); }
+        }
+
+        .mr-door-state {
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mr-door-state.free { color: #4ade80; }
+        .mr-door-state.busy { color: #ff6b7b; }
+
+        .mr-user-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+            margin-top: 4px;
+            text-shadow: 0 0 12px rgba(255, 74, 90, 0.35);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mr-user-title.free {
+            text-shadow: none;
+            color: #ffffff;
+        }
+
+        /* Módulo Siguiente (Recuadro Azul) */
+        .mr-next-card {
+            background: linear-gradient(135deg, rgba(20, 50, 85, 0.45) 0%, rgba(10, 22, 35, 0.75) 100%);
+            border: 1.5px solid rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 16px rgba(37, 99, 235, 0.2);
+            border-radius: 8px;
+            padding: 9px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mr-next-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mr-next-label {
+            font-size: 0.84rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mr-next-user {
+            font-size: 0.86rem;
+            font-weight: 800;
+            color: #7dd3fc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+
+        /* Módulo Disponibilidad (Recuadro Verde al Final) */
+        .mr-avail-card {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(10, 22, 35, 0.75) 100%);
+            border: 1.5px solid rgba(74, 222, 128, 0.65);
+            box-shadow: 0 0 16px rgba(74, 222, 128, 0.25);
+            border-radius: 8px;
+            padding: 10px 12px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #86efac;
+            text-shadow: 0 0 12px rgba(74, 222, 128, 0.45);
+            letter-spacing: 0.3px;
+            line-height: 1.2;
+        }
+
+        .mr-sim-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mr-dot-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            font-size: 0.55rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .mr-dot-btn.active {
+            background: var(--accent);
+            color: #081119;
+            border-color: var(--accent);
+        }
+
+        /* --- CAROUSEL SLIDE (PANTALLA COMPLETA 1.2fr) --- */
+        #meeting-room-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 12;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.2s ease-in-out;
+            background: radial-gradient(circle at 15% 15%, rgba(184, 143, 105, 0.1) 0%, rgba(8, 17, 25, 0.98) 60%, #060d14 100%);
+            padding: 35px 45px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        #meeting-room-slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mr-slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(184, 143, 105, 0.2);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .mr-slide-badge {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .mr-slide-badge.free {
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.25);
+        }
+
+        .mr-slide-badge.busy {
+            background: rgba(255, 74, 90, 0.2);
+            color: #ff4a5a;
+            border: 1px solid rgba(255, 74, 90, 0.5);
+            box-shadow: 0 0 20px rgba(255, 74, 90, 0.35);
+            animation: mrPulseRed 1.8s infinite;
+        }
+
+        .mr-slide-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 28px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .mr-slide-hero {
+            background: rgba(13, 27, 40, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(184, 143, 105, 0.25);
+            border-radius: 14px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .mr-slide-schedule-box {
+            background: rgba(13, 27, 40, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .mr-slide-timeline-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            flex: 1;
+            margin-top: 14px;
+            padding-right: 6px;
+        }
+
+        .mr-slide-row {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 12px 18px;
+            gap: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .mr-slide-row.current {
+            background: rgba(255, 74, 90, 0.08);
+            border-color: rgba(255, 74, 90, 0.3);
+        }
+
+        .mr-slide-time-badge {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent);
+            min-width: 140px;
+        }
+
+        .mr-slide-info-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .mr-slide-info-user {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
         /* Tasks Widget */
         .task-list {
             list-style: none;
@@ -447,6 +745,42 @@
 
         .ticker-text span {
             margin-right: 50px;
+        }
+
+        .ticker-mr-module {
+            display: inline-flex !important;
+            align-items: center;
+            gap: 16px;
+            margin-right: 60px !important;
+        }
+
+        .ticker-mr-module span, 
+        .ticker-mr-module strong, 
+        .ticker-mr-module i {
+            margin-right: 0 !important;
+        }
+
+        .ticker-mr-badge {
+            padding: 4px 14px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.82em;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ticker-mr-badge.busy {
+            background: rgba(255, 74, 90, 0.22);
+            border: 1.5px solid rgba(255, 74, 90, 0.6);
+            color: #ff6b7b;
+        }
+
+        .ticker-mr-badge.free {
+            background: rgba(74, 222, 128, 0.18);
+            border: 1.5px solid rgba(74, 222, 128, 0.5);
+            color: #4ade80;
         }
 
         .ticker-text .highlight {
@@ -673,9 +1007,37 @@
             letter-spacing: 1px;
             text-align: center;
         }
+
+        /* Lucide Single-line Icon System */
+        .lucide {
+            width: 1.15em;
+            height: 1.15em;
+            stroke-width: 1.8px;
+            vertical-align: -0.18em;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .icon-accent {
+            color: var(--accent);
+        }
     </style>
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <!-- Lucide Icons (Single-Line Vector System) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        window.refreshIcons = function() {
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        };
+        document.addEventListener('DOMContentLoaded', () => {
+            window.refreshIcons();
+            setTimeout(window.refreshIcons, 300);
+            setTimeout(window.refreshIcons, 1200);
+        });
+    </script>
 </head>
 
 <body>
@@ -683,7 +1045,7 @@
     <!-- Header Global -->
     <header class="app-header">
         <div class="header-left">
-            <span class="live-badge">LIVE</span>
+            <span class="live-badge" style="display: inline-flex; align-items: center;"><i data-lucide="radio" style="width: 0.85em; height: 0.85em; margin-right: 4px;"></i>LIVE</span>
             <img src="logo.svg" alt="The Palace Company" style="height: 17px; margin-left: 15px;">
         </div>
         <div class="header-right">
@@ -717,6 +1079,37 @@
                     </p>
                 </div>
             </div>
+
+            <!-- Full Broadcast Slide for Meeting Room -->
+            <div id="meeting-room-slide">
+                <div class="mr-slide-header">
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase;">THE PALACE COMPANY · PULSE OPS</div>
+                        <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.6rem; font-weight: 800; color: #ffffff; margin-top: 3px; letter-spacing: 0.5px;">SALA DE JUNTAS</h1>
+                    </div>
+                    <div id="mr-slide-badge" class="mr-slide-badge free">
+                        <!-- Se inyecta dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="mr-slide-grid">
+                    <!-- Columna Izquierda: Tarjeta Hero del Estado Actual -->
+                    <div class="mr-slide-hero" id="mr-slide-hero-box">
+                        <!-- Se inyecta dinámicamente -->
+                    </div>
+
+                    <!-- Columna Derecha: Agenda Completa -->
+                    <div class="mr-slide-schedule-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.1rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="calendar-days" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Agenda de Reuniones</span>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent); text-transform: uppercase;">Hoy & Mañana</span>
+                        </div>
+                        <div class="mr-slide-timeline-list" id="mr-slide-timeline-list">
+                            <!-- Se inyecta dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -724,14 +1117,21 @@
     <aside class="sidebar" id="sidebar-1">
         <!-- Widget 1: Tareas por Estatus (Pulse) -->
         <div class="widget" id="pulse-status-widget">
-            <h3>📈 Tareas por Estatus</h3>
+            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="bar-chart-3" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Tareas por Estatus</h3>
             <div id="pulse-status-container">
                 <!-- Se inyecta dinámicamente -->
             </div>
         </div>
 
-        <div class="widget">
-            <h3>🏖️ Vacaciones</h3>
+        <!-- Widget 2: Sala de Juntas (Pulse) -->
+        <div class="widget" id="meeting-room-widget">
+            <div id="meeting-room-container">
+                <!-- Se inyecta dinámicamente -->
+            </div>
+        </div>
+
+        <div class="widget" id="vacation-widget">
+            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="palmtree" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Vacaciones</h3>
             <ul class="task-list" id="vacation-list">
                 <!-- Se inyecta desde DB -->
             </ul>
@@ -740,9 +1140,9 @@
 
     <!-- Sidebar Dashboard 2 -->
     <aside class="sidebar" id="sidebar-2">
-        <!-- Widget 1: 🌍 Relojes -->
+        <!-- Widget 1: Relojes -->
         <div class="widget" id="clocks-widget">
-            <h3>🌍 Relojes</h3>
+            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="globe" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Relojes</h3>
             <div id="clock" style="font-family: monospace; font-size: 2.8rem; font-weight: 800; color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.25); text-align: center; margin: 12px 0 18px 0; line-height: 1;">12:00:00</div>
 
             <div class="world-clocks" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 15px; border-top: 1px solid var(--glass-border);">
@@ -778,7 +1178,7 @@
 
         <!-- Widget 2: Distribución por Módulo (Pulse) -->
         <div class="widget" id="pulse-modules-widget">
-            <h3>Distribución por Módulo</h3>
+            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="pie-chart" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Distribución por Módulo</h3>
             <div id="pulse-modules-container">
                 <!-- Se inyecta dinámicamente -->
             </div>
@@ -786,10 +1186,10 @@
 
         <!-- Widget 3: Cumpleaños -->
         <div class="widget" id="birthday-widget">
-            <h3>🎉 Cumpleaños</h3>
+            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="cake" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Cumpleaños</h3>
             <div style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--glass-border);">
                 <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">Hoy celebramos a:</div>
-                <div id="bday-main" style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-top: 4px; line-height: 1.1;">🎂 Cargando...</div>
+                <div id="bday-main" style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-top: 4px; line-height: 1.1;">Cargando...</div>
                 <div id="bday-dept" style="font-size: 1.1rem; color: var(--text-muted); margin-top: 5px;"></div>
             </div>
             <div>
@@ -899,6 +1299,12 @@
             currentGalleryIdx++;
             if (currentGalleryIdx >= activeGalleryItems.length) {
                 currentGalleryIdx = -1;
+
+                // Mostrar Slide de Sala de Juntas por 15 segundos antes de reiniciar video/galería
+                if (typeof window.triggerMeetingRoomSlide === 'function') {
+                    window.triggerMeetingRoomSlide(15);
+                    return;
+                }
 
                 if (window.hasVideos) {
                     // Volver a dar un respiro con el video por 30 segundos
@@ -1058,8 +1464,9 @@
             );
 
             if (todayBirthdays.length > 0) {
-                document.getElementById('bday-main').innerHTML = `🎂 ${todayBirthdays.map(b => b.name).join(', ')}`;
+                document.getElementById('bday-main').innerHTML = `<span style="display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="cake" style="color: var(--accent); width: 0.85em; height: 0.85em;"></i><span>${todayBirthdays.map(b => b.name).join(', ')}</span></span>`;
                 document.getElementById('bday-dept').innerHTML = "¡Muchas Felicidades!";
+                if (window.refreshIcons) window.refreshIcons();
             } else {
                 document.getElementById('bday-main').innerHTML = `--`;
                 document.getElementById('bday-dept').innerHTML = "Nadie en el equipo";
@@ -1094,16 +1501,18 @@
 
                     const code = data.current_weather.weathercode;
                     let desc = "Clima ext.";
-                    if (code === 0) desc = "Soleado ☀️";
-                    else if (code <= 3) desc = "Nublado ☁️";
-                    else if (code < 50) desc = "Niebla 🌫️";
-                    else if (code < 60) desc = "Llovizna 🌧️";
-                    else if (code < 70) desc = "Lluvia 🌧️";
-                    else if (code < 80) desc = "Nieve ❄️";
-                    else if (code < 90) desc = "Aguaceros 🌧️";
-                    else desc = "Tormenta ⛈️";
+                    let iconName = "sun";
+                    if (code === 0) { desc = "Soleado"; iconName = "sun"; }
+                    else if (code <= 3) { desc = "Nublado"; iconName = "cloud"; }
+                    else if (code < 50) { desc = "Niebla"; iconName = "cloud-fog"; }
+                    else if (code < 60) { desc = "Llovizna"; iconName = "cloud-drizzle"; }
+                    else if (code < 70) { desc = "Lluvia"; iconName = "cloud-rain"; }
+                    else if (code < 80) { desc = "Nieve"; iconName = "snowflake"; }
+                    else if (code < 90) { desc = "Aguaceros"; iconName = "cloud-rain"; }
+                    else { desc = "Tormenta"; iconName = "cloud-lightning"; }
 
-                    document.getElementById('weather-cond').textContent = desc;
+                    document.getElementById('weather-cond').innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px;"><i data-lucide="${iconName}" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i><span>${desc}</span></span>`;
+                    if (window.refreshIcons) window.refreshIcons();
                 }
             } catch (e) {
                 console.error('Weather error:', e);
@@ -1167,8 +1576,17 @@
                         const data = await response.json();
                         if (data && (data.total_tareas !== undefined || data.total_active !== undefined)) {
                             metricsState = data;
+                            metricsState.isLoading = false;
+                            metricsState.hasError = false;
+                            metricsState.isDemo = false;
                             renderMetricsWidget();
-                            console.log(`[Pulse API] Successfully loaded. Total tasks: ${data.total_tareas || data.total_active}`);
+
+                            if (Array.isArray(data.meeting_room)) {
+                                meetingRoomBookings = data.meeting_room;
+                                renderMeetingRoomWidget();
+                            }
+
+                            console.log(`[Pulse API] Successfully loaded. Total tasks: ${data.total_tareas || data.total_active}, Room bookings: ${data.meeting_room ? data.meeting_room.length : 0}`);
                             return;
                         } else {
                             console.warn(`[Pulse API] Response succeeded but data structure is unexpected:`, data);
@@ -1291,10 +1709,568 @@
         fetchPulseMetrics();
         setInterval(fetchPulseMetrics, 45000);
 
+        // ==========================================
+        // Lógica de Sala de Juntas (Pulse Meeting Room)
+        // ==========================================
+        let meetingRoomSimMode = 'auto'; // 'auto' | 'occupied' | 'free'
+        let meetingRoomBookings = null;
+
+        function formatMRTime(dateInput, uppercase = false) {
+            if (!dateInput) return '--:--';
+            const d = new Date(dateInput);
+            let h = d.getHours();
+            let m = d.getMinutes().toString().padStart(2, '0');
+            const ampm = h >= 12 ? 'pm' : 'am';
+            h = h % 12;
+            h = h ? h : 12;
+            return uppercase ? `${h}:${m} ${ampm.toUpperCase()}` : `${h}:${m}${ampm}`;
+        }
+
+        function formatMRUser(val) {
+            if (!val) return 'usuario';
+            let str = String(val).trim();
+            if (str.includes('@')) {
+                str = str.split('@')[0];
+            }
+            if (!str.includes(' ')) {
+                return str.toLowerCase();
+            }
+            const normalized = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const parts = normalized.split(/\s+/).filter(Boolean);
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1]).toLowerCase();
+            }
+            return parts[0].toLowerCase();
+        }
+
+        function formatMRDuration(startInput, endInput) {
+            const start = new Date(startInput);
+            const end = new Date(endInput);
+            return `${formatMRTime(start, true)} – ${formatMRTime(end, true)}`;
+        }
+
+        function generateRealisticMockBookings() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = now.getMonth();
+            const d = now.getDate();
+
+            // Reserva activa ahora (comenzó hace 35 min, termina en 25 min)
+            const activeStart = new Date(now.getTime() - 35 * 60000);
+            const activeEnd = new Date(now.getTime() + 25 * 60000);
+
+            // Siguiente reserva hoy (en 1 hora)
+            const nextStart = new Date(now.getTime() + 75 * 60000);
+            const nextEnd = new Date(now.getTime() + 135 * 60000);
+
+            // Reserva al final del día
+            const laterStart = new Date(now.getTime() + 180 * 60000);
+            const laterEnd = new Date(now.getTime() + 240 * 60000);
+
+            // Reservas de mañana
+            const tomorrow = new Date(now.getTime() + 24 * 3600 * 1000);
+            const tomY = tomorrow.getFullYear();
+            const tomM = tomorrow.getMonth();
+            const tomD = tomorrow.getDate();
+
+            const tom1Start = new Date(tomY, tomM, tomD, 10, 0);
+            const tom1End = new Date(tomY, tomM, tomD, 11, 30);
+
+            const tom2Start = new Date(tomY, tomM, tomD, 16, 0);
+            const tom2End = new Date(tomY, tomM, tomD, 17, 0);
+
+            return [
+                {
+                    id: "mock-1",
+                    title: "Revisión Creativa — Moon Palace",
+                    start_time: activeStart.toISOString(),
+                    end_time: activeEnd.toISOString(),
+                    created_by_name: "rsantarosa",
+                    status: "Confirmada"
+                },
+                {
+                    id: "mock-2",
+                    title: "Briefing Campaña Verano 2026",
+                    start_time: nextStart.toISOString(),
+                    end_time: nextEnd.toISOString(),
+                    created_by_name: "mgutierrez",
+                    status: "Confirmada"
+                },
+                {
+                    id: "mock-3",
+                    title: "Alineación de Producción y Diseño",
+                    start_time: laterStart.toISOString(),
+                    end_time: laterEnd.toISOString(),
+                    created_by_name: "cmendez",
+                    status: "Confirmada"
+                },
+                {
+                    id: "mock-4",
+                    title: "Status Semanal Dirección",
+                    start_time: tom1Start.toISOString(),
+                    end_time: tom1End.toISOString(),
+                    created_by_name: "asmorales",
+                    status: "Confirmada"
+                },
+                {
+                    id: "mock-5",
+                    title: "Presentación de Propuestas de Branding",
+                    start_time: tom2Start.toISOString(),
+                    end_time: tom2End.toISOString(),
+                    created_by_name: "ecastillo",
+                    status: "Confirmada"
+                }
+            ];
+        }
+
+        async function fetchMeetingRoomData() {
+            // Si el backend entrega el nodo dentro de metricsState
+            if (metricsState && Array.isArray(metricsState.meeting_room)) {
+                meetingRoomBookings = metricsState.meeting_room;
+                renderMeetingRoomWidget();
+                return;
+            }
+
+            // Intento de consulta a endpoint local o Edge Function
+            try {
+                const response = await fetch(`/api/meeting-room?t=${Date.now()}`, {
+                    method: 'GET',
+                    cache: 'no-store'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        meetingRoomBookings = data;
+                        renderMeetingRoomWidget();
+                        return;
+                    } else if (data && Array.isArray(data.meeting_room)) {
+                        meetingRoomBookings = data.meeting_room;
+                        renderMeetingRoomWidget();
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Fallback normal mientras el otro equipo configura el endpoint
+            }
+
+            // Si aún no hay backend, usamos el mock inteligente
+            if (!meetingRoomBookings) {
+                meetingRoomBookings = generateRealisticMockBookings();
+            }
+            renderMeetingRoomWidget();
+        }
+
+        function getMeetingRoomComputed() {
+            const now = new Date();
+            const bookings = meetingRoomBookings || generateRealisticMockBookings();
+            const activeBookings = bookings.filter(b => b.status !== 'Cancelada')
+                .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+
+            let currentBooking = activeBookings.find(b => {
+                const start = new Date(b.start_time);
+                const end = new Date(b.end_time);
+                return now >= start && now < end;
+            });
+
+            let isOccupied = false;
+            let displayCurrent = currentBooking;
+
+            if (meetingRoomSimMode === 'occupied') {
+                isOccupied = true;
+                if (!displayCurrent) {
+                    displayCurrent = {
+                        title: "Revisión Creativa — Moon Palace",
+                        created_by_name: "rsantarosa",
+                        start_time: new Date(now.getTime() - 25 * 60000).toISOString(),
+                        end_time: new Date(now.getTime() + 35 * 60000).toISOString()
+                    };
+                }
+            } else if (meetingRoomSimMode === 'free') {
+                isOccupied = false;
+                displayCurrent = null;
+            } else {
+                isOccupied = !!currentBooking;
+                displayCurrent = currentBooking;
+            }
+
+            const nextBooking = activeBookings.find(b => {
+                if (displayCurrent) {
+                    return new Date(b.start_time) >= new Date(displayCurrent.end_time);
+                }
+                return new Date(b.start_time) > now;
+            });
+
+            return { now, activeBookings, isOccupied, displayCurrent, nextBooking };
+        }
+
+        function renderMeetingRoomDoorSign() {
+            const container = document.getElementById('meeting-room-container');
+            if (!container) return;
+
+            const { now, activeBookings, isOccupied, displayCurrent, nextBooking } = getMeetingRoomComputed();
+
+            let statusCardHTML = '';
+            let nextCardHTML = '';
+            let availCardHTML = '';
+
+            // 1. MÓDULO DE ESTADO (Ocupada en Rojo / Libre en Verde)
+            if (isOccupied && displayCurrent) {
+                const end = new Date(displayCurrent.end_time);
+                const minsLeft = Math.max(1, Math.round((end - now) / 60000));
+                const minsLeftText = minsLeft > 60 ? `${Math.floor(minsLeft/60)}h ${minsLeft%60}m` : `${minsLeft} min`;
+                const currentUsername = formatMRUser(displayCurrent.created_by_name);
+
+                statusCardHTML = `
+                    <div class="mr-status-card busy">
+                        <div class="mr-door-state busy" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">
+                                <span style="width: 9px; height: 9px; border-radius: 50%; background: #ff4a5a; box-shadow: 0 0 10px #ff4a5a; animation: pulse 1.5s infinite;"></span>
+                                OCUPADA
+                            </span>
+                            <span style="font-size: 0.68rem; font-weight: 700; color: #ff949d; background: rgba(255, 74, 90, 0.25); padding: 2px 7px; border-radius: 4px;">
+                                FALTAN ${minsLeftText.toUpperCase()}
+                            </span>
+                        </div>
+                        <div class="mr-user-title" style="display: flex; align-items: center; gap: 7px;">
+                            <i data-lucide="user" style="width: 1.05em; height: 1.05em; opacity: 0.85;"></i>
+                            <span>${currentUsername}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                statusCardHTML = `
+                    <div class="mr-status-card free">
+                        <div class="mr-door-state free" style="display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">
+                            <span style="width: 9px; height: 9px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 10px #4ade80;"></span>
+                            DISPONIBLE
+                        </div>
+                        <div class="mr-user-title free" style="display: flex; align-items: center; gap: 7px;">
+                            <i data-lucide="check-circle-2" style="width: 1.05em; height: 1.05em; color: #4ade80;"></i>
+                            <span>SALA LIBRE</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 2. MÓDULO DE JUNTAS SIGUIENTES (Recuadro Azul)
+            const upcomingList = activeBookings.filter(b => {
+                const start = new Date(b.start_time);
+                if (displayCurrent) {
+                    return start >= new Date(displayCurrent.end_time);
+                }
+                return start > now;
+            });
+
+            if (upcomingList.length > 0) {
+                const rowsHTML = upcomingList.slice(0, 2).map((b, idx) => {
+                    const nextUser = formatMRUser(b.created_by_name);
+                    const nextTime = formatMRTime(b.start_time).toUpperCase();
+                    const isFirst = idx === 0;
+                    const borderStyle = isFirst && upcomingList.length > 1 ? 'padding-bottom: 5px; margin-bottom: 5px; border-bottom: 1px dashed rgba(56, 189, 248, 0.25);' : '';
+                    return `
+                        <div class="mr-next-row" style="${borderStyle}">
+                            <span class="mr-next-label" style="display: inline-flex; align-items: center; gap: 5px;">
+                                <i data-lucide="${isFirst ? 'chevrons-right' : 'calendar'}" style="color: #38bdf8; width: 1.05em; height: 1.05em;"></i> ${isFirst ? 'SIG:' : ''} <strong>${nextTime}</strong>
+                            </span>
+                            <span class="mr-next-user" style="display: inline-flex; align-items: center; gap: 5px;">
+                                <i data-lucide="user" style="width: 0.95em; height: 0.95em; opacity: 0.85;"></i>
+                                <span>${nextUser}</span>
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+
+                nextCardHTML = `
+                    <div class="mr-next-card">
+                        ${rowsHTML}
+                    </div>
+                `;
+            } else {
+                nextCardHTML = `
+                    <div class="mr-next-card" style="justify-content: center; text-align: center;">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: #93c5fd; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                            <i data-lucide="calendar-check" style="width: 1.05em; height: 1.05em; color: #93c5fd;"></i>
+                            <span>Sin más juntas hoy</span>
+                        </span>
+                    </div>
+                `;
+            }
+
+            // 3. MÓDULO DE DISPONIBILIDAD (Recuadro Verde al Final)
+            if (isOccupied && displayCurrent) {
+                const freeAtTime = formatMRTime(displayCurrent.end_time);
+                availCardHTML = `
+                    <div class="mr-avail-card">
+                        Disponible ${freeAtTime}
+                    </div>
+                `;
+            } else {
+                let freeUntilTitle = "Libre todo el día";
+                if (nextBooking) {
+                    const nextTime = formatMRTime(nextBooking.start_time);
+                    freeUntilTitle = `Disponible hasta ${nextTime}`;
+                }
+                availCardHTML = `
+                    <div class="mr-avail-card">
+                        ${freeUntilTitle}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="mr-door-sign">
+                    <div class="mr-door-top" style="margin-bottom: 3px;">
+                        <span class="mr-door-title" style="letter-spacing: 1.5px; display: inline-flex; align-items: center; gap: 7px;">
+                            <i data-lucide="door-closed" style="width: 1.15em; height: 1.15em; color: var(--accent);"></i>
+                            <span>SALA DE JUNTAS</span>
+                        </span>
+                    </div>
+
+                    ${statusCardHTML}
+                    ${nextCardHTML}
+                    ${availCardHTML}
+                </div>
+            `;
+            if (window.refreshIcons) window.refreshIcons();
+        }
+
+        function renderMeetingRoomSlide() {
+            const slide = document.getElementById('meeting-room-slide');
+            if (!slide) return;
+
+            const { now, activeBookings, isOccupied, displayCurrent, nextBooking } = getMeetingRoomComputed();
+
+            // Badge superior
+            const badgeContainer = document.getElementById('mr-slide-badge');
+            if (badgeContainer) {
+                badgeContainer.className = `mr-slide-badge ${isOccupied ? 'busy' : 'free'}`;
+                badgeContainer.innerHTML = isOccupied ? '● SALA OCUPADA' : '● SALA DISPONIBLE';
+            }
+
+            // Hero Box (columna izquierda)
+            const heroBox = document.getElementById('mr-slide-hero-box');
+            if (heroBox) {
+                if (isOccupied && displayCurrent) {
+                    const end = new Date(displayCurrent.end_time);
+                    const minsLeft = Math.max(1, Math.round((end - now) / 60000));
+                    const remainingFormatted = minsLeft > 60 ? `${Math.floor(minsLeft/60)}h ${minsLeft%60}m` : `${minsLeft} minutos`;
+
+                    heroBox.innerHTML = `
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 800; color: #ff6b7b; letter-spacing: 1.5px; text-transform: uppercase;">ESTADO EN VIVO</span>
+                            <h2 style="font-size: 2.2rem; font-weight: 800; color: #ffffff; margin: 8px 0 12px 0; line-height: 1.15;">${displayCurrent.title}</h2>
+                            <div style="font-size: 1.25rem; color: var(--accent); font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 7px;">
+                                <i data-lucide="user" style="width: 1.1em; height: 1.1em;"></i>
+                                <span>Reservó: <strong>${formatMRUser(displayCurrent.created_by_name)}</strong></span>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(255, 74, 90, 0.12); border: 1.5px solid rgba(255, 74, 90, 0.4); border-radius: 12px; padding: 20px 22px;">
+                            <div style="font-size: 0.8rem; color: #ff949d; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">TIEMPO RESTANTE</div>
+                            <div style="font-size: 2.8rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin: 4px 0;">${remainingFormatted}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Horario: ${formatMRDuration(displayCurrent.start_time, displayCurrent.end_time)}</div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; font-size: 0.85rem; color: var(--text-muted);">
+                            <span style="display: inline-flex; align-items: center; gap: 6px;">
+                                <i data-lucide="calendar" style="width: 1em; height: 1em; color: var(--accent);"></i>
+                                <span>${nextBooking ? `Siguiente junta: <strong>${formatMRTime(nextBooking.start_time, true)}</strong> · <i data-lucide="user" style="width: 0.9em; height: 0.9em; vertical-align: -0.12em;"></i> ${formatMRUser(nextBooking.created_by_name)}` : 'No hay más juntas hoy'}</span>
+                            </span>
+                            <span style="color: var(--accent); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" onclick="document.getElementById('meeting-room-slide').classList.remove('active')">
+                                <i data-lucide="arrow-left" style="width: 1em; height: 1em;"></i>
+                                <span>Volver al Video</span>
+                            </span>
+                        </div>
+                    `;
+                } else {
+                    let freeUntilText = "Libre todo el día";
+                    if (nextBooking) {
+                        const startNext = new Date(nextBooking.start_time);
+                        const isToday = startNext.getDate() === now.getDate();
+                        freeUntilText = isToday ? `Libre hasta las ${formatMRTime(nextBooking.start_time, true)}` : `Libre el resto del día`;
+                    }
+
+                    heroBox.innerHTML = `
+                        <div>
+                            <span style="font-size: 0.8rem; font-weight: 800; color: #4ade80; letter-spacing: 1.5px; text-transform: uppercase;">ESTADO EN VIVO</span>
+                            <h2 style="font-size: 2.2rem; font-weight: 800; color: #ffffff; margin: 8px 0 12px 0; line-height: 1.15;">${freeUntilText}</h2>
+                            <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.4;">
+                                La sala de juntas se encuentra disponible en este momento para el equipo.
+                            </p>
+                        </div>
+
+                        <div style="background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 12px; padding: 20px;">
+                            <div style="font-size: 0.8rem; color: #86efac; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">APARTA TU LUGAR EN PULSE</div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #ffffff; margin: 6px 0;">pulse.thepalacecompany.com/sala-juntas</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Bloques de 30 minutos a 2 horas.</div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; font-size: 0.85rem; color: var(--text-muted);">
+                            <span style="display: inline-flex; align-items: center; gap: 6px;">
+                                <i data-lucide="calendar" style="width: 1em; height: 1em; color: #4ade80;"></i>
+                                <span>${nextBooking ? `Próxima reserva: <strong>${formatMRTime(nextBooking.start_time, true)}</strong> · <i data-lucide="user" style="width: 0.9em; height: 0.9em; vertical-align: -0.12em;"></i> ${formatMRUser(nextBooking.created_by_name)}` : 'Sin reservaciones pendientes hoy'}</span>
+                            </span>
+                            <span style="color: var(--accent); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" onclick="document.getElementById('meeting-room-slide').classList.remove('active')">
+                                <i data-lucide="arrow-left" style="width: 1em; height: 1em;"></i>
+                                <span>Volver al Video</span>
+                            </span>
+                        </div>
+                    `;
+                }
+            }
+
+            // Timeline derecha
+            const timelineList = document.getElementById('mr-slide-timeline-list');
+            if (timelineList) {
+                if (activeBookings.length === 0) {
+                    timelineList.innerHTML = `<div style="text-align:center; padding: 40px; color:var(--text-muted); font-size:1.1rem;">No hay reservaciones registradas en Pulse.</div>`;
+                } else {
+                    timelineList.innerHTML = activeBookings.map(b => {
+                        const start = new Date(b.start_time);
+                        const end = new Date(b.end_time);
+                        const isNow = now >= start && now < end;
+                        const isTomorrow = start.getDate() !== now.getDate();
+                        const dayTag = isTomorrow 
+                            ? `<span style="background: rgba(184,143,105,0.25); color: var(--accent); font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-right: 8px;">MAÑANA</span>` 
+                            : `<span style="background: rgba(255,255,255,0.08); color: var(--text-muted); font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-right: 8px;">HOY</span>`;
+
+                        return `
+                            <div class="mr-slide-row ${isNow ? 'current' : ''}">
+                                <div class="mr-slide-time-badge">${formatMRDuration(b.start_time, b.end_time)}</div>
+                                <div style="flex:1; min-width:0;">
+                                    <div class="mr-slide-info-title">${dayTag}${b.title}</div>
+                                    <div class="mr-slide-info-user" style="display: inline-flex; align-items: center; gap: 5px;">
+                                        <i data-lucide="user" style="width: 0.95em; height: 0.95em; opacity: 0.85;"></i>
+                                        <span>${formatMRUser(b.created_by_name)}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    ${isNow ? '<span style="background:rgba(255,74,90,0.25); color:#ff6b7b; font-size:0.75rem; font-weight:800; padding:5px 12px; border-radius:6px; text-transform:uppercase;">EN CURSO</span>' : '<span style="color:var(--text-muted); font-size:0.8rem; font-weight:700;">PROGRAMADA</span>'}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+            if (window.refreshIcons) window.refreshIcons();
+        }
+
+        let mrSlideTimeout = null;
+
+        window.triggerMeetingRoomSlide = function(seconds = 18) {
+            clearTimeout(galleryTimer);
+            clearTimeout(mrSlideTimeout);
+
+            const slide = document.getElementById('meeting-room-slide');
+            const gallery = document.getElementById('gallery-layer');
+            const video = document.getElementById('video-layer');
+
+            if (!slide) return;
+
+            renderMeetingRoomSlide();
+
+            if (gallery) gallery.style.opacity = '0';
+            if (video) video.style.opacity = '0';
+            slide.classList.add('active');
+
+            mrSlideTimeout = setTimeout(() => {
+                slide.classList.remove('active');
+                if (typeof runGalleryCycle === 'function') {
+                    if (window.hasVideos) {
+                        if (video) video.style.opacity = '1';
+                        galleryTimer = setTimeout(runGalleryCycle, 30000);
+                    } else {
+                        galleryTimer = setTimeout(runGalleryCycle, 0);
+                    }
+                }
+            }, seconds * 1000);
+        };
+
+        function getMeetingRoomTickerHTML() {
+            const { now, activeBookings, isOccupied, displayCurrent, nextBooking } = getMeetingRoomComputed();
+
+            if (isOccupied && displayCurrent) {
+                const end = new Date(displayCurrent.end_time);
+                const minsLeft = Math.max(1, Math.round((end - now) / 60000));
+                const minsLeftText = minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft} min`;
+                const currentUsername = formatMRUser(displayCurrent.created_by_name);
+                const freeAtTime = formatMRTime(displayCurrent.end_time);
+
+                let nextHtml = '';
+                if (nextBooking) {
+                    const nextUser = formatMRUser(nextBooking.created_by_name);
+                    const nextTime = formatMRTime(nextBooking.start_time);
+                    nextHtml = `<span style="color: #7dd3fc; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="chevrons-right" style="width: 0.9em; height: 0.9em; color: #38bdf8; vertical-align: -0.1em;"></i>SIG: <strong style="color: #ffffff;">${nextTime.toUpperCase()}</strong> (${nextUser})</span>`;
+                }
+
+                return `
+                    <span class="ticker-mr-module">
+                        <span class="ticker-mr-badge busy">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ff4a5a; box-shadow: 0 0 12px #ff4a5a; animation: pulse 1.5s infinite;"></span>
+                            SALA OCUPADA
+                        </span>
+                        <span style="display: inline-flex; align-items: center; gap: 7px; color: #ffffff;">
+                            <i data-lucide="user" style="width: 0.85em; height: 0.85em; color: var(--accent); vertical-align: -0.1em;"></i>
+                            <strong style="color: var(--accent);">${currentUsername}</strong>
+                            <span style="opacity: 0.35;">·</span>
+                            <span>${displayCurrent.title}</span>
+                        </span>
+                        <span style="background: rgba(255, 74, 90, 0.2); border: 1px solid rgba(255, 74, 90, 0.45); color: #ff949d; font-size: 0.78em; font-weight: 800; padding: 2px 10px; border-radius: 6px;">
+                            FALTAN ${minsLeftText.toUpperCase()}
+                        </span>
+                        <span style="color: #4ade80; font-weight: 700;">
+                            DISPONIBLE ${freeAtTime.toUpperCase()}
+                        </span>
+                        ${nextHtml}
+                    </span>
+                `;
+            } else {
+                let freeUntilTitle = "LIBRE TODO EL DÍA";
+                let nextHtml = '<span style="opacity: 0.6; display: inline-flex; align-items: center; gap: 5px;"><i data-lucide="calendar-check" style="width: 0.85em; height: 0.85em; color: #4ade80; vertical-align: -0.1em;"></i>SIN MÁS JUNTAS HOY</span>';
+
+                if (nextBooking) {
+                    const nextTime = formatMRTime(nextBooking.start_time);
+                    const nextUser = formatMRUser(nextBooking.created_by_name);
+                    freeUntilTitle = `DISPONIBLE HASTA LAS ${nextTime.toUpperCase()}`;
+                    nextHtml = `<span style="color: #7dd3fc; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="calendar" style="width: 0.85em; height: 0.85em; color: #38bdf8; vertical-align: -0.1em;"></i>PRÓXIMA: <strong style="color: #ffffff;">${nextTime.toUpperCase()}</strong> (${nextUser})</span>`;
+                }
+
+                return `
+                    <span class="ticker-mr-module">
+                        <span class="ticker-mr-badge free">
+                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 12px #4ade80;"></span>
+                            SALA DISPONIBLE
+                        </span>
+                        <span style="color: #ffffff; font-weight: 700;">
+                            ${freeUntilTitle}
+                        </span>
+                        ${nextHtml}
+                    </span>
+                `;
+            }
+        }
+
+        function renderMeetingRoomWidget() {
+            renderMeetingRoomDoorSign();
+            renderMeetingRoomSlide();
+            if (window.lastFirebaseState !== undefined) {
+                updateTickerDOM(window.lastFirebaseState || {});
+            }
+        }
+
+        window.setMeetingRoomSimMode = function(mode) {
+            meetingRoomSimMode = mode;
+            renderMeetingRoomWidget();
+        };
+
+        // Iniciar polling de sala de juntas cada 30 segundos
+        fetchMeetingRoomData();
+        setInterval(fetchMeetingRoomData, 30000);
+
         let currentTickerHTML = "";
         window.lastFirebaseState = null;
 
-        function updateTickerDOM(data) {
+        function updateTickerDOM(data = {}) {
             const tickerBar = document.getElementById('ticker-bar');
             const tickerLabel = document.getElementById('ticker-label');
             const tickerContentBox = document.getElementById('ticker-content-box');
@@ -1302,22 +2278,33 @@
 
             if (data.managerMsg && data.managerMsg.trim() !== '') {
                 // MODO GERENCIA
-                const managerHTML = `<div class="ticker-manager-alert">🚨 ${data.managerMsg} 🚨</div>`;
+                const managerHTML = `<div class="ticker-manager-alert"><i data-lucide="alert-triangle" style="width: 1.15em; height: 1.15em; vertical-align: -0.2em; margin-right: 12px; stroke-width: 2.2px;"></i>${data.managerMsg}<i data-lucide="alert-triangle" style="width: 1.15em; height: 1.15em; vertical-align: -0.2em; margin-left: 12px; stroke-width: 2.2px;"></i></div>`;
                 if (currentTickerHTML !== `manager:${data.managerMsg}`) {
                     currentTickerHTML = `manager:${data.managerMsg}`;
                     tickerBar.classList.add('alert-mode');
                     tickerLabel.innerText = "GERENCIA";
                     tickerContentBox.innerHTML = managerHTML;
+                    if (window.refreshIcons) window.refreshIcons();
                 }
             } else {
                 // MODO NORMAL
                 tickerBar.classList.remove('alert-mode');
                 tickerLabel.innerText = "ÚLTIMA HORA";
+                tickerLabel.style.backgroundColor = "var(--accent)";
 
                 let charCount = 0;
                 let innerHtml = '';
+                const now = Date.now();
+
+                // 1. Información de la Sala de Juntas en el Marquee
+                const mrHTML = getMeetingRoomTickerHTML();
+                if (mrHTML) {
+                    innerHtml += mrHTML;
+                    charCount += 120;
+                }
+
+                // 2. Avisos de Firebase / Admin
                 if (data.tickers && data.tickers.length > 0) {
-                    const now = Date.now();
                     data.tickers.forEach(t => {
                         let text = t;
                         if (typeof t === 'object' && t !== null) {
@@ -1348,6 +2335,7 @@
                     // Ajustar velocidad en base al número de letras (~0.25s por letra) min 25s
                     let dur = Math.max(25, Math.floor(charCount * 0.25));
                     tickerContentBox.innerHTML = `<div class="ticker-text" id="ticker-text" style="animation-duration: ${dur}s">${innerHtml}</div>`;
+                    if (window.refreshIcons) window.refreshIcons();
                 }
             }
         }
@@ -1414,10 +2402,11 @@
                             setInterval(() => { fetchAndProcessSheet(currentSheetUrl); }, 10800000);
                         }
                     } else if (data.birthday) {
-                        document.getElementById('bday-main').innerHTML = `🎂 ${data.birthday.name || '--'}`;
+                        document.getElementById('bday-main').innerHTML = `<span style="display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="cake" style="color: var(--accent); width: 0.85em; height: 0.85em;"></i><span>${data.birthday.name || '--'}</span></span>`;
                         document.getElementById('bday-dept').innerHTML = data.birthday.dept || '--';
                         rotatorConfig.birthdays.itemsHtml = []; // Limpia siguientes si es entrada manual
                         renderRotatorSlice('birthdays');
+                        if (window.refreshIcons) window.refreshIcons();
                     }
 
                     // Actualizar Personal En Junta
