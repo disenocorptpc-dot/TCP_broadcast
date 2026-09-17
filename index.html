@@ -403,12 +403,13 @@
             z-index: 12;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.2s ease-in-out;
-            background: radial-gradient(circle at 15% 15%, rgba(184, 143, 105, 0.1) 0%, rgba(8, 17, 25, 0.98) 60%, #060d14 100%);
-            padding: 35px 45px;
+            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #060d14;
+            padding: 28px 36px;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         #meeting-room-slide.active {
@@ -416,67 +417,162 @@
             pointer-events: auto;
         }
 
+        .mr-bg-photo {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.25) saturate(0.85);
+            transform: scale(1.02);
+            animation: mrBgDrift 35s ease-in-out infinite alternate;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes mrBgDrift {
+            0% { transform: scale(1.02) translate3d(0, 0, 0); }
+            100% { transform: scale(1.06) translate3d(-1%, -0.8%, 0); }
+        }
+
+        .mr-bg-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(8, 17, 25, 0.65) 0%, rgba(8, 17, 25, 0.94) 75%, rgba(4, 9, 14, 0.98) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
         .mr-slide-header {
+            position: relative;
+            z-index: 3;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(184, 143, 105, 0.2);
-            padding-bottom: 16px;
-            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(184, 143, 105, 0.22);
+            padding-bottom: 14px;
+            margin-bottom: 20px;
         }
 
         .mr-slide-badge {
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            padding: 8px 22px;
+            border-radius: 9999px;
+            font-size: 0.92rem;
             font-weight: 800;
             letter-spacing: 1.5px;
             text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .mr-status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .mr-status-dot.busy {
+            background: #ff4a5a;
+            box-shadow: 0 0 10px rgba(255, 74, 90, 0.85);
+            animation: mrPulseBusy 1.8s infinite ease-in-out;
+        }
+
+        .mr-status-dot.free {
+            background: #4ade80;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.85);
+            animation: mrPulseFree 2s infinite ease-in-out;
+        }
+
+        @keyframes mrPulseBusy {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.6; }
+        }
+
+        @keyframes mrPulseFree {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.35); opacity: 0.65; }
         }
 
         .mr-slide-badge.free {
-            background: rgba(74, 222, 128, 0.15);
+            background: rgba(74, 222, 128, 0.14);
             color: #4ade80;
-            border: 1px solid rgba(74, 222, 128, 0.4);
-            box-shadow: 0 0 15px rgba(74, 222, 128, 0.25);
+            border: 1px solid rgba(74, 222, 128, 0.35);
         }
 
         .mr-slide-badge.busy {
-            background: rgba(255, 74, 90, 0.2);
+            background: rgba(255, 74, 90, 0.16);
             color: #ff4a5a;
-            border: 1px solid rgba(255, 74, 90, 0.5);
-            box-shadow: 0 0 20px rgba(255, 74, 90, 0.35);
-            animation: mrPulseRed 1.8s infinite;
+            border: 1px solid rgba(255, 74, 90, 0.4);
         }
 
         .mr-slide-grid {
+            position: relative;
+            z-index: 3;
             display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 28px;
+            grid-template-columns: 430px 1fr;
+            gap: 24px;
             flex: 1;
             min-height: 0;
         }
 
         .mr-slide-hero {
-            background: rgba(13, 27, 40, 0.65);
-            backdrop-filter: blur(12px);
+            background: linear-gradient(135deg, rgba(8, 17, 25, 0.90) 0%, rgba(13, 27, 40, 0.80) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(184, 143, 105, 0.25);
-            border-radius: 14px;
-            padding: 26px;
+            border-radius: 16px;
+            padding: 24px 26px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+        }
+
+        .mr-progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            overflow: hidden;
+            margin: 12px 0 8px 0;
+            position: relative;
+        }
+
+        .mr-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff8b94 0%, #ff4a5a 100%);
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+        }
+
+        .mr-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .mr-slide-schedule-box {
-            background: rgba(13, 27, 40, 0.45);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 14px;
-            padding: 24px 28px;
+            background: linear-gradient(135deg, rgba(8, 17, 25, 0.86) 0%, rgba(13, 27, 40, 0.74) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(184, 143, 105, 0.20);
+            border-radius: 16px;
+            padding: 22px 26px;
             display: flex;
             flex-direction: column;
             min-height: 0;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
         }
 
         .mr-slide-timeline-list {
@@ -493,36 +589,43 @@
             display: flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.025);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 12px 18px;
-            gap: 16px;
-            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 14px 20px;
+            gap: 18px;
+            transition: all 0.25s ease;
         }
 
         .mr-slide-row.current {
-            background: rgba(255, 74, 90, 0.08);
-            border-color: rgba(255, 74, 90, 0.3);
+            background: linear-gradient(90deg, rgba(255, 74, 90, 0.16) 0%, rgba(255, 74, 90, 0.04) 100%);
+            border-color: rgba(255, 74, 90, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .mr-slide-time-badge {
             font-family: monospace;
-            font-size: 1.1rem;
+            font-variant-numeric: tabular-nums;
+            font-size: 1.05rem;
             font-weight: 800;
             color: var(--accent);
-            min-width: 140px;
+            min-width: 155px;
+            letter-spacing: 0.02em;
         }
 
         .mr-slide-info-title {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #ffffff;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            line-height: 1.25;
         }
 
         .mr-slide-info-user {
             font-size: 0.85rem;
             color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         /* Tasks Widget */
@@ -1211,10 +1314,16 @@
 
             <!-- Full Broadcast Slide for Meeting Room -->
             <div id="meeting-room-slide">
+                <div class="mr-bg-photo"></div>
+                <div class="mr-bg-vignette"></div>
+
                 <div class="mr-slide-header">
                     <div>
-                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase;">THE PALACE COMPANY · PULSE OPS</div>
-                        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.6rem; font-weight: 800; color: #ffffff; margin-top: 3px; letter-spacing: 0.5px;">SALA DE JUNTAS</h2>
+                        <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="building" style="width: 1.1em; height: 1.1em;"></i>
+                            <span>THE PALACE COMPANY · PULSE CORPORATE OPS</span>
+                        </div>
+                        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.6rem; font-weight: 800; color: #ffffff; margin-top: 4px; letter-spacing: 0.5px;">SALA DE JUNTAS EJECUTIVA</h2>
                     </div>
                     <div id="mr-slide-badge" class="mr-slide-badge free">
                         <!-- Se inyecta dinámicamente -->
@@ -1229,9 +1338,12 @@
 
                     <!-- Columna Derecha: Agenda Completa -->
                     <div class="mr-slide-schedule-box">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 1.1rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 8px;"><i data-lucide="calendar-days" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Agenda de Reuniones</span>
-                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--accent); text-transform: uppercase;">Hoy & Mañana</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px;">
+                            <span style="font-size: 1.05rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 1.2px; display: inline-flex; align-items: center; gap: 10px;">
+                                <i data-lucide="calendar-range" style="color: var(--accent); width: 1.15em; height: 1.15em;"></i>
+                                Agenda de Reuniones
+                            </span>
+                            <span id="mr-slide-count-badge" style="font-size: 0.78rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; background: rgba(184, 143, 105, 0.15); border: 1px solid rgba(184, 143, 105, 0.3); padding: 4px 12px; border-radius: 9999px;">Hoy & Mañana</span>
                         </div>
                         <div class="mr-slide-timeline-list" id="mr-slide-timeline-list">
                             <!-- Se inyecta dinámicamente -->
@@ -2159,6 +2271,8 @@
             let isOccupied = false;
             let displayCurrent = currentBooking;
 
+            let listBookings = activeBookings;
+
             if (meetingRoomSimMode === 'occupied') {
                 isOccupied = true;
                 if (!displayCurrent) {
@@ -2172,19 +2286,20 @@
             } else if (meetingRoomSimMode === 'free') {
                 isOccupied = false;
                 displayCurrent = null;
+                listBookings = activeBookings.filter(b => !(now >= new Date(b.start_time) && now < new Date(b.end_time)));
             } else {
                 isOccupied = !!currentBooking;
                 displayCurrent = currentBooking;
             }
 
-            const nextBooking = activeBookings.find(b => {
+            const nextBooking = listBookings.find(b => {
                 if (displayCurrent) {
                     return new Date(b.start_time) >= new Date(displayCurrent.end_time);
                 }
                 return new Date(b.start_time) > now;
             });
 
-            return { now, activeBookings, isOccupied, displayCurrent, nextBooking };
+            return { now, activeBookings: listBookings, isOccupied, displayCurrent, nextBooking };
         }
 
         function renderMeetingRoomDoorSign() {
@@ -2328,75 +2443,130 @@
             const badgeContainer = document.getElementById('mr-slide-badge');
             if (badgeContainer) {
                 badgeContainer.className = `mr-slide-badge ${isOccupied ? 'busy' : 'free'}`;
-                badgeContainer.innerHTML = isOccupied ? '● SALA OCUPADA' : '● SALA DISPONIBLE';
+                badgeContainer.innerHTML = isOccupied 
+                    ? '<span class="mr-status-dot busy"></span> EN SESIÓN PRIVADA' 
+                    : '<span class="mr-status-dot free"></span> SALA DISPONIBLE';
+            }
+
+            // Contador de agenda
+            const countBadge = document.getElementById('mr-slide-count-badge');
+            if (countBadge) {
+                countBadge.innerHTML = `<i data-lucide="calendar" style="width: 1em; height: 1em; vertical-align: -0.12em;"></i> ${activeBookings.length} ${activeBookings.length === 1 ? 'REUNIÓN' : 'REUNIONES'}`;
             }
 
             // Hero Box (columna izquierda)
             const heroBox = document.getElementById('mr-slide-hero-box');
             if (heroBox) {
                 if (isOccupied && displayCurrent) {
+                    const start = new Date(displayCurrent.start_time);
                     const end = new Date(displayCurrent.end_time);
+                    const totalDuration = Math.max(1, (end - start) / 60000);
+                    const elapsed = Math.max(0, (now - start) / 60000);
+                    const progressPct = Math.min(100, Math.max(4, Math.round((elapsed / totalDuration) * 100)));
                     const minsLeft = Math.max(1, Math.round((end - now) / 60000));
-                    const remainingFormatted = minsLeft > 60 ? `${Math.floor(minsLeft/60)}h ${minsLeft%60}m` : `${minsLeft} minutos`;
+                    const remainingFormatted = minsLeft > 60 ? `${Math.floor(minsLeft/60)}h ${minsLeft%60}m` : `${minsLeft} min`;
 
                     heroBox.innerHTML = `
                         <div>
-                            <span style="font-size: 0.8rem; font-weight: 800; color: #ff6b7b; letter-spacing: 1.5px; text-transform: uppercase;">ESTADO EN VIVO</span>
-                            <h2 style="font-size: 2.2rem; font-weight: 800; color: #ffffff; margin: 8px 0 12px 0; line-height: 1.15;">${displayCurrent.title}</h2>
-                            <div style="font-size: 1.25rem; color: var(--accent); font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 7px;">
-                                <i data-lucide="user" style="width: 1.1em; height: 1.1em;"></i>
-                                <span>Reservó: <strong>${formatMRUser(displayCurrent.created_by_name)}</strong></span>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                <span class="mr-chip" style="background: rgba(255, 74, 90, 0.18); color: #ff8b94; border: 1px solid rgba(255, 74, 90, 0.35);">
+                                    <span class="mr-status-dot busy"></span> EN VIVO · REUNIÓN PRIVADA
+                                </span>
+                                <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); font-family: monospace;">${formatMRTime(start, true)} — ${formatMRTime(end, true)}</span>
+                            </div>
+                            <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.1rem; font-weight: 800; color: #ffffff; margin: 0 0 12px 0; line-height: 1.18; letter-spacing: -0.01em;">${displayCurrent.title}</h2>
+                            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(184, 143, 105, 0.25); border-radius: 8px; padding: 7px 14px;">
+                                <i data-lucide="user-check" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
+                                <span style="font-size: 0.9rem; color: #e2e8f0;">Reservado por: <strong style="color: var(--accent); font-weight: 700;">${formatMRUser(displayCurrent.created_by_name)}</strong></span>
                             </div>
                         </div>
 
-                        <div style="background: rgba(255, 74, 90, 0.12); border: 1.5px solid rgba(255, 74, 90, 0.4); border-radius: 12px; padding: 20px 22px;">
-                            <div style="font-size: 0.8rem; color: #ff949d; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">TIEMPO RESTANTE</div>
-                            <div style="font-size: 2.8rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin: 4px 0;">${remainingFormatted}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted);">Horario: ${formatMRDuration(displayCurrent.start_time, displayCurrent.end_time)}</div>
+                        <div style="background: linear-gradient(135deg, rgba(255, 74, 90, 0.12) 0%, rgba(20, 10, 15, 0.6) 100%); border: 1.5px solid rgba(255, 74, 90, 0.35); border-radius: 14px; padding: 18px 22px; box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.76rem; color: #ff949d; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px;">TIEMPO RESTANTE</span>
+                                <span style="font-size: 0.78rem; color: rgba(255,255,255,0.6); font-family: monospace; font-variant-numeric: tabular-nums;">${progressPct}% transcurrido</span>
+                            </div>
+                            <div style="font-family: 'Space Grotesk', monospace; font-size: 3.2rem; font-weight: 800; color: #ffffff; line-height: 1.05; margin: 6px 0; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;">${remainingFormatted}</div>
+                            <div class="mr-progress-track">
+                                <div class="mr-progress-bar" style="width: ${progressPct}%;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: rgba(255,255,255,0.45); font-family: monospace;">
+                                <span>Inicio ${formatMRTime(start, true)}</span>
+                                <span>Término ${formatMRTime(end, true)}</span>
+                            </div>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; font-size: 0.85rem; color: var(--text-muted);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; font-size: 0.84rem; color: var(--text-muted);">
                             <span style="display: inline-flex; align-items: center; gap: 6px;">
-                                <i data-lucide="calendar" style="width: 1em; height: 1em; color: var(--accent);"></i>
-                                <span>${nextBooking ? `Siguiente junta: <strong>${formatMRTime(nextBooking.start_time, true)}</strong> · <i data-lucide="user" style="width: 0.9em; height: 0.9em; vertical-align: -0.12em;"></i> ${formatMRUser(nextBooking.created_by_name)}` : 'No hay más juntas hoy'}</span>
+                                <i data-lucide="clock" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
+                                <span>${nextBooking ? `Siguiente junta: <strong style="color:#ffffff;">${formatMRTime(nextBooking.start_time, true)}</strong> · ${formatMRUser(nextBooking.created_by_name)}` : 'Sin más juntas programadas hoy'}</span>
                             </span>
-                            <span style="color: var(--accent); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" onclick="document.getElementById('meeting-room-slide').classList.remove('active')">
-                                <i data-lucide="arrow-left" style="width: 1em; height: 1em;"></i>
-                                <span>Volver al Video</span>
+                            <span style="color: var(--accent); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; letter-spacing: 0.5px; opacity: 0.9;" onclick="document.getElementById('meeting-room-slide').classList.remove('active')">
+                                <i data-lucide="arrow-left" style="width: 1.05em; height: 1.05em;"></i>
+                                <span>Volver</span>
                             </span>
                         </div>
                     `;
                 } else {
                     let freeUntilText = "Libre todo el día";
+                    let nextDetail = "No hay más eventos registrados para hoy.";
                     if (nextBooking) {
                         const startNext = new Date(nextBooking.start_time);
                         const isToday = startNext.getDate() === now.getDate();
                         freeUntilText = isToday ? `Libre hasta las ${formatMRTime(nextBooking.start_time, true)}` : `Libre el resto del día`;
+                        nextDetail = `Próxima reserva: <strong style="color: #ffffff;">${formatMRTime(nextBooking.start_time, true)}</strong> (${isToday ? 'Hoy' : 'Mañana'}) · ${formatMRUser(nextBooking.created_by_name)}`;
                     }
 
                     heroBox.innerHTML = `
                         <div>
-                            <span style="font-size: 0.8rem; font-weight: 800; color: #4ade80; letter-spacing: 1.5px; text-transform: uppercase;">ESTADO EN VIVO</span>
-                            <h2 style="font-size: 2.2rem; font-weight: 800; color: #ffffff; margin: 8px 0 12px 0; line-height: 1.15;">${freeUntilText}</h2>
-                            <p style="font-size: 1.05rem; color: var(--text-muted); line-height: 1.4;">
-                                La sala de juntas se encuentra disponible en este momento para el equipo.
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                <span class="mr-chip" style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.35);">
+                                    <span class="mr-status-dot free"></span> SALA DISPONIBLE
+                                </span>
+                                <span style="font-size: 0.78rem; font-weight: 700; color: #4ade80; text-transform: uppercase;">ACCESO ABIERTO</span>
+                            </div>
+                            <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; line-height: 1.15; letter-spacing: -0.01em;">${freeUntilText}</h2>
+                            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.45; margin: 0 0 14px 0;">
+                                El espacio ejecutivo se encuentra libre y acondicionado para presentaciones, juntas estratégicas o llamadas confidenciales.
                             </p>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;">
+                                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 10px; font-size: 0.78rem; color: #cbd5e1; display: flex; align-items: center; gap: 7px;">
+                                    <i data-lucide="users" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
+                                    <span>Capacidad 14p</span>
+                                </div>
+                                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 10px; font-size: 0.78rem; color: #cbd5e1; display: flex; align-items: center; gap: 7px;">
+                                    <i data-lucide="tv" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
+                                    <span>Pantalla 85" 4K</span>
+                                </div>
+                                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 10px; font-size: 0.78rem; color: #cbd5e1; display: flex; align-items: center; gap: 7px;">
+                                    <i data-lucide="video" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
+                                    <span>Poly Studio 4K</span>
+                                </div>
+                                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 10px; font-size: 0.78rem; color: #cbd5e1; display: flex; align-items: center; gap: 7px;">
+                                    <i data-lucide="coffee" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
+                                    <span>Coffee Service</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div style="background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.3); border-radius: 12px; padding: 20px;">
-                            <div style="font-size: 0.8rem; color: #86efac; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">APARTA TU LUGAR EN PULSE</div>
-                            <div style="font-size: 1.3rem; font-weight: 700; color: #ffffff; margin: 6px 0;">pulse.thepalacecompany.com/sala-juntas</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted);">Bloques de 30 minutos a 2 horas.</div>
+                        <div style="background: linear-gradient(135deg, rgba(74, 222, 128, 0.10) 0%, rgba(10, 25, 20, 0.5) 100%); border: 1px solid rgba(74, 222, 128, 0.35); border-radius: 14px; padding: 18px 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
+                            <div style="font-size: 0.75rem; color: #86efac; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; display: flex; align-items: center; gap: 6px;">
+                                <i data-lucide="bookmark-plus" style="width: 1.1em; height: 1.1em;"></i>
+                                <span>APARTA TU LUGAR EN PULSE</span>
+                            </div>
+                            <div style="font-family: 'Space Grotesk', monospace; font-size: 1.25rem; font-weight: 700; color: #ffffff; margin: 8px 0 4px 0; letter-spacing: -0.01em;">pulse.thepalacecompany.com</div>
+                            <div style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.65);">Sección Sala de Juntas · Bloques de 30m a 2h</div>
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; font-size: 0.85rem; color: var(--text-muted);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; font-size: 0.84rem; color: var(--text-muted);">
                             <span style="display: inline-flex; align-items: center; gap: 6px;">
-                                <i data-lucide="calendar" style="width: 1em; height: 1em; color: #4ade80;"></i>
-                                <span>${nextBooking ? `Próxima reserva: <strong>${formatMRTime(nextBooking.start_time, true)}</strong> · <i data-lucide="user" style="width: 0.9em; height: 0.9em; vertical-align: -0.12em;"></i> ${formatMRUser(nextBooking.created_by_name)}` : 'Sin reservaciones pendientes hoy'}</span>
+                                <i data-lucide="calendar" style="width: 1.1em; height: 1.1em; color: #4ade80;"></i>
+                                <span>${nextDetail}</span>
                             </span>
-                            <span style="color: var(--accent); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;" onclick="document.getElementById('meeting-room-slide').classList.remove('active')">
-                                <i data-lucide="arrow-left" style="width: 1em; height: 1em;"></i>
-                                <span>Volver al Video</span>
+                            <span style="color: var(--accent); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; letter-spacing: 0.5px; opacity: 0.9;" onclick="document.getElementById('meeting-room-slide').classList.remove('active')">
+                                <i data-lucide="arrow-left" style="width: 1.05em; height: 1.05em;"></i>
+                                <span>Volver</span>
                             </span>
                         </div>
                     `;
@@ -2407,29 +2577,29 @@
             const timelineList = document.getElementById('mr-slide-timeline-list');
             if (timelineList) {
                 if (activeBookings.length === 0) {
-                    timelineList.innerHTML = `<div style="text-align:center; padding: 40px; color:var(--text-muted); font-size:1.1rem;">No hay reservaciones registradas en Pulse.</div>`;
+                    timelineList.innerHTML = `<div style="text-align:center; padding: 50px 20px; color:var(--text-muted); font-size:1.1rem; display:flex; flex-direction:column; align-items:center; gap:10px;"><i data-lucide="calendar-check" style="width: 2.2em; height: 2.2em; color: var(--accent); opacity:0.6;"></i><span>No hay reuniones registradas para hoy ni mañana en Pulse.</span></div>`;
                 } else {
                     timelineList.innerHTML = activeBookings.map(b => {
                         const start = new Date(b.start_time);
                         const end = new Date(b.end_time);
-                        const isNow = now >= start && now < end;
+                        const isNow = isOccupied && (now >= start && now < end);
                         const isTomorrow = start.getDate() !== now.getDate();
                         const dayTag = isTomorrow 
-                            ? `<span style="background: rgba(184,143,105,0.25); color: var(--accent); font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-right: 8px;">MAÑANA</span>` 
-                            : `<span style="background: rgba(255,255,255,0.08); color: var(--text-muted); font-size: 0.72rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; margin-right: 8px;">HOY</span>`;
+                            ? `<span style="background: rgba(184,143,105,0.25); color: var(--accent); font-size: 0.72rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; margin-right: 8px; border: 1px solid rgba(184,143,105,0.4);">MAÑANA</span>` 
+                            : `<span style="background: rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.72rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; margin-right: 8px; border: 1px solid rgba(255,255,255,0.12);">HOY</span>`;
 
                         return `
                             <div class="mr-slide-row ${isNow ? 'current' : ''}">
                                 <div class="mr-slide-time-badge">${formatMRDuration(b.start_time, b.end_time)}</div>
                                 <div style="flex:1; min-width:0;">
                                     <div class="mr-slide-info-title">${dayTag}${b.title}</div>
-                                    <div class="mr-slide-info-user" style="display: inline-flex; align-items: center; gap: 5px;">
-                                        <i data-lucide="user" style="width: 0.95em; height: 0.95em; opacity: 0.85;"></i>
+                                    <div class="mr-slide-info-user">
+                                        <i data-lucide="user" style="width: 0.95em; height: 0.95em; opacity: 0.85; color: var(--accent);"></i>
                                         <span>${formatMRUser(b.created_by_name)}</span>
                                     </div>
                                 </div>
                                 <div>
-                                    ${isNow ? '<span style="background:rgba(255,74,90,0.25); color:#ff6b7b; font-size:0.75rem; font-weight:800; padding:5px 12px; border-radius:6px; text-transform:uppercase;">EN CURSO</span>' : '<span style="color:var(--text-muted); font-size:0.8rem; font-weight:700;">PROGRAMADA</span>'}
+                                    ${isNow ? '<span class="mr-chip" style="background:rgba(255,74,90,0.22); color:#ff6b7b; border: 1px solid rgba(255,74,90,0.4);"><span class="mr-status-dot busy"></span> EN CURSO</span>' : '<span class="mr-chip" style="background:rgba(255,255,255,0.05); color:var(--text-muted); border: 1px solid rgba(255,255,255,0.08);">PROGRAMADA</span>'}
                                 </div>
                             </div>
                         `;
