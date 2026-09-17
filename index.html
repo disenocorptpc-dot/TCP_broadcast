@@ -1554,22 +1554,26 @@
         // Lógica de Métricas Pulse (Supabase)
         let metricsState = {
             "isDemo": true,
-            "isLoading": true,
+            "isLoading": false,
             "hasError": false,
             "updated_at": new Date().toISOString(),
-            "total_tareas": 0,
-            "total_archived": 0,
+            "total_tareas": 684,
+            "total_archived": 45,
             "by_status": {
-                "sin_avance": { "label": "Sin Avance", "count": 0 },
-                "en_diseno": { "label": "En Diseño", "count": 0 },
-                "en_produccion_taller": { "label": "En Producción (Taller)", "count": 0 },
-                "en_produccion_externa": { "label": "En Producción (Externas)", "count": 0 },
-                "en_produccion": { "label": "En Producción", "count": 0 },
-                "entregadas": { "label": "Entregadas", "count": 0 },
-                "canceladas": { "label": "Cancelada", "count": 0 },
-                "archivadas": { "label": "Archivada", "count": 0 }
+                "sin_avance": { "label": "Sin Avance", "count": 42 },
+                "en_diseno": { "label": "En Diseño", "count": 196 },
+                "en_produccion_taller": { "label": "En Producción (Taller)", "count": 168 },
+                "en_produccion_externa": { "label": "En Producción (Externas)", "count": 96 },
+                "en_produccion": { "label": "En Producción", "count": 264 },
+                "entregadas": { "label": "Entregadas", "count": 182 },
+                "canceladas": { "label": "Cancelada", "count": 14 },
+                "archivadas": { "label": "Archivada", "count": 45 }
             },
-            "by_module": {}
+            "by_module": {
+                "Diseño": 396,
+                "Fotografía": 224,
+                "Sin módulo": 64
+            }
         };
 
         function formatTime(isoString) {
