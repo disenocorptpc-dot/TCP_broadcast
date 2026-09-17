@@ -791,8 +791,9 @@
             opacity: 0;
             overflow: hidden;
             display: flex;
-            align-items: flex-end;
-            transition: opacity 1.2s ease-in-out;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
             background: #050505;
         }
@@ -818,6 +819,186 @@
             max-height: none !important;
             transition: opacity 0.8s ease-in-out;
             opacity: 0;
+        }
+
+        /* Subtle cinematic ambient vignette */
+        .gallery-vignette {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 35%, rgba(0, 0, 0, 0) 0%, rgba(8, 17, 25, 0.3) 65%, rgba(8, 17, 25, 0.75) 100%);
+        }
+
+        /* Top Progress & HUD Bar */
+        .gallery-hud-top {
+            position: relative;
+            z-index: 4;
+            width: 100%;
+            padding: 22px 28px 0 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .gallery-progress-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .gallery-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), #e8cfab);
+            box-shadow: 0 0 10px rgba(184, 143, 105, 0.6);
+            transition: width 0.1s linear;
+        }
+
+        .gallery-kicker-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            background: rgba(8, 17, 25, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(184, 143, 105, 0.25);
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+        }
+
+        .gallery-counter-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            background: rgba(8, 17, 25, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(184, 143, 105, 0.2);
+            font-family: 'Public Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--text-main);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+        }
+
+        .gallery-counter-badge .counter-slash {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .gallery-counter-badge .counter-total {
+            color: var(--text-muted);
+        }
+
+        /* Floating Editorial Glass Card */
+        .gallery-card-wrapper {
+            position: relative;
+            z-index: 4;
+            width: 100%;
+            padding: 0 28px 26px 28px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .gallery-editorial-card {
+            width: 100%;
+            max-width: 780px;
+            background: linear-gradient(135deg, rgba(8, 17, 25, 0.9) 0%, rgba(13, 27, 40, 0.76) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(184, 143, 105, 0.22);
+            border-radius: 16px;
+            padding: 22px 28px;
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            box-sizing: border-box;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+        }
+
+        .gallery-editorial-card.slide-transitioning {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        .gallery-meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .gallery-author-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .gallery-dots {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gallery-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.22);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-dot.active {
+            width: 20px;
+            border-radius: 4px;
+            background: var(--accent);
+            box-shadow: 0 0 8px rgba(184, 143, 105, 0.6);
+        }
+
+        .gallery-title-text {
+            font-family: 'Space Grotesk', 'Public Sans', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+            margin: 0 0 8px 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+        }
+
+        .gallery-desc-text {
+            font-family: 'Public Sans', sans-serif;
+            font-size: 1.15rem;
+            color: rgba(237, 236, 228, 0.9);
+            font-weight: 400;
+            line-height: 1.45;
+            margin: 0;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
         }
 
         /* Clock & Weather Widget */
@@ -993,20 +1174,38 @@
 
             <!-- The Dynamic Hero Gallery Layer (CONFINED TO VIDEO CONTAINER) -->
             <div id="gallery-layer">
+                <div class="gallery-progress-track">
+                    <div id="gallery-progress-bar" class="gallery-progress-fill"></div>
+                </div>
+
                 <div id="gallery-image-viewport">
                     <img id="gallery-image-elem" src="" alt="Slide">
+                    <div class="gallery-vignette"></div>
                 </div>
-                <div
-                    style="position: relative; z-index: 2; width: 100%; padding: 80px 50px 40px 50px; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 75%, transparent 100%); box-sizing: border-box;">
-                    <div id="gallery-author"
-                        style="display: none; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 1rem; margin-bottom: 12px; color: white;">
+
+                <!-- Top HUD -->
+                <div class="gallery-hud-top">
+                    <div class="gallery-kicker-badge">
+                        <i data-lucide="sparkles" style="width: 14px; height: 14px; color: var(--accent);"></i>
+                        <span>Comunicado Corporativo</span>
                     </div>
-                    <h1 id="gallery-title"
-                        style="font-family: 'Space Grotesk', sans-serif; font-size: 3.5rem; font-weight: 800; color: white; margin-bottom: 10px; line-height: 1.1; text-shadow: 0 4px 15px rgba(0,0,0,1);">
-                    </h1>
-                    <p id="gallery-desc"
-                        style="font-size: 1.5rem; color: rgba(255,255,255,0.85); font-weight: 400; max-width: 90%; line-height: 1.4; text-shadow: 0 2px 10px rgba(0,0,0,1);">
-                    </p>
+                    <div id="gallery-counter-badge" class="gallery-counter-badge">
+                        <span id="gallery-current-num">01</span>
+                        <span class="counter-slash">/</span>
+                        <span id="gallery-total-num" class="counter-total">01</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Floating Editorial Card -->
+                <div class="gallery-card-wrapper">
+                    <div id="gallery-editorial-card" class="gallery-editorial-card">
+                        <div class="gallery-meta-row">
+                            <div id="gallery-author" class="gallery-author-chip" style="display: none;"></div>
+                            <div id="gallery-dots-container" class="gallery-dots"></div>
+                        </div>
+                        <h1 id="gallery-title" class="gallery-title-text"></h1>
+                        <p id="gallery-desc" class="gallery-desc-text"></p>
+                    </div>
                 </div>
             </div>
 
@@ -1310,6 +1509,17 @@
                     fill: 'forwards'
                 });
 
+                // Animate Top Progress Bar smoothly across slide duration
+                const pBar = document.getElementById('gallery-progress-bar');
+                if (pBar) {
+                    pBar.style.transition = 'none';
+                    pBar.style.width = '0%';
+                    setTimeout(() => {
+                        pBar.style.transition = `width ${slideDuration - 400}ms linear`;
+                        pBar.style.width = '100%';
+                    }, 60);
+                }
+
                 videoLayer.style.opacity = '0';
                 layer.style.opacity = '1';
 
@@ -1333,6 +1543,8 @@
                     try { currentGalleryAnim.cancel(); } catch (e) { }
                     currentGalleryAnim = null;
                 }
+                const pBar = document.getElementById('gallery-progress-bar');
+                if (pBar) { pBar.style.transition = 'none'; pBar.style.width = '0%'; }
                 document.getElementById('gallery-layer').style.opacity = '0';
                 document.getElementById('video-layer').style.opacity = '1';
                 return;
@@ -1354,6 +1566,8 @@
                         try { currentGalleryAnim.cancel(); } catch (e) { }
                         currentGalleryAnim = null;
                     }
+                    const pBar = document.getElementById('gallery-progress-bar');
+                    if (pBar) { pBar.style.transition = 'none'; pBar.style.width = '0%'; }
                     document.getElementById('gallery-layer').style.opacity = '0';
                     document.getElementById('video-layer').style.opacity = '1';
                     galleryTimer = setTimeout(runGalleryCycle, 30000);
@@ -1365,17 +1579,50 @@
                 // Inyectar datos a la foto actual
                 let slide = activeGalleryItems[currentGalleryIdx];
                 let authorBadge = document.getElementById('gallery-author');
+                let card = document.getElementById('gallery-editorial-card');
+
+                if (card) {
+                    card.classList.add('slide-transitioning');
+                    setTimeout(() => {
+                        card.classList.remove('slide-transitioning');
+                    }, 120);
+                }
 
                 document.getElementById('gallery-title').innerText = slide.title || '';
-                document.getElementById('gallery-desc').innerText = slide.desc || '';
+                const descElem = document.getElementById('gallery-desc');
+                if (descElem) {
+                    descElem.innerText = slide.desc || '';
+                    descElem.style.display = slide.desc ? 'block' : 'none';
+                }
+
+                // Actualizar contador y dots de paginación
+                const curNum = document.getElementById('gallery-current-num');
+                const totNum = document.getElementById('gallery-total-num');
+                if (curNum) curNum.innerText = String(currentGalleryIdx + 1).padStart(2, '0');
+                if (totNum) totNum.innerText = String(activeGalleryItems.length).padStart(2, '0');
+
+                const dotsBox = document.getElementById('gallery-dots-container');
+                if (dotsBox) {
+                    if (activeGalleryItems.length > 1) {
+                        dotsBox.innerHTML = activeGalleryItems.map((_, i) =>
+                            `<div class="gallery-dot ${i === currentGalleryIdx ? 'active' : ''}"></div>`
+                        ).join('');
+                    } else {
+                        dotsBox.innerHTML = '';
+                    }
+                }
 
                 if (slide.author) {
-                    authorBadge.style.display = "inline-block";
-                    authorBadge.innerText = `Aviso de: ${slide.author}`;
-                    authorBadge.style.backgroundColor = slide.color || "#ff0055";
-                    authorBadge.style.boxShadow = `0 4px 15px ${slide.color || "#ff0055"}66`;
+                    authorBadge.style.display = "inline-flex";
+                    authorBadge.innerHTML = `<i data-lucide="user" style="width: 12px; height: 12px;"></i> Aviso de: ${slide.author}`;
+                    authorBadge.style.backgroundColor = slide.color || "rgba(184, 143, 105, 0.25)";
+                    authorBadge.style.borderColor = "rgba(255, 255, 255, 0.2)";
                 } else {
                     authorBadge.style.display = "none";
+                }
+
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    window.lucide.createIcons();
                 }
 
                 if (slide.image && slide.image.length > 1000) {
