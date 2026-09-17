@@ -108,7 +108,7 @@
             flex-grow: 1;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(37, 77, 110, 0.15), 0 0 0 1px var(--glass-border);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--glass-border);
             position: relative;
             background: #000;
         }
@@ -157,29 +157,34 @@
             border-radius: 12px;
             padding: 18px;
             transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
 
         .widget:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(37, 77, 110, 0.1);
-            border-color: rgba(184, 143, 105, 0.5);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4);
+            border-color: rgba(184, 143, 105, 0.4);
         }
 
+        .widget h2,
         .widget h3 {
             font-family: 'Public Sans', sans-serif;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: 800;
             color: var(--accent);
             margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.15em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         /* Pulse Status Colors */
-        .pulse-red { color: #ff4a5a; text-shadow: 0 0 10px rgba(255, 74, 90, 0.25); }
-        .pulse-blue { color: #4fa8ff; text-shadow: 0 0 10px rgba(79, 168, 255, 0.25); }
-        .pulse-purple { color: #c084fc; text-shadow: 0 0 10px rgba(192, 132, 252, 0.25); }
-        .pulse-orange { color: #ffb020; text-shadow: 0 0 10px rgba(255, 176, 32, 0.25); }
+        .pulse-red { color: #ff4a5a; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .pulse-blue { color: #4fa8ff; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .pulse-purple { color: #c084fc; font-weight: 800; font-variant-numeric: tabular-nums; }
+        .pulse-orange { color: #ffb020; font-weight: 800; font-variant-numeric: tabular-nums; }
 
         .pulse-card-row {
             transition: all 0.2s ease-in-out;
@@ -577,6 +582,8 @@
             align-items: center;
             position: relative;
             z-index: 10;
+            border-top: 1px solid var(--glass-border);
+            padding: 6px 0;
         }
 
         .ticker-bar.alert-mode {
@@ -590,7 +597,8 @@
             font-weight: 800;
             font-size: 2.2rem;
             padding: 0 40px;
-            height: 100%;
+            height: calc(100% + 12px);
+            margin: -6px 0;
             display: flex;
             align-items: center;
             white-space: nowrap;
@@ -746,16 +754,12 @@
             font-family: 'Public Sans', sans-serif;
             font-size: 7.5rem;
             font-weight: 900;
-            color: #fff;
+            color: #EDECE4;
             text-align: center;
             text-transform: uppercase;
-            text-shadow: 0 0 50px rgba(184, 143, 105, 0.8), 0 0 100px rgba(37, 77, 110, 0.8);
+            text-shadow: 0 8px 32px rgba(0, 0, 0, 0.85);
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, pulseCelebration 0.8s 0.5s infinite alternate ease-in-out;
             transform: scale(0.1);
-            background: linear-gradient(45deg, #B88F69, #fff, #254D6E);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
         @keyframes popIn {
@@ -767,12 +771,12 @@
         @keyframes pulseCelebration {
             0% {
                 transform: scale(1);
-                filter: drop-shadow(0 0 20px rgba(37, 77, 110, 0.8));
+                filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.6));
             }
 
             100% {
-                transform: scale(1.15) rotate(2deg);
-                filter: drop-shadow(0 0 50px rgba(184, 143, 105, 0.9));
+                transform: scale(1.08) rotate(1deg);
+                filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.85));
             }
         }
 
@@ -1011,7 +1015,7 @@
                 <div class="mr-slide-header">
                     <div>
                         <div style="font-size: 0.85rem; font-weight: 800; color: var(--accent); letter-spacing: 2.5px; text-transform: uppercase;">THE PALACE COMPANY · PULSE OPS</div>
-                        <h1 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.6rem; font-weight: 800; color: #ffffff; margin-top: 3px; letter-spacing: 0.5px;">SALA DE JUNTAS</h1>
+                        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.6rem; font-weight: 800; color: #ffffff; margin-top: 3px; letter-spacing: 0.5px;">SALA DE JUNTAS</h2>
                     </div>
                     <div id="mr-slide-badge" class="mr-slide-badge free">
                         <!-- Se inyecta dinámicamente -->
@@ -1043,7 +1047,7 @@
     <aside class="sidebar" id="sidebar-1">
         <!-- Widget 1: Tareas por Estatus (Pulse) -->
         <div class="widget" id="pulse-status-widget">
-            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="bar-chart-3" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Tareas por Estatus</h3>
+            <h2 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="bar-chart-3" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Tareas por Estatus</h2>
             <div id="pulse-status-container">
                 <!-- Se inyecta dinámicamente -->
             </div>
@@ -1057,7 +1061,7 @@
         </div>
 
         <div class="widget" id="vacation-widget">
-            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="palmtree" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Vacaciones</h3>
+            <h2 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="palmtree" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Vacaciones</h2>
             <ul class="task-list" id="vacation-list">
                 <!-- Se inyecta desde DB -->
             </ul>
@@ -1068,43 +1072,43 @@
     <aside class="sidebar" id="sidebar-2">
         <!-- Widget 1: Relojes -->
         <div class="widget" id="clocks-widget">
-            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="globe" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Relojes</h3>
-            <div id="clock" style="font-family: monospace; font-size: 2.8rem; font-weight: 800; color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.25); text-align: center; margin: 12px 0 18px 0; line-height: 1;">12:00:00</div>
+            <h2 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="globe" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Relojes</h2>
+            <div id="clock" style="font-family: monospace; font-variant-numeric: tabular-nums; font-size: 2.8rem; font-weight: 800; color: #ffffff; text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); text-align: center; margin: 12px 0 18px 0; line-height: 1;">12:00:00</div>
 
             <div class="world-clocks" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 15px; border-top: 1px solid var(--glass-border);">
                 <div class="world-clock" id="cw-merida" style="padding: 6px 10px; flex-direction: column; align-items: flex-start; gap: 2px;">
-                    <span class="wc-label" style="font-size: 0.65rem;">Mérida</span>
-                    <span class="wc-time" id="wc-merida" style="font-size: 1rem;">--:--</span>
+                    <span class="wc-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">Mérida</span>
+                    <span class="wc-time" id="wc-merida" style="font-size: 1rem; font-variant-numeric: tabular-nums;">--:--</span>
                 </div>
                 <div class="world-clock" id="cw-cabos" style="padding: 6px 10px; flex-direction: column; align-items: flex-start; gap: 2px;">
-                    <span class="wc-label" style="font-size: 0.65rem;">Los Cabos</span>
-                    <span class="wc-time" id="wc-cabos" style="font-size: 1rem;">--:--</span>
+                    <span class="wc-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">Los Cabos</span>
+                    <span class="wc-time" id="wc-cabos" style="font-size: 1rem; font-variant-numeric: tabular-nums;">--:--</span>
                 </div>
                 <div class="world-clock" id="cw-jamaica" style="padding: 6px 10px; flex-direction: column; align-items: flex-start; gap: 2px;">
-                    <span class="wc-label" style="font-size: 0.65rem;">Jamaica</span>
-                    <span class="wc-time" id="wc-jamaica" style="font-size: 1rem;">--:--</span>
+                    <span class="wc-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">Jamaica</span>
+                    <span class="wc-time" id="wc-jamaica" style="font-size: 1rem; font-variant-numeric: tabular-nums;">--:--</span>
                 </div>
                 <div class="world-clock" id="cw-punta" style="padding: 6px 10px; flex-direction: column; align-items: flex-start; gap: 2px;">
-                    <span class="wc-label" style="font-size: 0.65rem;">Punta Cana</span>
-                    <span class="wc-time" id="wc-punta" style="font-size: 1rem;">--:--</span>
+                    <span class="wc-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">Punta Cana</span>
+                    <span class="wc-time" id="wc-punta" style="font-size: 1rem; font-variant-numeric: tabular-nums;">--:--</span>
                 </div>
                 <div class="world-clock" id="cw-milan" style="grid-column: span 2; padding: 6px 10px; flex-direction: row; justify-content: space-between; align-items: center;">
-                    <span class="wc-label" style="font-size: 0.65rem;">Milán</span>
-                    <span class="wc-time" id="wc-milan" style="font-size: 1rem;">--:--</span>
+                    <span class="wc-label" style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">Milán</span>
+                    <span class="wc-time" id="wc-milan" style="font-size: 1rem; font-variant-numeric: tabular-nums;">--:--</span>
                 </div>
             </div>
 
             <div style="margin-top: 10px; border-top: 1px solid var(--glass-border); padding-top: 10px;">
-                <div class="weather-mini" style="padding: 8px; flex-direction: row; justify-content: space-between; font-size: 0.75rem;">
+                <div class="weather-mini" style="padding: 8px; flex-direction: row; justify-content: space-between; font-size: 0.78rem;">
                     <span class="cond" id="weather-cond">Cargando...</span>
-                    <span class="temp" id="weather-temp" style="font-weight: 800; color: var(--accent);">--°C</span>
+                    <span class="temp" id="weather-temp" style="font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums;">--°C</span>
                 </div>
             </div>
         </div>
 
         <!-- Widget 2: Distribución por Módulo (Pulse) -->
         <div class="widget" id="pulse-modules-widget">
-            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="pie-chart" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Distribución por Módulo</h3>
+            <h2 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="pie-chart" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Distribución por Módulo</h2>
             <div id="pulse-modules-container">
                 <!-- Se inyecta dinámicamente -->
             </div>
@@ -1112,7 +1116,7 @@
 
         <!-- Widget 3: Cumpleaños -->
         <div class="widget" id="birthday-widget">
-            <h3 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="cake" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Cumpleaños</h3>
+            <h2 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="cake" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Cumpleaños</h2>
             <div style="margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--glass-border);">
                 <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">Hoy celebramos a:</div>
                 <div id="bday-main" style="font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-top: 4px; line-height: 1.1;">Cargando...</div>
@@ -1673,13 +1677,13 @@
                         <!-- Tareas Activas -->
                         <div class="pulse-card-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(74, 222, 128, 0.04); border: 1px solid rgba(74, 222, 128, 0.25); border-radius: 10px; padding: 12px 18px; cursor: default;">
                             <span style="font-size: 0.85rem; color: #4ade80; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Tareas Activas</span>
-                            <span style="font-size: 3rem; font-weight: 800; color: #4ade80; text-shadow: 0 0 15px rgba(74, 222, 128, 0.35); line-height: 1;">${totalActive}</span>
+                            <span style="font-size: 3rem; font-weight: 800; color: #4ade80; font-variant-numeric: tabular-nums; line-height: 1;">${totalActive}</span>
                         </div>
                         <!-- En Producción -->
                         <div class="pulse-card-row" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.015); border: 1px solid rgba(255, 176, 32, 0.2); border-radius: 10px; padding: 12px 18px; cursor: default;">
                             <div style="display: flex; flex-direction: column;">
                                 <span style="font-size: 0.85rem; color: var(--text-main); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">En Producción</span>
-                                <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 2px;">Taller: ${enProduccionTaller} | Ext: ${enProduccionExterna}</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 2px;">Taller: ${enProduccionTaller} | Ext: ${enProduccionExterna}</span>
                             </div>
                             <span class="pulse-orange" style="font-size: 2.6rem; font-weight: 800; line-height: 1;">${enProduccion}</span>
                         </div>
