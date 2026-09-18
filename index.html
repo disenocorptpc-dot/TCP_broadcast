@@ -696,115 +696,214 @@
         }
 
         /* --- BOTTOM TICKER --- */
+        /* --- BOTTOM TICKER (STITCH CONTINUOUS BROADCAST ARCHITECTURE) --- */
         .ticker-bar {
             grid-column: 1 / 4;
             grid-row: 3 / 4;
-            background: var(--marine);
+            background: #070b14;
             display: flex;
-            align-items: center;
+            align-items: stretch;
             position: relative;
             z-index: 10;
-            border-top: 1px solid var(--glass-border);
-            padding: 6px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            height: 100%;
         }
 
         .ticker-bar.alert-mode {
-            background: #dc2626;
+            background: #450a0a;
+            border-top: 1px solid #dc2626;
         }
 
         .ticker-label {
-            background: var(--accent);
-            color: #122535;
-            font-family: 'Public Sans', sans-serif;
-            font-weight: 800;
-            font-size: 2.2rem;
-            padding: 0 40px;
-            height: calc(100% + 12px);
-            margin: -6px 0;
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+            color: #070b14;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            padding: 0 26px;
             display: flex;
             align-items: center;
+            gap: 10px;
             white-space: nowrap;
             flex-shrink: 0;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             z-index: 2;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
             transition: all 0.3s ease;
         }
 
+        .ticker-label i, 
+        .ticker-label svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.5px;
+            color: #070b14;
+        }
+
         .ticker-bar.alert-mode .ticker-label {
-            background: var(--danger);
-            color: white;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: #ffffff;
+        }
+
+        .ticker-bar.alert-mode .ticker-label i,
+        .ticker-bar.alert-mode .ticker-label svg {
+            color: #ffffff;
         }
 
         .ticker-content {
             flex-grow: 1;
             overflow: hidden;
-            white-space: nowrap;
+            display: flex;
+            align-items: center;
             position: relative;
+            background: #080c16;
         }
 
-        .ticker-text {
+        /* Seamless Infinite Ticker Track (0% to -50%) */
+        .ticker-track {
+            display: flex;
+            align-items: center;
+            width: max-content;
+            will-change: transform;
+            animation: tickerContinuous var(--ticker-duration, 35s) linear infinite;
+        }
+
+        .ticker-track:hover {
+            animation-play-state: paused;
+        }
+
+        .ticker-segment {
             display: inline-flex;
             align-items: center;
+            gap: 18px;
+            padding-right: 42px;
             white-space: nowrap;
-            padding-left: 100%;
-            animation: ticker 25s linear infinite;
-            font-size: 2.2rem;
+            font-family: 'Space Grotesk', 'Public Sans', sans-serif;
+            font-size: 0.98rem;
             font-weight: 600;
-            color: #EDECE4;
-            text-transform: uppercase;
+            color: #cbd5e1;
         }
 
-
-
-        .ticker-text span {
-            margin-right: 50px;
+        @keyframes tickerContinuous {
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+            100% {
+                transform: translate3d(-50%, 0, 0);
+            }
         }
 
-        .ticker-mr-module {
-            display: inline-flex !important;
-            align-items: center;
-            gap: 16px;
-            margin-right: 60px !important;
-        }
-
-        .ticker-mr-module span, 
-        .ticker-mr-module strong, 
-        .ticker-mr-module i {
-            margin-right: 0 !important;
-        }
-
-        .ticker-mr-badge {
-            padding: 4px 14px;
-            border-radius: 6px;
+        /* Modular Ticker Tokens & Badges */
+        .ticker-token-sep {
+            color: rgba(255, 255, 255, 0.25);
             font-weight: 800;
-            font-size: 0.82em;
-            letter-spacing: 1px;
+            font-size: 1.25rem;
+            user-select: none;
+            padding: 0 4px;
+        }
+
+        .ticker-token-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .ticker-mr-badge.busy {
-            background: rgba(255, 74, 90, 0.22);
-            border: 1.5px solid rgba(255, 74, 90, 0.6);
+        .ticker-token-badge.busy {
             color: #ff6b7b;
         }
 
-        .ticker-mr-badge.free {
-            background: rgba(74, 222, 128, 0.18);
-            border: 1.5px solid rgba(74, 222, 128, 0.5);
+        .ticker-token-badge.free {
             color: #4ade80;
         }
 
-        .ticker-text .highlight {
-            color: var(--accent);
-            font-weight: 700;
+        .ticker-token-user {
+            color: #fbbf24;
+            font-weight: 800;
+            font-size: 0.94rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .ticker-text .alert {
-            color: var(--danger);
+        .ticker-token-title {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.96rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .ticker-token-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.80rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .ticker-token-pill.busy {
+            background: rgba(244, 63, 94, 0.2);
+            border: 1px solid rgba(244, 63, 94, 0.5);
+            color: #fda4af;
+        }
+
+        .ticker-token-pill.free {
+            background: rgba(74, 222, 128, 0.16);
+            border: 1px solid rgba(74, 222, 128, 0.45);
+            color: #86efac;
+        }
+
+        .ticker-token-pill.avail {
+            background: rgba(56, 189, 248, 0.14);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #7dd3fc;
+        }
+
+        .ticker-token-next {
+            color: #38bdf8;
+            font-weight: 800;
+            font-size: 0.92rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+
+        .ticker-token-pill.info {
+            background: rgba(56, 189, 248, 0.18);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            color: #7dd3fc;
+        }
+
+        .ticker-token-pill.alert {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            color: #fde68a;
+        }
+
+        .ticker-token-pill.urgent {
+            background: rgba(239, 68, 68, 0.25);
+            border: 1px solid rgba(239, 68, 68, 0.6);
+            color: #fca5a5;
+        }
+
+        .ticker-token-text {
+            color: #e2e8f0;
             font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .ticker-manager-alert {
@@ -813,24 +912,13 @@
             justify-content: center;
             width: 100%;
             height: 100%;
-            font-size: 2.5rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: white;
             text-transform: uppercase;
             white-space: nowrap;
             padding: 0 20px;
             animation: pulse 2s infinite;
-        }
-
-        /* Animations */
-        @keyframes ticker {
-            0% {
-                transform: translate3d(0, 0, 0);
-            }
-
-            100% {
-                transform: translate3d(-100%, 0, 0);
-            }
         }
 
         @keyframes pulse {
@@ -1452,15 +1540,16 @@
         </div>
     </aside>
 
-    <!-- Bottom Ticker -->
-    <div class="ticker-bar" id="ticker-bar">
-        <div class="ticker-label" id="ticker-label">ÚLTIMA HORA</div>
-        <div class="ticker-content" id="ticker-content-box">
-            <div class="ticker-text" id="ticker-text">
-                <!-- Cargando... -->
-            </div>
+    <!-- Bottom Ticker (Continuous Broadcast Architecture) -->
+    <footer class="ticker-bar" id="ticker-bar">
+        <div class="ticker-label" id="ticker-label">
+            <i data-lucide="megaphone"></i>
+            <span>ÚLTIMA HORA</span>
         </div>
-    </div>
+        <div class="ticker-content" id="ticker-content-box">
+            <!-- Inyectado dinámicamente con track infinito continuo (Stitch) -->
+        </div>
+    </footer>
 
     <!-- Celebration Overlay -->
     <div id="celebration-overlay">
@@ -2686,50 +2775,64 @@
                 if (nextBooking) {
                     const nextUser = formatMRUser(nextBooking.created_by_name);
                     const nextTime = formatMRTime(nextBooking.start_time).toUpperCase();
-                    nextHtml = `<span style="color: #7dd3fc; display: inline-flex; align-items: center; gap: 4px;"><span class="mr-icon-box" style="width: 14px; height: 14px;"><i data-lucide="chevrons-right" style="width: 13px; height: 13px; color: #38bdf8;"></i></span>SIGUIENTE: <strong style="color: #ffffff;">${nextTime}</strong> (${nextUser})</span>`;
+                    nextHtml = `
+                        <span class="ticker-token-sep">·</span>
+                        <span class="ticker-token-next">
+                            <span class="mr-icon-box" style="width: 15px; height: 15px;"><i data-lucide="calendar" style="width: 13px; height: 13px; color: #38bdf8;"></i></span>
+                            PRÓXIMA: <strong style="color: #ffffff;">${nextTime}</strong> (${nextUser})
+                        </span>
+                    `;
                 }
 
                 return `
-                    <span class="ticker-mr-module">
-                        <span class="ticker-mr-badge busy">
-                            <span class="mr-status-dot busy"></span>
-                            SALA OCUPADA
-                        </span>
-                        <span style="display: inline-flex; align-items: center; gap: 7px; color: #ffffff;">
-                            <span class="mr-icon-box" style="width: 14px; height: 14px;"><i data-lucide="user" style="width: 13px; height: 13px; color: var(--accent);"></i></span>
-                            <strong style="color: var(--accent);">${currentUsername}</strong>
-                            <span style="opacity: 0.35;">·</span>
-                            <span>${displayCurrent.title}</span>
-                        </span>
-                        <span style="background: rgba(255, 74, 90, 0.2); border: 1px solid rgba(255, 74, 90, 0.45); color: #ff949d; font-size: 0.78em; font-weight: 800; padding: 2px 10px; border-radius: 6px;">
-                            FALTAN ${minsLeftText.toUpperCase()}
-                        </span>
-                        <span style="color: #4ade80; font-weight: 700;">
-                            LIBRE A LAS ${freeAtTime}
-                        </span>
-                        ${nextHtml}
+                    <span class="ticker-token-badge busy">
+                        <span class="mr-status-dot busy"></span> SALA OCUPADA
                     </span>
+                    <span class="ticker-token-sep">·</span>
+                    <span class="ticker-token-user">
+                        <span class="mr-icon-box" style="width: 15px; height: 15px;"><i data-lucide="user" style="width: 13px; height: 13px; color: #fbbf24;"></i></span>
+                        <span>${currentUsername}</span>
+                    </span>
+                    <span class="ticker-token-sep">·</span>
+                    <span class="ticker-token-title">${displayCurrent.title.toUpperCase()}</span>
+                    <span class="ticker-token-sep">·</span>
+                    <span class="ticker-token-pill busy">FALTAN ${minsLeftText.toUpperCase()}</span>
+                    ${nextHtml}
+                    <span class="ticker-token-sep">·</span>
+                    <span class="ticker-token-pill avail">LIBRE A LAS ${freeAtTime}</span>
                 `;
             } else {
-                let availabilityDetail = '<span style="color: #4ade80; font-weight: 700;">TODO EL DÍA</span>';
-                let nextHtml = '<span style="opacity: 0.6; display: inline-flex; align-items: center; gap: 5px;"><span class="mr-icon-box" style="width: 14px; height: 14px;"><i data-lucide="calendar-check" style="width: 13px; height: 13px; color: #4ade80;"></i></span>SIN MÁS JUNTAS HOY</span>';
+                let availabilityDetail = '';
+                let nextHtml = '';
 
                 if (nextBooking) {
                     const nextTime = formatMRTime(nextBooking.start_time).toUpperCase();
                     const nextUser = formatMRUser(nextBooking.created_by_name);
-                    availabilityDetail = `<span style="color: #ffffff; font-weight: 700;">HASTA LAS <span style="color: #4ade80;">${nextTime}</span></span>`;
-                    nextHtml = `<span style="color: #7dd3fc; display: inline-flex; align-items: center; gap: 4px;"><span class="mr-icon-box" style="width: 14px; height: 14px;"><i data-lucide="user" style="width: 13px; height: 13px; color: #38bdf8;"></i></span>SIGUIENTE: <strong style="color: #ffffff;">${nextUser}</strong></span>`;
+                    availabilityDetail = `<span class="ticker-token-pill free">HASTA LAS ${nextTime}</span>`;
+                    nextHtml = `
+                        <span class="ticker-token-sep">·</span>
+                        <span class="ticker-token-next">
+                            <span class="mr-icon-box" style="width: 15px; height: 15px;"><i data-lucide="calendar" style="width: 13px; height: 13px; color: #38bdf8;"></i></span>
+                            PRÓXIMA: <strong style="color: #ffffff;">${nextTime}</strong> (${nextUser})
+                        </span>
+                    `;
+                } else {
+                    availabilityDetail = `<span class="ticker-token-pill free">TODO EL DÍA</span>`;
+                    nextHtml = `
+                        <span class="ticker-token-sep">·</span>
+                        <span class="ticker-token-title" style="color: #94a3b8;">SIN MÁS JUNTAS PROGRAMADAS HOY</span>
+                    `;
                 }
 
                 return `
-                    <span class="ticker-mr-module">
-                        <span class="ticker-mr-badge free">
-                            <span class="mr-status-dot free"></span>
-                            SALA DISPONIBLE
-                        </span>
-                        ${availabilityDetail}
-                        ${nextHtml}
+                    <span class="ticker-token-badge free">
+                        <span class="mr-status-dot free"></span> SALA DISPONIBLE
                     </span>
+                    <span class="ticker-token-sep">·</span>
+                    ${availabilityDetail}
+                    <span class="ticker-token-sep">·</span>
+                    <span class="ticker-token-pill avail">ACCESO LIBRE</span>
+                    ${nextHtml}
                 `;
             }
         }
@@ -2773,25 +2876,22 @@
                 if (currentTickerHTML !== `manager:${data.managerMsg}`) {
                     currentTickerHTML = `manager:${data.managerMsg}`;
                     tickerBar.classList.add('alert-mode');
-                    tickerLabel.innerText = "GERENCIA";
+                    tickerLabel.innerHTML = `<i data-lucide="alert-octagon"></i><span>GERENCIA</span>`;
                     tickerContentBox.innerHTML = managerHTML;
                     if (window.refreshIcons) window.refreshIcons();
                 }
             } else {
-                // MODO NORMAL
+                // MODO NORMAL (STITCH CONTINUOUS BROADCAST MARQUEE)
                 tickerBar.classList.remove('alert-mode');
-                tickerLabel.innerText = "ÚLTIMA HORA";
-                tickerLabel.style.backgroundColor = "var(--accent)";
+                tickerLabel.innerHTML = `<i data-lucide="megaphone"></i><span>ÚLTIMA HORA</span>`;
 
-                let charCount = 0;
-                let innerHtml = '';
+                let tokens = [];
                 const now = Date.now();
 
                 // 1. Información de la Sala de Juntas en el Marquee
                 const mrHTML = getMeetingRoomTickerHTML();
                 if (mrHTML) {
-                    innerHtml += mrHTML;
-                    charCount += 120;
+                    tokens.push(mrHTML);
                 }
 
                 // 2. Avisos de Firebase / Admin (filtrando mensajes fantasma)
@@ -2807,27 +2907,37 @@
                         if (!text || isGhostTicker(text)) return;
 
                         if (text.includes('span style')) {
-                            // Mensajes desde Admin con colores personalizados
-                            innerHtml += `<span>${text}</span>`;
-                        } else if (text.includes('URGENTE') || text.includes('RECORDATORIO') || text.includes('COMUNICADO:')) {
-                            innerHtml += `<span><span class="alert">ATENCIÓN:</span> ${text}</span>`;
+                            // Mensajes desde Admin con estilos propios
+                            tokens.push(`<span class="ticker-token-text">${text}</span>`);
+                        } else if (text.includes('URGENTE')) {
+                            tokens.push(`<span class="ticker-token-pill urgent">URGENTE</span> <span class="ticker-token-text">${text.replace(/URGENTE:?/i, '').trim()}</span>`);
+                        } else if (text.includes('RECORDATORIO') || text.includes('ATENCIÓN') || text.includes('COMUNICADO:')) {
+                            tokens.push(`<span class="ticker-token-pill alert">ATENCIÓN</span> <span class="ticker-token-text">${text}</span>`);
                         } else {
-                            innerHtml += `<span><span class="highlight">INFO:</span> ${text}</span>`;
+                            tokens.push(`<span class="ticker-token-pill info">INFO</span> <span class="ticker-token-text">${text}</span>`);
                         }
-                        charCount += text.replace(/<[^>]+>/g, '').length + 20; // 20 por el espaciado
                     });
                 }
 
-                if (innerHtml === '') {
-                    innerHtml = '<span>Sin anuncios actuales.</span>';
-                    charCount = 40;
+                if (tokens.length === 0) {
+                    tokens.push('<span class="ticker-token-title" style="color: #64748b;">SIN ANUNCIOS ADICIONALES ACTIVOS</span>');
                 }
 
-                if (currentTickerHTML !== innerHtml) {
-                    currentTickerHTML = innerHtml;
-                    // Ajustar velocidad en base al número de letras (~0.25s por letra) min 25s
-                    let dur = Math.max(25, Math.floor(charCount * 0.25));
-                    tickerContentBox.innerHTML = `<div class="ticker-text" id="ticker-text" style="animation-duration: ${dur}s">${innerHtml}</div>`;
+                // Unir los tokens con el separador de punto Stitch
+                const segmentHTML = tokens.join('<span class="ticker-token-sep">·</span>');
+
+                if (currentTickerHTML !== segmentHTML) {
+                    currentTickerHTML = segmentHTML;
+                    // Calcular duración en base a la cantidad de caracteres (~32s - 85s)
+                    const charCount = segmentHTML.replace(/<[^>]+>/g, '').length;
+                    const dur = Math.max(30, Math.min(85, Math.floor(charCount * 0.22)));
+
+                    tickerContentBox.innerHTML = `
+                        <div class="ticker-track" style="animation-duration: ${dur}s;">
+                            <div class="ticker-segment">${segmentHTML}</div>
+                            <div class="ticker-segment" aria-hidden="true">${segmentHTML}</div>
+                        </div>
+                    `;
                     if (window.refreshIcons) window.refreshIcons();
                 }
             }
