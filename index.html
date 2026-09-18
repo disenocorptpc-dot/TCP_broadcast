@@ -241,6 +241,25 @@
             transition: all 0.3s ease;
         }
 
+        .mr-icon-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        .mr-icon-box svg,
+        .mr-icon-box i {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2.2px;
+            display: block;
+        }
+
         .mr-door-sign {
             display: flex;
             flex-direction: column;
@@ -1299,16 +1318,14 @@
                     </div>
                 </div>
 
-                <!-- Bottom Floating Editorial Card -->
-                <div class="gallery-card-wrapper">
-                    <div id="gallery-editorial-card" class="gallery-editorial-card">
-                        <div class="gallery-meta-row">
-                            <div id="gallery-author" class="gallery-author-chip" style="display: none;"></div>
-                            <div id="gallery-dots-container" class="gallery-dots"></div>
-                        </div>
-                        <h1 id="gallery-title" class="gallery-title-text"></h1>
-                        <p id="gallery-desc" class="gallery-desc-text"></p>
+                <!-- Bottom Full-Width Cinematic Fade with Large Typography -->
+                <div id="gallery-text-container" style="position: relative; z-index: 4; width: 100%; padding: 80px 48px 36px 48px; background: linear-gradient(to top, rgba(4, 9, 14, 0.96) 0%, rgba(4, 9, 14, 0.72) 55%, rgba(4, 9, 14, 0.25) 80%, transparent 100%); box-sizing: border-box; transition: opacity 0.3s ease;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <div id="gallery-author" style="display: none; padding: 6px 16px; border-radius: 9999px; font-weight: 800; font-size: 0.88rem; color: white; letter-spacing: 0.5px; text-transform: uppercase;"></div>
+                        <div id="gallery-dots-container" class="gallery-dots"></div>
                     </div>
+                    <h1 id="gallery-title" style="font-family: 'Space Grotesk', sans-serif; font-size: 3.5rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; line-height: 1.1; text-shadow: 0 4px 18px rgba(0,0,0,0.95); letter-spacing: -0.01em;"></h1>
+                    <p id="gallery-desc" style="font-family: 'Public Sans', sans-serif; font-size: 1.45rem; color: rgba(255,255,255,0.88); font-weight: 400; max-width: 92%; line-height: 1.4; text-shadow: 0 2px 10px rgba(0,0,0,0.9); margin: 0;"></p>
                 </div>
             </div>
 
@@ -1417,13 +1434,6 @@
             </div>
         </div>
 
-        <!-- Widget 2: Distribución por Módulo (Pulse) -->
-        <div class="widget" id="pulse-modules-widget">
-            <h2 style="display: flex; align-items: center; gap: 8px;"><i data-lucide="pie-chart" style="color: var(--accent); width: 1.1em; height: 1.1em;"></i> Distribución por Módulo</h2>
-            <div id="pulse-modules-container">
-                <!-- Se inyecta dinámicamente -->
-            </div>
-        </div>
 
         <!-- Widget 3: Cumpleaños -->
         <div class="widget" id="birthday-widget">
@@ -1691,13 +1701,13 @@
                 // Inyectar datos a la foto actual
                 let slide = activeGalleryItems[currentGalleryIdx];
                 let authorBadge = document.getElementById('gallery-author');
-                let card = document.getElementById('gallery-editorial-card');
+                let card = document.getElementById('gallery-text-container');
 
                 if (card) {
-                    card.classList.add('slide-transitioning');
+                    card.style.opacity = '0';
                     setTimeout(() => {
-                        card.classList.remove('slide-transitioning');
-                    }, 120);
+                        card.style.opacity = '1';
+                    }, 150);
                 }
 
                 document.getElementById('gallery-title').innerText = slide.title || '';
@@ -1726,9 +1736,9 @@
 
                 if (slide.author) {
                     authorBadge.style.display = "inline-flex";
-                    authorBadge.innerHTML = `<i data-lucide="user" style="width: 12px; height: 12px;"></i> Aviso de: ${slide.author}`;
-                    authorBadge.style.backgroundColor = slide.color || "rgba(184, 143, 105, 0.25)";
-                    authorBadge.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                    authorBadge.innerHTML = `<i data-lucide="user" style="width: 14px; height: 14px; vertical-align: -0.12em; margin-right: 4px;"></i> Aviso de: ${slide.author}`;
+                    authorBadge.style.backgroundColor = slide.color || "rgba(184, 143, 105, 0.35)";
+                    authorBadge.style.border = "1px solid rgba(255, 255, 255, 0.2)";
                 } else {
                     authorBadge.style.display = "none";
                 }
@@ -2310,7 +2320,6 @@
 
             let statusCardHTML = '';
             let nextCardHTML = '';
-            let availCardHTML = '';
 
             // 1. MÓDULO DE ESTADO (Ocupada en Rojo / Libre en Verde)
             if (isOccupied && displayCurrent) {
@@ -2318,34 +2327,55 @@
                 const minsLeft = Math.max(1, Math.round((end - now) / 60000));
                 const minsLeftText = minsLeft > 60 ? `${Math.floor(minsLeft/60)}h ${minsLeft%60}m` : `${minsLeft} min`;
                 const currentUsername = formatMRUser(displayCurrent.created_by_name);
+                const freeAtTime = formatMRTime(displayCurrent.end_time);
 
                 statusCardHTML = `
                     <div class="mr-status-card busy">
                         <div class="mr-door-state busy" style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">
-                                <span style="width: 9px; height: 9px; border-radius: 50%; background: #ff4a5a; box-shadow: 0 0 10px #ff4a5a; animation: pulse 1.5s infinite;"></span>
-                                OCUPADA
+                            <span style="display: inline-flex; align-items: center; gap: 7px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">
+                                <span class="mr-status-dot busy"></span>
+                                SALA OCUPADA
                             </span>
-                            <span style="font-size: 0.68rem; font-weight: 700; color: #ff949d; background: rgba(255, 74, 90, 0.25); padding: 2px 7px; border-radius: 4px;">
+                            <span style="font-size: 0.68rem; font-weight: 700; color: #ff949d; background: rgba(255, 74, 90, 0.25); border: 1px solid rgba(255, 74, 90, 0.4); padding: 2px 7px; border-radius: 4px;">
                                 FALTAN ${minsLeftText.toUpperCase()}
                             </span>
                         </div>
-                        <div class="mr-user-title" style="display: flex; align-items: center; gap: 7px;">
-                            <i data-lucide="user" style="width: 1.05em; height: 1.05em; opacity: 0.85;"></i>
-                            <span>${currentUsername}</span>
+                        <div class="mr-user-title" style="display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 1.18rem; font-weight: 800; color: #ffffff;">
+                            <span class="mr-icon-box">
+                                <i data-lucide="user" style="color: var(--accent);"></i>
+                            </span>
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${currentUsername}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 5px; font-size: 0.78rem; color: #ffb4ba;">
+                            <span class="mr-icon-box">
+                                <i data-lucide="clock" style="color: #ff949d;"></i>
+                            </span>
+                            <span>Libre a las ${freeAtTime}</span>
                         </div>
                     </div>
                 `;
             } else {
+                let freeUntilTitle = "Disponible todo el día";
+                if (nextBooking) {
+                    freeUntilTitle = `Libre hasta ${formatMRTime(nextBooking.start_time)}`;
+                }
+
                 statusCardHTML = `
                     <div class="mr-status-card free">
-                        <div class="mr-door-state free" style="display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">
-                            <span style="width: 9px; height: 9px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 10px #4ade80;"></span>
-                            DISPONIBLE
+                        <div class="mr-door-state free" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="display: inline-flex; align-items: center; gap: 7px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">
+                                <span class="mr-status-dot free"></span>
+                                SALA DISPONIBLE
+                            </span>
+                            <span style="font-size: 0.68rem; font-weight: 700; color: #86efac; background: rgba(74, 222, 128, 0.15); border: 1px solid rgba(74, 222, 128, 0.3); padding: 2px 7px; border-radius: 4px;">
+                                ACCESO LIBRE
+                            </span>
                         </div>
-                        <div class="mr-user-title free" style="display: flex; align-items: center; gap: 7px;">
-                            <i data-lucide="check-circle-2" style="width: 1.05em; height: 1.05em; color: #4ade80;"></i>
-                            <span>SALA LIBRE</span>
+                        <div class="mr-user-title free" style="display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.96rem; font-weight: 800; color: #ffffff;">
+                            <span class="mr-icon-box">
+                                <i data-lucide="clock" style="color: #4ade80;"></i>
+                            </span>
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${freeUntilTitle}</span>
                         </div>
                     </div>
                 `;
@@ -2365,14 +2395,19 @@
                     const nextUser = formatMRUser(b.created_by_name);
                     const nextTime = formatMRTime(b.start_time).toUpperCase();
                     const isFirst = idx === 0;
-                    const borderStyle = isFirst && upcomingList.length > 1 ? 'padding-bottom: 5px; margin-bottom: 5px; border-bottom: 1px dashed rgba(56, 189, 248, 0.25);' : '';
+                    const borderStyle = isFirst && upcomingList.length > 1 ? 'padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px dashed rgba(56, 189, 248, 0.25);' : '';
                     return `
-                        <div class="mr-next-row" style="${borderStyle}">
-                            <span class="mr-next-label" style="display: inline-flex; align-items: center; gap: 5px;">
-                                <i data-lucide="${isFirst ? 'chevrons-right' : 'calendar'}" style="color: #38bdf8; width: 1.05em; height: 1.05em;"></i> ${isFirst ? 'SIG:' : ''} <strong>${nextTime}</strong>
+                        <div class="mr-next-row" style="${borderStyle} display: flex; justify-content: space-between; align-items: center;">
+                            <span class="mr-next-label" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 800; color: #ffffff;">
+                                <span class="mr-icon-box">
+                                    <i data-lucide="${isFirst ? 'chevrons-right' : 'calendar'}" style="color: #38bdf8;"></i>
+                                </span>
+                                <span>${isFirst ? 'SIG:' : 'POST:'} <strong>${nextTime}</strong></span>
                             </span>
-                            <span class="mr-next-user" style="display: inline-flex; align-items: center; gap: 5px;">
-                                <i data-lucide="user" style="width: 0.95em; height: 0.95em; opacity: 0.85;"></i>
+                            <span class="mr-next-user" style="display: inline-flex; align-items: center; gap: 5px; font-size: 0.82rem; font-weight: 700; color: #7dd3fc;">
+                                <span class="mr-icon-box">
+                                    <i data-lucide="user" style="color: var(--accent);"></i>
+                                </span>
                                 <span>${nextUser}</span>
                             </span>
                         </div>
@@ -2386,32 +2421,13 @@
                 `;
             } else {
                 nextCardHTML = `
-                    <div class="mr-next-card" style="justify-content: center; text-align: center;">
-                        <span style="font-size: 0.82rem; font-weight: 700; color: #93c5fd; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
-                            <i data-lucide="calendar-check" style="width: 1.05em; height: 1.05em; color: #93c5fd;"></i>
+                    <div class="mr-next-card" style="justify-content: center; text-align: center; padding: 10px 12px;">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: #93c5fd; display: inline-flex; align-items: center; justify-content: center; gap: 7px;">
+                            <span class="mr-icon-box">
+                                <i data-lucide="calendar-check" style="color: #93c5fd;"></i>
+                            </span>
                             <span>Sin más juntas hoy</span>
                         </span>
-                    </div>
-                `;
-            }
-
-            // 3. MÓDULO DE DISPONIBILIDAD (Recuadro Verde al Final)
-            if (isOccupied && displayCurrent) {
-                const freeAtTime = formatMRTime(displayCurrent.end_time);
-                availCardHTML = `
-                    <div class="mr-avail-card">
-                        Disponible ${freeAtTime}
-                    </div>
-                `;
-            } else {
-                let freeUntilTitle = "Libre todo el día";
-                if (nextBooking) {
-                    const nextTime = formatMRTime(nextBooking.start_time);
-                    freeUntilTitle = `Disponible hasta ${nextTime}`;
-                }
-                availCardHTML = `
-                    <div class="mr-avail-card">
-                        ${freeUntilTitle}
                     </div>
                 `;
             }
@@ -2420,14 +2436,13 @@
                 <div class="mr-door-sign">
                     <div class="mr-door-top" style="margin-bottom: 3px;">
                         <span class="mr-door-title" style="letter-spacing: 1.5px; display: inline-flex; align-items: center; gap: 7px;">
-                            <i data-lucide="door-closed" style="width: 1.15em; height: 1.15em; color: var(--accent);"></i>
+                            <span class="mr-icon-box"><i data-lucide="door-closed" style="color: var(--accent);"></i></span>
                             <span>SALA DE JUNTAS</span>
                         </span>
                     </div>
 
                     ${statusCardHTML}
                     ${nextCardHTML}
-                    ${availCardHTML}
                 </div>
             `;
             if (window.refreshIcons) window.refreshIcons();
@@ -2470,13 +2485,13 @@
                         <div>
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
                                 <span class="mr-chip" style="background: rgba(255, 74, 90, 0.18); color: #ff8b94; border: 1px solid rgba(255, 74, 90, 0.35);">
-                                    <span class="mr-status-dot busy"></span> EN VIVO · REUNIÓN PRIVADA
+                                    <span class="mr-status-dot busy"></span> EN SESIÓN PRIVADA
                                 </span>
                                 <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); font-family: monospace;">${formatMRTime(start, true)} — ${formatMRTime(end, true)}</span>
                             </div>
-                            <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.1rem; font-weight: 800; color: #ffffff; margin: 0 0 12px 0; line-height: 1.18; letter-spacing: -0.01em;">${displayCurrent.title}</h2>
+                            <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.3rem; font-weight: 800; color: #ffffff; margin: 0 0 12px 0; line-height: 1.18; letter-spacing: -0.01em;">${displayCurrent.title}</h2>
                             <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(184, 143, 105, 0.25); border-radius: 8px; padding: 7px 14px;">
-                                <i data-lucide="user-check" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
+                                <span class="mr-icon-box"><i data-lucide="user-check" style="color: var(--accent);"></i></span>
                                 <span style="font-size: 0.9rem; color: #e2e8f0;">Reservado por: <strong style="color: var(--accent); font-weight: 700;">${formatMRUser(displayCurrent.created_by_name)}</strong></span>
                             </div>
                         </div>
@@ -2486,7 +2501,7 @@
                                 <span style="font-size: 0.76rem; color: #ff949d; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px;">TIEMPO RESTANTE</span>
                                 <span style="font-size: 0.78rem; color: rgba(255,255,255,0.6); font-family: monospace; font-variant-numeric: tabular-nums;">${progressPct}% transcurrido</span>
                             </div>
-                            <div style="font-family: 'Space Grotesk', monospace; font-size: 3.2rem; font-weight: 800; color: #ffffff; line-height: 1.05; margin: 6px 0; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;">${remainingFormatted}</div>
+                            <div style="font-family: 'Space Grotesk', monospace; font-size: 3.4rem; font-weight: 800; color: #ffffff; line-height: 1.05; margin: 6px 0; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;">${remainingFormatted}</div>
                             <div class="mr-progress-track">
                                 <div class="mr-progress-bar" style="width: ${progressPct}%;"></div>
                             </div>
@@ -2498,74 +2513,91 @@
 
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; font-size: 0.84rem; color: var(--text-muted);">
                             <span style="display: inline-flex; align-items: center; gap: 6px;">
-                                <i data-lucide="clock" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
-                                <span>${nextBooking ? `Siguiente junta: <strong style="color:#ffffff;">${formatMRTime(nextBooking.start_time, true)}</strong> · ${formatMRUser(nextBooking.created_by_name)}` : 'Sin más juntas programadas hoy'}</span>
+                                <span class="mr-icon-box"><i data-lucide="clock" style="color: var(--accent);"></i></span>
+                                <span>${nextBooking ? `Siguiente: <strong style="color:#ffffff;">${formatMRTime(nextBooking.start_time, true)}</strong> · ${formatMRUser(nextBooking.created_by_name)}` : 'Sin más juntas programadas hoy'}</span>
                             </span>
                             <span style="color: var(--accent); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; letter-spacing: 0.5px; opacity: 0.9;" onclick="document.getElementById('meeting-room-slide').classList.remove('active')">
-                                <i data-lucide="arrow-left" style="width: 1.05em; height: 1.05em;"></i>
+                                <span class="mr-icon-box"><i data-lucide="arrow-left" style="color: var(--accent);"></i></span>
                                 <span>Volver</span>
                             </span>
                         </div>
                     `;
                 } else {
-                    let freeUntilText = "Libre todo el día";
-                    let nextDetail = "No hay más eventos registrados para hoy.";
+                    let freeUntilHeadline = "Disponible todo el día";
+                    let nextBookingCardHTML = `
+                        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 22px 20px;">
+                            <div style="font-size: 0.76rem; font-weight: 800; color: #86efac; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                <span class="mr-icon-box"><i data-lucide="check-circle-2" style="color: #4ade80;"></i></span>
+                                AGENDA TOTALMENTE DESPEJADA
+                            </div>
+                            <p style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.5; margin: 0;">
+                                No hay reuniones adicionales agendadas para el día de hoy en Pulse. El espacio está disponible para sesiones de trabajo presenciales o videollamadas del equipo.
+                            </p>
+                        </div>
+                    `;
+
                     if (nextBooking) {
                         const startNext = new Date(nextBooking.start_time);
                         const isToday = startNext.getDate() === now.getDate();
-                        freeUntilText = isToday ? `Libre hasta las ${formatMRTime(nextBooking.start_time, true)}` : `Libre el resto del día`;
-                        nextDetail = `Próxima reserva: <strong style="color: #ffffff;">${formatMRTime(nextBooking.start_time, true)}</strong> (${isToday ? 'Hoy' : 'Mañana'}) · ${formatMRUser(nextBooking.created_by_name)}`;
+                        const timeStr = formatMRTime(nextBooking.start_time, true);
+                        freeUntilHeadline = isToday ? `Libre hasta las <span style="color: #4ade80;">${timeStr}</span>` : `Disponible todo el día`;
+
+                        nextBookingCardHTML = `
+                            <div style="background: rgba(255, 255, 255, 0.04); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 18px 22px; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="font-size: 0.76rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.2px; display: inline-flex; align-items: center; gap: 6px;">
+                                        <span class="mr-icon-box"><i data-lucide="calendar" style="color: #38bdf8;"></i></span>
+                                        PRÓXIMA RESERVA PROGRAMADA
+                                    </span>
+                                    <span style="font-size: 0.8rem; font-weight: 700; color: #ffffff; background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); padding: 3px 10px; border-radius: 6px; font-family: monospace;">
+                                        ${isToday ? 'HOY' : 'MAÑANA'} · ${timeStr}
+                                    </span>
+                                </div>
+                                <div style="font-family: 'Space Grotesk', sans-serif; font-size: 1.45rem; font-weight: 700; color: #ffffff; margin-bottom: 8px; line-height: 1.25;">
+                                    ${nextBooking.title}
+                                </div>
+                                <div style="display: inline-flex; align-items: center; gap: 7px; font-size: 0.92rem; color: #94a3b8;">
+                                    <span class="mr-icon-box"><i data-lucide="user" style="color: var(--accent);"></i></span>
+                                    <span>Reservado por: <strong style="color: #e2e8f0; font-weight: 700;">${formatMRUser(nextBooking.created_by_name)}</strong></span>
+                                </div>
+                            </div>
+                        `;
                     }
 
                     heroBox.innerHTML = `
                         <div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                                 <span class="mr-chip" style="background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.35);">
                                     <span class="mr-status-dot free"></span> SALA DISPONIBLE
                                 </span>
-                                <span style="font-size: 0.78rem; font-weight: 700; color: #4ade80; text-transform: uppercase;">ACCESO ABIERTO</span>
+                                <span style="font-size: 0.78rem; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: 1px;">ACCESO LIBRE</span>
                             </div>
-                            <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 800; color: #ffffff; margin: 0 0 10px 0; line-height: 1.15; letter-spacing: -0.01em;">${freeUntilText}</h2>
-                            <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.45; margin: 0 0 14px 0;">
-                                El espacio ejecutivo se encuentra libre y acondicionado para presentaciones, juntas estratégicas o llamadas confidenciales.
+                            <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 3.2rem; font-weight: 800; color: #ffffff; margin: 0 0 14px 0; line-height: 1.08; letter-spacing: -0.02em;">
+                                ${freeUntilHeadline}
+                            </h2>
+                            <p style="font-size: 0.96rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                                Espacio libre para uso ejecutivo. Consulta la agenda del día o agenda tu siguiente reunión en tiempo real desde Pulse.
                             </p>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;">
-                                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 10px; font-size: 0.78rem; color: #cbd5e1; display: flex; align-items: center; gap: 7px;">
-                                    <i data-lucide="users" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
-                                    <span>Capacidad 14p</span>
-                                </div>
-                                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 10px; font-size: 0.78rem; color: #cbd5e1; display: flex; align-items: center; gap: 7px;">
-                                    <i data-lucide="tv" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
-                                    <span>Pantalla 85" 4K</span>
-                                </div>
-                                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 10px; font-size: 0.78rem; color: #cbd5e1; display: flex; align-items: center; gap: 7px;">
-                                    <i data-lucide="video" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
-                                    <span>Poly Studio 4K</span>
-                                </div>
-                                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 7px 10px; font-size: 0.78rem; color: #cbd5e1; display: flex; align-items: center; gap: 7px;">
-                                    <i data-lucide="coffee" style="width: 1.1em; height: 1.1em; color: var(--accent);"></i>
-                                    <span>Coffee Service</span>
-                                </div>
-                            </div>
                         </div>
 
-                        <div style="background: linear-gradient(135deg, rgba(74, 222, 128, 0.10) 0%, rgba(10, 25, 20, 0.5) 100%); border: 1px solid rgba(74, 222, 128, 0.35); border-radius: 14px; padding: 18px 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
-                            <div style="font-size: 0.75rem; color: #86efac; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; display: flex; align-items: center; gap: 6px;">
-                                <i data-lucide="bookmark-plus" style="width: 1.1em; height: 1.1em;"></i>
-                                <span>APARTA TU LUGAR EN PULSE</span>
+                        ${nextBookingCardHTML}
+
+                        <div style="background: linear-gradient(135deg, rgba(74, 222, 128, 0.10) 0%, rgba(10, 25, 20, 0.5) 100%); border: 1.5px solid rgba(74, 222, 128, 0.35); border-radius: 14px; padding: 20px 22px; box-shadow: 0 8px 24px rgba(0,0,0,0.35);">
+                            <div style="font-size: 0.76rem; color: #86efac; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; display: flex; align-items: center; gap: 7px; margin-bottom: 6px;">
+                                <span class="mr-icon-box"><i data-lucide="bookmark-plus" style="color: #4ade80;"></i></span>
+                                <span>RESERVA TU ESPACIO EN PULSE</span>
                             </div>
-                            <div style="font-family: 'Space Grotesk', monospace; font-size: 1.25rem; font-weight: 700; color: #ffffff; margin: 8px 0 4px 0; letter-spacing: -0.01em;">pulse.thepalacecompany.com</div>
-                            <div style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.65);">Sección Sala de Juntas · Bloques de 30m a 2h</div>
+                            <div style="font-family: 'Space Grotesk', monospace; font-size: 1.4rem; font-weight: 700; color: #ffffff; margin: 4px 0; letter-spacing: -0.01em;">pulse.thepalacecompany.com</div>
+                            <div style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.65);">Sección Sala de Juntas · Bloques de 30m a 2h</div>
                         </div>
 
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; font-size: 0.84rem; color: var(--text-muted);">
                             <span style="display: inline-flex; align-items: center; gap: 6px;">
-                                <i data-lucide="calendar" style="width: 1.1em; height: 1.1em; color: #4ade80;"></i>
-                                <span>${nextDetail}</span>
+                                <span class="mr-icon-box"><i data-lucide="radio" style="color: #4ade80;"></i></span>
+                                <span>Sincronización en tiempo real vía Pulse</span>
                             </span>
                             <span style="color: var(--accent); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; letter-spacing: 0.5px; opacity: 0.9;" onclick="document.getElementById('meeting-room-slide').classList.remove('active')">
-                                <i data-lucide="arrow-left" style="width: 1.05em; height: 1.05em;"></i>
+                                <span class="mr-icon-box"><i data-lucide="arrow-left" style="color: var(--accent);"></i></span>
                                 <span>Volver</span>
                             </span>
                         </div>
@@ -2648,23 +2680,23 @@
                 const minsLeft = Math.max(1, Math.round((end - now) / 60000));
                 const minsLeftText = minsLeft > 60 ? `${Math.floor(minsLeft / 60)}h ${minsLeft % 60}m` : `${minsLeft} min`;
                 const currentUsername = formatMRUser(displayCurrent.created_by_name);
-                const freeAtTime = formatMRTime(displayCurrent.end_time);
+                const freeAtTime = formatMRTime(displayCurrent.end_time).toUpperCase();
 
                 let nextHtml = '';
                 if (nextBooking) {
                     const nextUser = formatMRUser(nextBooking.created_by_name);
-                    const nextTime = formatMRTime(nextBooking.start_time);
-                    nextHtml = `<span style="color: #7dd3fc; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="chevrons-right" style="width: 0.9em; height: 0.9em; color: #38bdf8; vertical-align: -0.1em;"></i>SIG: <strong style="color: #ffffff;">${nextTime.toUpperCase()}</strong> (${nextUser})</span>`;
+                    const nextTime = formatMRTime(nextBooking.start_time).toUpperCase();
+                    nextHtml = `<span style="color: #7dd3fc; display: inline-flex; align-items: center; gap: 4px;"><span class="mr-icon-box" style="width: 14px; height: 14px;"><i data-lucide="chevrons-right" style="width: 13px; height: 13px; color: #38bdf8;"></i></span>SIGUIENTE: <strong style="color: #ffffff;">${nextTime}</strong> (${nextUser})</span>`;
                 }
 
                 return `
                     <span class="ticker-mr-module">
                         <span class="ticker-mr-badge busy">
-                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #ff4a5a; box-shadow: 0 0 12px #ff4a5a; animation: pulse 1.5s infinite;"></span>
+                            <span class="mr-status-dot busy"></span>
                             SALA OCUPADA
                         </span>
                         <span style="display: inline-flex; align-items: center; gap: 7px; color: #ffffff;">
-                            <i data-lucide="user" style="width: 0.85em; height: 0.85em; color: var(--accent); vertical-align: -0.1em;"></i>
+                            <span class="mr-icon-box" style="width: 14px; height: 14px;"><i data-lucide="user" style="width: 13px; height: 13px; color: var(--accent);"></i></span>
                             <strong style="color: var(--accent);">${currentUsername}</strong>
                             <span style="opacity: 0.35;">·</span>
                             <span>${displayCurrent.title}</span>
@@ -2673,31 +2705,29 @@
                             FALTAN ${minsLeftText.toUpperCase()}
                         </span>
                         <span style="color: #4ade80; font-weight: 700;">
-                            DISPONIBLE ${freeAtTime.toUpperCase()}
+                            LIBRE A LAS ${freeAtTime}
                         </span>
                         ${nextHtml}
                     </span>
                 `;
             } else {
-                let freeUntilTitle = "LIBRE TODO EL DÍA";
-                let nextHtml = '<span style="opacity: 0.6; display: inline-flex; align-items: center; gap: 5px;"><i data-lucide="calendar-check" style="width: 0.85em; height: 0.85em; color: #4ade80; vertical-align: -0.1em;"></i>SIN MÁS JUNTAS HOY</span>';
+                let availabilityDetail = '<span style="color: #4ade80; font-weight: 700;">TODO EL DÍA</span>';
+                let nextHtml = '<span style="opacity: 0.6; display: inline-flex; align-items: center; gap: 5px;"><span class="mr-icon-box" style="width: 14px; height: 14px;"><i data-lucide="calendar-check" style="width: 13px; height: 13px; color: #4ade80;"></i></span>SIN MÁS JUNTAS HOY</span>';
 
                 if (nextBooking) {
-                    const nextTime = formatMRTime(nextBooking.start_time);
+                    const nextTime = formatMRTime(nextBooking.start_time).toUpperCase();
                     const nextUser = formatMRUser(nextBooking.created_by_name);
-                    freeUntilTitle = `DISPONIBLE HASTA LAS ${nextTime.toUpperCase()}`;
-                    nextHtml = `<span style="color: #7dd3fc; display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="calendar" style="width: 0.85em; height: 0.85em; color: #38bdf8; vertical-align: -0.1em;"></i>PRÓXIMA: <strong style="color: #ffffff;">${nextTime.toUpperCase()}</strong> (${nextUser})</span>`;
+                    availabilityDetail = `<span style="color: #ffffff; font-weight: 700;">HASTA LAS <span style="color: #4ade80;">${nextTime}</span></span>`;
+                    nextHtml = `<span style="color: #7dd3fc; display: inline-flex; align-items: center; gap: 4px;"><span class="mr-icon-box" style="width: 14px; height: 14px;"><i data-lucide="user" style="width: 13px; height: 13px; color: #38bdf8;"></i></span>SIGUIENTE: <strong style="color: #ffffff;">${nextUser}</strong></span>`;
                 }
 
                 return `
                     <span class="ticker-mr-module">
                         <span class="ticker-mr-badge free">
-                            <span style="width: 10px; height: 10px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 12px #4ade80;"></span>
+                            <span class="mr-status-dot free"></span>
                             SALA DISPONIBLE
                         </span>
-                        <span style="color: #ffffff; font-weight: 700;">
-                            ${freeUntilTitle}
-                        </span>
+                        ${availabilityDetail}
                         ${nextHtml}
                     </span>
                 `;
@@ -2723,6 +2753,13 @@
 
         let currentTickerHTML = "";
         window.lastFirebaseState = null;
+
+        // Filtro defensivo contra mensajes fantasmas (sg medios, salirs, etc.)
+        function isGhostTicker(str) {
+            if (!str) return true;
+            const lower = String(str).toLowerCase();
+            return lower.includes('sg medios') || lower.includes('sg_medios') || lower.includes('salirs');
+        }
 
         function updateTickerDOM(data = {}) {
             const tickerBar = document.getElementById('ticker-bar');
@@ -2757,7 +2794,7 @@
                     charCount += 120;
                 }
 
-                // 2. Avisos de Firebase / Admin
+                // 2. Avisos de Firebase / Admin (filtrando mensajes fantasma)
                 if (data.tickers && data.tickers.length > 0) {
                     data.tickers.forEach(t => {
                         let text = t;
@@ -2766,6 +2803,8 @@
                             if (t.hideAt && now > t.hideAt) return;
                             text = t.text;
                         }
+
+                        if (!text || isGhostTicker(text)) return;
 
                         if (text.includes('span style')) {
                             // Mensajes desde Admin con colores personalizados

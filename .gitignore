@@ -1,3 +1,5 @@
 .wrangler/
+.claude/
+.codex/
 .DS_Store
 *.log
