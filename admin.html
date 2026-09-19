@@ -333,6 +333,63 @@
                     </div>
                 </div>
 
+                <!-- CENTRO DE PROTECCIÓN CIVIL Y ALERTA SÍSMICA (SASMEX) -->
+                <div class="card" style="border: 1px solid rgba(239, 68, 68, 0.4); background: linear-gradient(180deg, rgba(30, 10, 10, 0.6) 0%, rgba(20, 20, 25, 0.6) 100%);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <h2 style="color: #fca5a5; margin: 0; display: flex; align-items: center; gap: 8px;">
+                            <span>🚨</span> Centro de Protección Civil y Alertas
+                        </h2>
+                        <span id="sasmex-pill" style="font-size: 0.75rem; padding: 3px 8px; border-radius: 20px; background: rgba(74, 222, 128, 0.15); color: #86efac; border: 1px solid rgba(74, 222, 128, 0.4); font-weight: 700;">
+                            🟢 SASMEX Activo
+                        </span>
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">
+                        Monitoreo en tiempo real de <strong>@SASMEX_Oficial</strong> y activación de emergencia para toda la red de pantallas.
+                    </p>
+
+                    <!-- Estado del Monitor SASMEX -->
+                    <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Último Boletín CIRES / SASMEX:</span>
+                            <button onclick="checkSasmexLive()" style="padding: 3px 8px; font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.4);">🔄 Consultar Ahora</button>
+                        </div>
+                        <div id="sasmex-last-msg" style="font-size: 0.80rem; color: #e2e8f0; line-height: 1.35; max-height: 80px; overflow-y: auto; font-family: monospace;">
+                            Haz clic en "Consultar Ahora" para verificar @SASMEX_Oficial.
+                        </div>
+                    </div>
+
+                    <!-- Botones de Activación Inmediata -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                        <button onclick="adminTriggerSeismicAlert()" style="background: #dc2626; border-color: #ef4444; color: white; font-weight: 700; padding: 10px;">
+                            🔴 Alerta Sísmica (Prueba)
+                        </button>
+                        <button onclick="adminTriggerDrillAlert()" style="background: #d97706; border-color: #f59e0b; color: white; font-weight: 700; padding: 10px;">
+                            🛡️ Simulacro Programado
+                        </button>
+                        <button onclick="adminTriggerHurricaneAlert()" style="background: #2563eb; border-color: #3b82f6; color: white; font-weight: 700; padding: 10px;">
+                            🌀 Ciclón (SIAT-CT)
+                        </button>
+                        <button onclick="adminTriggerFireAlert()" style="background: #ea580c; border-color: #f97316; color: white; font-weight: 700; padding: 10px;">
+                            🔥 Evacuación General
+                        </button>
+                    </div>
+
+                    <button class="delete-btn" style="width: 100%; border-color: rgba(74, 222, 128, 0.5); color: #86efac; background: rgba(74, 222, 128, 0.1); margin-bottom: 10px;"
+                        onclick="adminClearEmergency()">
+                        🟢 Todo Despejado (Desactivar Emergencia)
+                    </button>
+
+                    <!-- Webhook Info Box para IT -->
+                    <details style="font-size: 0.75rem; color: var(--text-muted); background: rgba(0,0,0,0.25); border-radius: 6px; padding: 8px;">
+                        <summary style="cursor: pointer; font-weight: 600; color: #cbd5e1;">🔌 Webhook Oficial para Hardware (SARMEX / Raspberry Pi)</summary>
+                        <div style="margin-top: 8px; font-family: monospace; color: #93c5fd; word-break: break-all;">
+                            URL: https://tcp-broadcast.pages.dev/api/emergency-alert<br>
+                            Token: palace-emergency-2026<br>
+                            Método: POST (JSON)
+                        </div>
+                    </details>
+                </div>
+
                 <!-- Mensaje de Gerencia -->
                 <div class="card">
                     <h2>📢 Mensaje de Gerencia (Alerta Mayor)</h2>
@@ -503,7 +560,8 @@
             managerMsg: "",
             sheetUrl: "",
             birthday: { name: "", dept: "" },
-            celebration: { msg: "", timestamp: 0 }
+            celebration: { msg: "", timestamp: 0 },
+            emergencyAlert: { active: false, timestamp: 0 }
         };
 
         let imageCache = {}; // Cache local para que no reescriba Base64 en el master doc
@@ -841,6 +899,109 @@
             await saveToFirebase();
             alert('Mensaje de gerencia retirado.');
         }
+
+        // ==========================================
+        //  CENTRO DE PROTECCIÓN CIVIL Y ALERTA SÍSMICA
+        // ==========================================
+        window.checkSasmexLive = async function() {
+            const msgEl = document.getElementById('sasmex-last-msg');
+            const pillEl = document.getElementById('sasmex-pill');
+            if (msgEl) msgEl.textContent = 'Consultando @SASMEX_Oficial...';
+            try {
+                const res = await fetch('/api/sasmex-monitor');
+                const data = await res.json();
+                if (data.success && data.latest) {
+                    if (msgEl) msgEl.textContent = `[${data.latest.postId}] ${data.latest.text}`;
+                    if (pillEl) {
+                        if (data.hasActiveAlert) {
+                            pillEl.innerHTML = '🚨 ¡ALERTA SÍSMICA ACTIVA!';
+                            pillEl.style.background = 'rgba(239, 68, 68, 0.3)';
+                            pillEl.style.color = '#fca5a5';
+                            pillEl.style.borderColor = '#ef4444';
+                        } else {
+                            pillEl.innerHTML = '🟢 SASMEX Conectado (Normal)';
+                            pillEl.style.background = 'rgba(74, 222, 128, 0.15)';
+                            pillEl.style.color = '#86efac';
+                            pillEl.style.borderColor = 'rgba(74, 222, 128, 0.4)';
+                        }
+                    }
+                } else {
+                    if (msgEl) msgEl.textContent = 'No se pudo obtener el último boletín.';
+                }
+            } catch (err) {
+                if (msgEl) msgEl.textContent = 'Error de conexión con el monitor SASMEX.';
+            }
+        };
+
+        window.adminTriggerSeismicAlert = async function() {
+            if (!confirm('¿Deseas activar la ALERTA SÍSMICA en TODAS las pantallas del hotel?')) return;
+            globalState.emergencyAlert = {
+                active: true,
+                type: 'SISMO',
+                title: '¡ALERTA SÍSMICA!',
+                subtitle: 'Sismo detectado por la Red Oficial SASMEX (CIRES A.C.)',
+                source: `CONSOLA_ADMIN · ${loggedInUser ? loggedInUser.role : 'OPERACIONES'}`,
+                countdown: 50,
+                timestamp: Date.now()
+            };
+            await saveToFirebase();
+            alert('🚨 Alerta Sísmica activada en todas las pantallas.');
+        };
+
+        window.adminTriggerDrillAlert = async function() {
+            if (!confirm('¿Deseas activar el SIMULACRO PROGRAMADO en las pantallas?')) return;
+            globalState.emergencyAlert = {
+                active: true,
+                type: 'SIMULACRO',
+                title: 'SIMULACRO PROGRAMADO',
+                subtitle: 'Ejercicio de Evacuación de Protección Civil · The Palace Company',
+                source: `SIMULACRO_OFICIAL · ${loggedInUser ? loggedInUser.role : 'OPERACIONES'}`,
+                countdown: 60,
+                timestamp: Date.now()
+            };
+            await saveToFirebase();
+            alert('🛡️ Modo Simulacro activado en todas las pantallas.');
+        };
+
+        window.adminTriggerHurricaneAlert = async function() {
+            const fase = prompt('Indica la Fase del Ciclón SIAT-CT (ej: Amarilla, Naranja, Roja):', 'Naranja');
+            if (!fase) return;
+            globalState.emergencyAlert = {
+                active: true,
+                type: 'HURACAN',
+                title: `ALERTA CICLÓNICA · FASE ${fase.toUpperCase()}`,
+                subtitle: 'Protocolo de Seguridad Meteorológica · Protección Civil Quintana Roo',
+                source: `SIAT_CT · ${loggedInUser ? loggedInUser.role : 'OPERACIONES'}`,
+                countdown: 90,
+                timestamp: Date.now()
+            };
+            await saveToFirebase();
+            alert(`🌀 Alerta Ciclónica (Fase ${fase}) activada.`);
+        };
+
+        window.adminTriggerFireAlert = async function() {
+            if (!confirm('¿Deseas activar la ALERTA DE EVACUACIÓN GENERAL / INCENDIO?')) return;
+            globalState.emergencyAlert = {
+                active: true,
+                type: 'INCENDIO',
+                title: '¡EVACUACIÓN INMEDIATA!',
+                subtitle: 'Alerta de Seguridad e Incendio · Diríjase a Puntos de Reunión',
+                source: `SEGURIDAD_INTERNA · ${loggedInUser ? loggedInUser.role : 'OPERACIONES'}`,
+                countdown: 30,
+                timestamp: Date.now()
+            };
+            await saveToFirebase();
+            alert('🔥 Alerta de Evacuación activada.');
+        };
+
+        window.adminClearEmergency = async function() {
+            globalState.emergencyAlert = {
+                active: false,
+                timestamp: Date.now()
+            };
+            await saveToFirebase();
+            alert('🟢 Emergencia desactivada. Pantallas regresadas a la programación normal.');
+        };
 
         // ==========================
         //  GALLERY COMPRESS & UPLOAD

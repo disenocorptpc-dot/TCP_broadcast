@@ -1006,6 +1006,261 @@
             }
         }
 
+        /* --- EMERGENCY TAKEOVER OVERLAY (PROTECCIÓN CIVIL / SASMEX) --- */
+        #emergency-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, rgba(185, 28, 28, 0.45) 0%, rgba(10, 2, 2, 0.98) 75%);
+            backdrop-filter: blur(16px);
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 30px 48px;
+            box-sizing: border-box;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            box-shadow: inset 0 0 120px rgba(220, 38, 38, 0.5);
+        }
+
+        #emergency-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+            animation: emergencyPulseGlow 2s infinite ease-in-out;
+        }
+
+        @keyframes emergencyPulseGlow {
+            0%, 100% {
+                box-shadow: inset 0 0 80px rgba(220, 38, 38, 0.4);
+            }
+            50% {
+                box-shadow: inset 0 0 160px rgba(239, 68, 68, 0.85);
+            }
+        }
+
+        .emergency-hazard-bar {
+            height: 12px;
+            width: 100%;
+            background: repeating-linear-gradient(
+                -45deg,
+                #ef4444,
+                #ef4444 20px,
+                #000000 20px,
+                #000000 40px
+            );
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+
+        .emergency-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid rgba(239, 68, 68, 0.4);
+            padding-bottom: 16px;
+            margin-top: 14px;
+        }
+
+        .emergency-brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .emergency-brand img {
+            height: 38px;
+            filter: brightness(0) invert(1);
+        }
+
+        .emergency-badge {
+            background: #ef4444;
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 900;
+            font-size: 1.05rem;
+            letter-spacing: 2px;
+            padding: 6px 16px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            animation: blinkBadge 1s infinite alternate;
+        }
+
+        @keyframes blinkBadge {
+            0% { opacity: 1; }
+            100% { opacity: 0.65; }
+        }
+
+        .emergency-meta-right {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            color: #fca5a5;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .emergency-hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .emergency-siren-box {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.2);
+            border: 3px solid #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.7);
+            animation: sirenBeat 1s infinite ease-in-out;
+        }
+
+        .emergency-siren-box i,
+        .emergency-siren-box svg {
+            width: 55px;
+            height: 55px;
+            color: #ffffff;
+            stroke-width: 2.2px;
+        }
+
+        @keyframes sirenBeat {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(239, 68, 68, 0.6); }
+            50% { transform: scale(1.12); box-shadow: 0 0 70px rgba(255, 74, 90, 0.95); }
+        }
+
+        .emergency-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 45px rgba(239, 68, 68, 0.9);
+            line-height: 1.05;
+            margin-bottom: 8px;
+        }
+
+        .emergency-subtitle {
+            font-family: 'Public Sans', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 700;
+            color: #fca5a5;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .emergency-telemetry-pill {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(239, 68, 68, 0.7);
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .emergency-telemetry-pill .eta-count {
+            color: #fbbf24;
+            font-size: 1.45rem;
+            font-weight: 900;
+        }
+
+        .emergency-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            width: 100%;
+            max-width: 1550px;
+            margin: 0 auto;
+        }
+
+        .emergency-card {
+            background: rgba(18, 5, 5, 0.85);
+            border: 1.5px solid rgba(239, 68, 68, 0.45);
+            border-radius: 16px;
+            padding: 22px 28px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .emergency-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .emergency-card-header h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.30rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .emergency-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .emergency-steps li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            font-family: 'Public Sans', sans-serif;
+            font-size: 1.10rem;
+            color: #f1f5f9;
+            line-height: 1.35;
+        }
+
+        .emergency-step-num {
+            background: #ef4444;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 0.90rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .emergency-steps strong {
+            color: #fbbf24;
+        }
+
         /* --- KEN BURNS / PAN & SCAN CINEMATIC HERO GALLERY --- */
         #gallery-layer {
             position: absolute;
@@ -1570,6 +1825,72 @@
     <!-- Celebration Overlay -->
     <div id="celebration-overlay">
         <div id="celebration-msg">¡FELICIDADES!</div>
+    </div>
+
+    <!-- Emergency Takeover Overlay (Protección Civil & SASMEX) -->
+    <div id="emergency-overlay">
+        <div class="emergency-hazard-bar"></div>
+        
+        <div class="emergency-header">
+            <div class="emergency-brand">
+                <img src="logo.svg" alt="The Palace Company">
+                <div class="emergency-badge" id="emergency-badge">
+                    <i data-lucide="alert-triangle"></i>
+                    <span>ALERTA DE SEGURIDAD PRIORITARIA</span>
+                </div>
+            </div>
+            <div class="emergency-meta-right">
+                <i data-lucide="radio"></i>
+                <span id="emergency-source-tag">SISTEMA OFICIAL SASMEX · CIRES A.C.</span>
+                <span style="opacity: 0.5;">|</span>
+                <span id="emergency-clock">--:--:--</span>
+            </div>
+        </div>
+
+        <div class="emergency-hero">
+            <div class="emergency-siren-box" id="emergency-icon-box">
+                <i data-lucide="bell" id="emergency-main-icon"></i>
+            </div>
+            <h1 class="emergency-title" id="emergency-title">¡ALERTA SÍSMICA!</h1>
+            <p class="emergency-subtitle" id="emergency-subtitle">Sismo detectado por la Red Oficial de Sensores SASMEX</p>
+            <div class="emergency-telemetry-pill" id="emergency-telemetry">
+                <i data-lucide="activity" style="color: #ef4444;"></i>
+                <span id="emergency-telemetry-text">TIEMPO ESTIMADO DE ARRIBO:</span>
+                <span class="eta-count" id="emergency-countdown">45s</span>
+            </div>
+        </div>
+
+        <div class="emergency-cards-grid">
+            <!-- Español -->
+            <div class="emergency-card">
+                <div class="emergency-card-header">
+                    <span style="font-size: 1.5rem;">🇲🇽</span>
+                    <h3>Protocolo de Seguridad (Español)</h3>
+                </div>
+                <ul class="emergency-steps" id="emergency-steps-es">
+                    <li><span class="emergency-step-num">1</span> <span><strong>CONSERVE LA CALMA:</strong> No corra, no grite y evite el pánico.</span></li>
+                    <li><span class="emergency-step-num">2</span> <span><strong>ZONA SEGURA:</strong> Repliéguese hacia columnas estructurales y muros de carga.</span></li>
+                    <li><span class="emergency-step-num">3</span> <span><strong>NO USE ELEVADORES:</strong> Diríjase hacia las escaleras de emergencia.</span></li>
+                    <li><span class="emergency-step-num">4</span> <span><strong>EVACUACIÓN:</strong> Siga estrictamente las instrucciones del personal brigadista.</span></li>
+                </ul>
+            </div>
+
+            <!-- English -->
+            <div class="emergency-card">
+                <div class="emergency-card-header">
+                    <span style="font-size: 1.5rem;">🇺🇸</span>
+                    <h3>Safety Protocol (English)</h3>
+                </div>
+                <ul class="emergency-steps" id="emergency-steps-en">
+                    <li><span class="emergency-step-num">1</span> <span><strong>STAY CALM:</strong> Do not run, scream, or push others.</span></li>
+                    <li><span class="emergency-step-num">2</span> <span><strong>SAFE ZONES:</strong> Move to structural columns and load-bearing walls.</span></li>
+                    <li><span class="emergency-step-num">3</span> <span><strong>NO ELEVATORS:</strong> Use designated emergency exit stairwells only.</span></li>
+                    <li><span class="emergency-step-num">4</span> <span><strong>EVACUATION:</strong> Follow all instructions given by emergency response staff.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="emergency-hazard-bar" style="margin-top: 14px;"></div>
     </div>
 
     <script type="module">
@@ -2959,6 +3280,200 @@
             }
         }
 
+        // --- EMERGENCY TAKEOVER & SASMEX SEISMIC ALERT LOGIC ---
+        let isEmergencyActive = false;
+        let emergencyCountdownInterval = null;
+        let emergencyAudioCtx = null;
+        let emergencySirenOsc = null;
+        let lastSasmexPostId = null;
+
+        function playEmergencySiren() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                if (!emergencyAudioCtx) {
+                    emergencyAudioCtx = new AudioContext();
+                }
+                if (emergencyAudioCtx.state === 'suspended') {
+                    emergencyAudioCtx.resume();
+                }
+
+                if (emergencySirenOsc) {
+                    try { emergencySirenOsc.stop(); } catch (e) {}
+                }
+
+                const osc = emergencyAudioCtx.createOscillator();
+                const gain = emergencyAudioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(850, emergencyAudioCtx.currentTime);
+
+                let high = false;
+                const sirenInterval = setInterval(() => {
+                    if (!isEmergencyActive) {
+                        clearInterval(sirenInterval);
+                        try { osc.stop(); } catch (e) {}
+                        return;
+                    }
+                    high = !high;
+                    if (emergencyAudioCtx && osc) {
+                        try {
+                            osc.frequency.setValueAtTime(high ? 1020 : 850, emergencyAudioCtx.currentTime);
+                        } catch (e) {}
+                    }
+                }, 600);
+
+                gain.gain.setValueAtTime(0.08, emergencyAudioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(emergencyAudioCtx.destination);
+                osc.start();
+                emergencySirenOsc = osc;
+            } catch (e) {
+                console.warn('Alerta de audio restringida por políticas de autoplay del navegador:', e);
+            }
+        }
+
+        function stopEmergencySiren() {
+            if (emergencySirenOsc) {
+                try { emergencySirenOsc.stop(); } catch (e) {}
+                emergencySirenOsc = null;
+            }
+        }
+
+        function triggerEmergencyOverlay(alertData = {}) {
+            isEmergencyActive = true;
+            const overlay = document.getElementById('emergency-overlay');
+            if (!overlay) return;
+
+            const titleEl = document.getElementById('emergency-title');
+            const subtitleEl = document.getElementById('emergency-subtitle');
+            const badgeEl = document.getElementById('emergency-badge');
+            const countdownEl = document.getElementById('emergency-countdown');
+            const sourceEl = document.getElementById('emergency-source-tag');
+            const clockEl = document.getElementById('emergency-clock');
+
+            const type = (alertData.type || 'SISMO').toUpperCase();
+            const isDrill = type === 'SIMULACRO';
+
+            if (titleEl) {
+                titleEl.textContent = alertData.title || (isDrill ? 'SIMULACRO PROGRAMADO' : '¡ALERTA SÍSMICA!');
+                titleEl.style.textShadow = isDrill ? '0 0 45px rgba(234, 179, 8, 0.9)' : '0 0 45px rgba(239, 68, 68, 0.9)';
+            }
+
+            if (subtitleEl) {
+                subtitleEl.textContent = alertData.subtitle || 'Sismo detectado por la Red Oficial SASMEX (CIRES A.C.)';
+            }
+
+            if (badgeEl) {
+                badgeEl.innerHTML = isDrill
+                    ? '<i data-lucide="shield-alert"></i><span>SIMULACRO EN CURSO · NO ENTRAR EN PÁNICO</span>'
+                    : '<i data-lucide="alert-triangle"></i><span>ALERTA DE SEGURIDAD PRIORITARIA</span>';
+                badgeEl.style.background = isDrill ? '#d97706' : '#ef4444';
+            }
+
+            if (sourceEl) {
+                sourceEl.textContent = alertData.source || 'SISTEMA OFICIAL SASMEX · CIRES A.C.';
+            }
+
+            if (clockEl) {
+                const now = new Date();
+                clockEl.textContent = now.toLocaleTimeString('es-MX', { hour12: false });
+            }
+
+            // Countdown regresivo
+            if (emergencyCountdownInterval) clearInterval(emergencyCountdownInterval);
+            let secondsLeft = alertData.countdown || 60;
+            if (countdownEl) {
+                countdownEl.textContent = `${secondsLeft}s`;
+                emergencyCountdownInterval = setInterval(() => {
+                    secondsLeft--;
+                    if (secondsLeft <= 0) {
+                        countdownEl.textContent = 'EN CURSO';
+                        clearInterval(emergencyCountdownInterval);
+                    } else {
+                        countdownEl.textContent = `${secondsLeft}s`;
+                    }
+                }, 1000);
+            }
+
+            overlay.classList.add('active');
+            if (window.refreshIcons) window.refreshIcons();
+
+            // Poner Ticker inferior en modo alerta máxima
+            const tickerBar = document.getElementById('ticker-bar');
+            const tickerLabel = document.getElementById('ticker-label');
+            const tickerContentBox = document.getElementById('ticker-content-box');
+            if (tickerBar && tickerLabel && tickerContentBox) {
+                tickerBar.classList.add('alert-mode');
+                tickerLabel.innerHTML = `<i data-lucide="alert-octagon"></i><span>EMERGENCIA</span>`;
+                const alertMsg = alertData.rawText || `${alertData.title || 'ALERTA SÍSMICA ACTIVADA'} · PROTOCOLO DE PROTECCIÓN CIVIL EN CURSO · SIGA LAS INDICACIONES DE LOS BRIGADISTAS`;
+                tickerContentBox.innerHTML = `<div class="ticker-manager-alert"><i data-lucide="alert-triangle" style="width: 1.15em; height: 1.15em; vertical-align: -0.2em; margin-right: 12px; stroke-width: 2.2px;"></i>${alertMsg}<i data-lucide="alert-triangle" style="width: 1.15em; height: 1.15em; vertical-align: -0.2em; margin-left: 12px; stroke-width: 2.2px;"></i></div>`;
+                if (window.refreshIcons) window.refreshIcons();
+            }
+
+            playEmergencySiren();
+        }
+
+        function dismissEmergencyOverlay() {
+            isEmergencyActive = false;
+            const overlay = document.getElementById('emergency-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+            if (emergencyCountdownInterval) {
+                clearInterval(emergencyCountdownInterval);
+                emergencyCountdownInterval = null;
+            }
+            stopEmergencySiren();
+
+            // Restaurar Ticker normal
+            if (window.lastFirebaseState) {
+                updateTickerDOM(window.lastFirebaseState);
+            }
+        }
+
+        // Monitoreo en segundo plano de @SASMEX_Oficial
+        async function pollSasmexMonitor() {
+            try {
+                const res = await fetch('/api/sasmex-monitor');
+                if (!res.ok) return;
+                const json = await res.json();
+                if (json.success && json.hasActiveAlert && json.activeAlertData) {
+                    const alert = json.activeAlertData;
+                    if (alert.postId !== lastSasmexPostId) {
+                        lastSasmexPostId = alert.postId;
+                        triggerEmergencyOverlay({
+                            active: true,
+                            type: alert.isDrill ? "SIMULACRO" : "SISMO",
+                            title: alert.isDrill ? "SIMULACRO PROGRAMADO" : "¡ALERTA SÍSMICA!",
+                            subtitle: `Sismo detectado por la Red Oficial SASMEX · Sensor: ${alert.sensor || 'Costa del Pacífico'}`,
+                            source: "@SASMEX_Oficial",
+                            rawText: alert.text,
+                            countdown: 60
+                        });
+                    }
+                }
+            } catch (err) {
+                // Silencioso, no interrumpir broadcast
+            }
+        }
+        setInterval(pollSasmexMonitor, 20000);
+
+        // Funciones accesibles globalmente para pruebas y consola
+        window.simulateEmergency = function(type = 'SISMO', countdown = 45) {
+            triggerEmergencyOverlay({
+                active: true,
+                type: type,
+                title: type === 'SISMO' ? '¡ALERTA SÍSMICA!' : (type === 'SIMULACRO' ? 'SIMULACRO PROGRAMADO' : 'ALERTA DE EMERGENCIA'),
+                subtitle: 'Prueba de Sistema de Protección Civil · The Palace Company',
+                source: 'CONSOLA_ADMINISTRACION',
+                countdown: countdown
+            });
+        };
+
+        window.clearEmergency = function() {
+            dismissEmergencyOverlay();
+        };
+
         // Inicializar Firebase
         initFirebase().then(({ db: database, docRef }) => {
             db = database;
@@ -2974,6 +3489,15 @@
             onSnapshot(docRef, (doc) => {
                 if (doc.exists()) {
                     const data = doc.data();
+
+                    // Disparador de Alerta Sísmica / Emergencia vía Firebase
+                    if (data.emergencyAlert) {
+                        if (data.emergencyAlert.active) {
+                            triggerEmergencyOverlay(data.emergencyAlert);
+                        } else if (isEmergencyActive) {
+                            dismissEmergencyOverlay();
+                        }
+                    }
 
                     // Disparador de Celebraciones (Confeti)
                     if (data.celebration && data.celebration.timestamp > lastCelebrationTime) {
