@@ -1109,6 +1109,39 @@
             gap: 12px;
         }
 
+        .emergency-dismiss-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.45);
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            padding: 7px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(8px);
+            margin-left: 10px;
+        }
+
+        .emergency-dismiss-btn:hover {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: #ffffff;
+            transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
+        }
+
+        .emergency-dismiss-btn i,
+        .emergency-dismiss-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
         .emergency-hero {
             display: flex;
             flex-direction: column;
@@ -1844,6 +1877,10 @@
                 <span id="emergency-source-tag">SISTEMA OFICIAL SASMEX · CIRES A.C.</span>
                 <span style="opacity: 0.5;">|</span>
                 <span id="emergency-clock">--:--:--</span>
+                <button type="button" onclick="window.clearEmergency()" class="emergency-dismiss-btn" title="Cerrar Alerta (ESC)">
+                    <i data-lucide="x-circle"></i>
+                    <span>✕ CERRAR (ESC)</span>
+                </button>
             </div>
         </div>
 
@@ -1895,7 +1932,7 @@
 
     <script type="module">
         import { initFirebase } from './firebase-config.js';
-        import { onSnapshot, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { onSnapshot, getDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         let db = null;
         let imageCache = {};
@@ -3201,20 +3238,38 @@
             return lower.includes('sg medios') || lower.includes('sg_medios') || lower.includes('salirs');
         }
 
-        function updateTickerDOM(data = {}) {
+        function updateTickerDOM(data = {}, force = false) {
+            // No intervenir con el ticker mientras una emergencia crítica esté en curso a menos que sea forzado
+            if (isEmergencyActive && !force) return;
+
             const tickerBar = document.getElementById('ticker-bar');
             const tickerLabel = document.getElementById('ticker-label');
             const tickerContentBox = document.getElementById('ticker-content-box');
             if (!tickerBar || !tickerLabel || !tickerContentBox) return;
 
             if (data.managerMsg && data.managerMsg.trim() !== '') {
-                // MODO GERENCIA
-                const managerHTML = `<div class="ticker-manager-alert"><i data-lucide="alert-triangle" style="width: 1.15em; height: 1.15em; vertical-align: -0.2em; margin-right: 12px; stroke-width: 2.2px;"></i>${data.managerMsg}<i data-lucide="alert-triangle" style="width: 1.15em; height: 1.15em; vertical-align: -0.2em; margin-left: 12px; stroke-width: 2.2px;"></i></div>`;
-                if (currentTickerHTML !== `manager:${data.managerMsg}`) {
-                    currentTickerHTML = `manager:${data.managerMsg}`;
+                // MODO GERENCIA - Track continuo con desplazamiento fluido (nunca se topa ni se corta)
+                const managerKey = `manager:${data.managerMsg}`;
+                if (currentTickerHTML !== managerKey || force) {
+                    currentTickerHTML = managerKey;
                     tickerBar.classList.add('alert-mode');
                     tickerLabel.innerHTML = `<i data-lucide="alert-octagon"></i><span>GERENCIA</span>`;
-                    tickerContentBox.innerHTML = managerHTML;
+
+                    const managerSegment = `
+                        <span class="ticker-token-pill urgent" style="font-size: 1.1rem; padding: 4px 14px; background: rgba(239, 68, 68, 0.35); border-color: #ef4444; color: #fff;">
+                            <i data-lucide="megaphone" style="width: 1.1em; height: 1.1em; vertical-align: -0.15em; margin-right: 6px;"></i>COMUNICADO DE GERENCIA
+                        </span>
+                        <span class="ticker-token-text" style="color: #ffffff; font-weight: 800; font-size: 1.35rem; letter-spacing: 0.5px;">${data.managerMsg}</span>
+                    `;
+                    const charCount = managerSegment.replace(/<[^>]+>/g, '').length;
+                    const dur = Math.max(22, Math.min(65, Math.floor(charCount * 0.24)));
+
+                    tickerContentBox.innerHTML = `
+                        <div class="ticker-track" style="animation-duration: ${dur}s;">
+                            <div class="ticker-segment">${managerSegment}</div>
+                            <div class="ticker-segment" aria-hidden="true">${managerSegment}</div>
+                        </div>
+                    `;
                     if (window.refreshIcons) window.refreshIcons();
                 }
             } else {
@@ -3263,7 +3318,7 @@
                 // Unir los tokens con el separador de punto Stitch
                 const segmentHTML = tokens.join('<span class="ticker-token-sep">·</span>');
 
-                if (currentTickerHTML !== segmentHTML) {
+                if (currentTickerHTML !== segmentHTML || force) {
                     currentTickerHTML = segmentHTML;
                     // Calcular duración en base a la cantidad de caracteres (~32s - 95s)
                     const charCount = segmentHTML.replace(/<[^>]+>/g, '').length;
@@ -3279,6 +3334,7 @@
                 }
             }
         }
+        window.updateTickerDOM = updateTickerDOM;
 
         // --- EMERGENCY TAKEOVER & SASMEX SEISMIC ALERT LOGIC ---
         let isEmergencyActive = false;
@@ -3398,7 +3454,7 @@
             overlay.classList.add('active');
             if (window.refreshIcons) window.refreshIcons();
 
-            // Poner Ticker inferior en modo alerta máxima
+            // Poner Ticker inferior en modo alerta máxima continuo (desplazamiento continuo sin toparse)
             const tickerBar = document.getElementById('ticker-bar');
             const tickerLabel = document.getElementById('ticker-label');
             const tickerContentBox = document.getElementById('ticker-content-box');
@@ -3406,7 +3462,30 @@
                 tickerBar.classList.add('alert-mode');
                 tickerLabel.innerHTML = `<i data-lucide="alert-octagon"></i><span>EMERGENCIA</span>`;
                 const alertMsg = alertData.rawText || `${alertData.title || 'ALERTA SÍSMICA ACTIVADA'} · PROTOCOLO DE PROTECCIÓN CIVIL EN CURSO · SIGA LAS INDICACIONES DE LOS BRIGADISTAS`;
-                tickerContentBox.innerHTML = `<div class="ticker-manager-alert"><i data-lucide="alert-triangle" style="width: 1.15em; height: 1.15em; vertical-align: -0.2em; margin-right: 12px; stroke-width: 2.2px;"></i>${alertMsg}<i data-lucide="alert-triangle" style="width: 1.15em; height: 1.15em; vertical-align: -0.2em; margin-left: 12px; stroke-width: 2.2px;"></i></div>`;
+                
+                currentTickerHTML = `emergency:${alertMsg}`;
+
+                const emergencySegment = `
+                    <span class="ticker-token-pill urgent" style="font-size: 1.1rem; padding: 4px 14px; background: rgba(239, 68, 68, 0.35); border-color: #ef4444; color: #fff;">
+                        <i data-lucide="alert-octagon" style="width: 1.1em; height: 1.1em; vertical-align: -0.15em; margin-right: 6px;"></i>ALERTA
+                    </span>
+                    <span class="ticker-token-text" style="color: #ffffff; font-weight: 800; font-size: 1.35rem; letter-spacing: 0.5px;">${alertMsg}</span>
+                    <span class="ticker-token-sep" style="color: #ef4444;">·</span>
+                    <span class="ticker-token-pill urgent" style="font-size: 1.1rem; padding: 4px 14px; background: rgba(245, 158, 11, 0.3); border-color: #f59e0b; color: #fef08a;">
+                        <i data-lucide="shield-alert" style="width: 1.1em; height: 1.1em; vertical-align: -0.15em; margin-right: 6px;"></i>PROTOCOLO OFICIAL
+                    </span>
+                    <span class="ticker-token-text" style="color: #fef08a; font-weight: 700; font-size: 1.30rem;">CONSERVE LA CALMA · SIGA LAS INDICACIONES DE LOS BRIGADISTAS</span>
+                `;
+
+                const charCount = emergencySegment.replace(/<[^>]+>/g, '').length;
+                const dur = Math.max(25, Math.min(65, Math.floor(charCount * 0.22)));
+
+                tickerContentBox.innerHTML = `
+                    <div class="ticker-track" style="animation-duration: ${dur}s;">
+                        <div class="ticker-segment">${emergencySegment}</div>
+                        <div class="ticker-segment" aria-hidden="true">${emergencySegment}</div>
+                    </div>
+                `;
                 if (window.refreshIcons) window.refreshIcons();
             }
 
@@ -3425,10 +3504,12 @@
             }
             stopEmergencySiren();
 
-            // Restaurar Ticker normal
-            if (window.lastFirebaseState) {
-                updateTickerDOM(window.lastFirebaseState);
-            }
+            // Invalida la caché del ticker y fuerza la reconstrucción limpia a modo normal
+            currentTickerHTML = null;
+            const tickerBar = document.getElementById('ticker-bar');
+            if (tickerBar) tickerBar.classList.remove('alert-mode');
+
+            updateTickerDOM(window.lastFirebaseState || {}, true);
         }
 
         // Monitoreo en segundo plano de @SASMEX_Oficial
@@ -3451,6 +3532,9 @@
                             countdown: 60
                         });
                     }
+                } else if (json.success && !json.hasActiveAlert && lastSasmexPostId && isEmergencyActive) {
+                    lastSasmexPostId = null;
+                    dismissEmergencyOverlay();
                 }
             } catch (err) {
                 // Silencioso, no interrumpir broadcast
@@ -3472,11 +3556,27 @@
 
         window.clearEmergency = function() {
             dismissEmergencyOverlay();
+            if (window.firebaseDocRef && setDoc) {
+                setDoc(window.firebaseDocRef, {
+                    emergencyAlert: {
+                        active: false,
+                        timestamp: Date.now()
+                    }
+                }, { merge: true }).catch(err => console.warn('Error clearing emergency in Firebase:', err));
+            }
         };
+
+        // Atajo de teclado ESC para cerrar emergencia
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isEmergencyActive) {
+                window.clearEmergency();
+            }
+        });
 
         // Inicializar Firebase
         initFirebase().then(({ db: database, docRef }) => {
             db = database;
+            window.firebaseDocRef = docRef;
             console.log("Firebase Conectado. Escuchando cambios en vivo...");
 
             // Refrescar periódicamente los tickers programados por si cambia la hora actual
