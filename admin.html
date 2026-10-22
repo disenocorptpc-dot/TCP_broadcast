@@ -471,17 +471,6 @@
                     </div>
                 </div>
 
-                <!-- GATITO PULSE CONTROL -->
-                <div class="card" style="grid-column: 1 / -1; border-color: rgba(255, 74, 90, 0.4);">
-                    <h2>🐱 Gatito "¡PULSE!!!" en Pantalla Completa</h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">El gatito 3D sale automáticamente <strong>cada 2 horas</strong> por encima de toda la pantalla golpeando el cristal y gritando <strong>¡PULSE!!!</strong>. También puedes soltarlo manualmente en este instante:</p>
-                    <div class="flex-row">
-                        <input type="text" id="pulse-cat-msg"
-                            placeholder="Subtítulo opcional (Por defecto: ¡ACTUALICEN SUS TAREAS Y ODPs!)">
-                        <button onclick="triggerPulseCatAdmin()" style="background: var(--danger); color: white;">🐾 ¡Soltar Gatito PULSE!</button>
-                    </div>
-                </div>
-
                 <!-- CELEBRATION / CONFETTI CONTROL -->
                 <div class="card" style="grid-column: 1 / -1;">
                     <h2>🎊 Celebración en Pantalla Completa</h2>
@@ -572,7 +561,6 @@
             sheetUrl: "",
             birthday: { name: "", dept: "" },
             celebration: { msg: "", timestamp: 0 },
-            pulseCat: { msg: "", timestamp: 0 },
             emergencyAlert: { active: false, timestamp: 0 }
         };
 
@@ -1196,21 +1184,6 @@
                 await saveToFirebase();
                 alert('Cumpleañero actualizado a: ' + globalState.birthday.name);
             }
-        }
-
-        window.triggerPulseCatAdmin = async function triggerPulseCatAdmin() {
-            const msgInput = document.getElementById('pulse-cat-msg');
-            const msg = msgInput && msgInput.value.trim() !== ''
-                ? msgInput.value.trim()
-                : '¡ACTUALICEN SUS TAREAS Y ODPs!';
-
-            globalState.pulseCat = {
-                msg: msg,
-                timestamp: Date.now()
-            };
-            if (msgInput) msgInput.value = '';
-            await saveToFirebase();
-            alert('🐾 ¡Gatito PULSE lanzado a la Televisión!');
         }
 
         window.triggerCelebration = async function triggerCelebration() {
